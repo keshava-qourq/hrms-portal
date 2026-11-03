@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v8
+**Documentation version:** v9
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -38,7 +38,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 |---|---|
 | [Requirements](requirements/README.md) | v2 approved |
 | [Architecture](architecture/README.md) | 22 entries |
-| [Development](development/README.md) | 7 entries |
+| [Development](development/README.md) | 13 entries |
 | [Testing](testing/README.md) | 3 entries |
 | [Deployment](deployment/README.md) | 2 entries |
 | [Maintenance](maintenance/README.md) | 1 entry |
@@ -49,12 +49,12 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Developer guide](development/developer-guide.md) | generated |
 | [API reference](development/api-reference.md) | 6 routes |
 | [Test report](testing/test-report.md) | failed |
-| [Tests](testing/test-cases.md) | 69 tests |
+| [Tests](testing/test-cases.md) | 72 tests |
 | [Deployment guide](deployment/deployment-guide.md) | deployed |
 | [Runbook](deployment/runbook.md) | deployed |
 | [Release notes](deployment/release-notes.md) | 2 releases |
 | [Traceability matrix](traceability-matrix.md) | 43 requirements |
-| [Changelog](CHANGELOG.md) | 8 versions |
+| [Changelog](CHANGELOG.md) | 9 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -173,27 +173,18 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Development
 
-- The plan does not state which sprint each story belongs to, only the sprint goals, so story-to-sprint mapping cannot be documented.
-- Sprint start and end dates are not provided.
-- The project description and RBAC requirements in the input are truncated ('2. Employees can'), so the full RBAC requirement list could not be cross-checked against the plan.
-- The project description lists 5 roles (Employee, Reporting Manager, HR Admin, Project Manager, System Admin). The plan refers to a 'fixed role model' without naming the roles. Alignment is unconfirmed.
-- Discrepancy: run status is 'completed', but 35 of 40 planned stories have no delivered ticket. It is unclear whether they were descoped, deferred, failed, or never attempted.
-- No statuses (blocked, failed, skipped) are given for undelivered stories.
-- Several core features appear undelivered, including administrator-created accounts (US-002), relationship-scoped access (US-004), session timeout and lockout (US-005), and the timesheet and leave workflows. Confirm whether the run ended early.
-- US-039 and US-040 (user guides) are not delivered. Treat any user-guide content as unavailable.
-- No implementation details, acceptance criteria or test results were provided for this ticket.
-- Delivery depends on account creation (US-002) and on session timeout and lockout (US-005), which have no delivery records. Whether sign-in is usable end to end is unconfirmed.
-- No implementation details, role-permission matrix or test results were provided.
-- The ticket shares a commit with two other tickets, so changes cannot be attributed to this ticket alone.
-- Relationship-scoped access (US-004) has no delivery record, so access control is incomplete at the role level only.
-- No implementation details or tests proving immutability were provided.
-- The audit log covers 'approvals, changes and admin actions'. The approval and admin-account features that would emit those events (US-002, US-031 and others) have no delivery records, so actual event coverage is unconfirmed.
-- No retention policy or viewer for the audit log is described.
-- The operations supported are not stated.
-- No front-end screen for departments is recorded. The ticket is backend-assigned and no frontend ticket exists.
-- Employee records (US-009), which would use departments, have no delivery record.
-- The chosen interface language, date format and time zone handling are not stated.
-- The other EPIC-008 stories (the dashboard US-036 and the phone layout US-037) have no delivery records, and few other screens are known to exist yet to apply this to.
+- Input does not map individual stories to specific sprints; sprint-to-story assignment is inferred only from goal wording, not stated.
+- CHG-001 (Sprint 10) is named but no change-request details are provided.
+- No delivery status recorded for US-001 through US-007; only US-041 shows a ticket as delivered.
+- No per-story delivery status, commits, or results recorded.
+- No per-story delivery status recorded.
+- No per-story or per-task delivery status recorded.
+- No per-story delivery status recorded; user-guide artifacts themselves are not included in the input.
+- Run labeled 'completed' conflicts with the absence of delivery records for 42 of 43 stories — needs human confirmation of actual build completeness.
+- No commits/test results provided for US-001 through US-040, US-042, US-043.
+- US-043 (frontend sign-in test using real login response, qa-agent) and US-029/US-031 QA tasks have no recorded outcome.
+- CHG-001 change-request work (Sprint 10) has no delivery evidence.
+- No industry/domain skill with regulations provided; compliance tracing to named controls could not be done.
 
 ### Testing
 

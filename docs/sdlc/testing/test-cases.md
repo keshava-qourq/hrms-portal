@@ -3,9 +3,9 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start summary -->
-69 tests · Passed 49 · Failed 0 · Skipped 14 · Not run 6
+72 tests · Passed 52 · Failed 0 · Skipped 14 · Not run 6
 
-Acceptance criteria covered: 16/152 · passing: 8/152
+Acceptance criteria covered: 18/152 · passing: 10/152
 <!-- sdlc:auto:end summary -->
 
 <!-- sdlc:auto:start tests -->
@@ -20,6 +20,9 @@ Acceptance criteria covered: 16/152 · passing: 8/152
 | AC-001 | SignIn > [AC-001] stores the token and navigates home on success | Unit | Passed | `frontend/src/screens/SignIn.test.tsx` |
 | AC-002 | SignIn > [AC-002] shows the generic message from the API | Unit | Passed | `frontend/src/screens/SignIn.test.tsx` |
 | AC-003 | SignIn > [AC-003] shows the deactivated-account message from the API | Unit | Passed | `frontend/src/screens/SignIn.test.tsx` |
+| AC-142 | SignIn > [AC-142] stores session_token in preference to fallbacks and navigates home | Unit | Passed | `frontend/src/screens/SignIn.test.tsx` |
+| AC-143 | SignIn > [AC-143] does not store an empty token when no field has a value | Unit | Passed | `frontend/src/screens/SignIn.test.tsx` |
+| AC-143 | SignIn > [AC-143] falls back to token when session_token is empty, never storing empty | Unit | Passed | `frontend/src/screens/SignIn.test.tsx` |
 | AC-001 | test_ac001_login_returns_session_usable_by_me | Integration | Passed | `backend/tests/integration/test_auth.py` |
 | AC-001 | test_ac001_me_without_valid_session_is_401 | Integration | Passed | `backend/tests/integration/test_auth.py` |
 | AC-002 | test_ac002_wrong_password_and_unknown_email_give_same_message | Integration | Passed | `backend/tests/integration/test_auth.py` |
