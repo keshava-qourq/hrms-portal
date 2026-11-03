@@ -120,9 +120,7 @@ def my_projects(
         select(Project).where(conds).order_by(Project.name).limit(limit).offset(offset)
     ).all()
     return ProjectPage(
-        items=[
-            ProjectOut(id=str(p.id), code=p.code, name=p.name, status=p.status) for p in rows
-        ],
+        items=[ProjectOut(id=str(p.id), code=p.code, name=p.name, status=p.status) for p in rows],
         total=total,
     )
 
@@ -162,9 +160,7 @@ def list_timesheets(
 
     count_q = select(func.count()).select_from(query.subquery())
     total = db.scalar(count_q) or 0
-    rows = db.execute(
-        query.order_by(TimesheetEntry.work_date).limit(limit).offset(offset)
-    ).all()
+    rows = db.execute(query.order_by(TimesheetEntry.work_date).limit(limit).offset(offset)).all()
     return TimesheetEntryPage(
         items=[
             TimesheetEntryOut(
@@ -179,6 +175,47 @@ def list_timesheets(
             for e, ts in rows
         ],
         total=total,
+    )
+
+
+@router.get("/timesheets/{entry_id}", response_model=TimesheetEntryOut)
+def get_timesheet_entry(
+    entry_id: str,
+    user: CurrentUser,
+    db: DbSession,
+) -> TimesheetEntryOut:
+    """One timesheet entry, readable only by the employee who owns it.
+
+    The refusal is one identical 403 whether the id is unknown, malformed or
+    simply not the caller's, and it is raised before any record data is loaded
+    into the response (fails closed)."""
+    try:
+        eid: uuid.UUID | None = uuid.UUID(entry_id)
+    except ValueError:
+        eid = None
+    row = (
+        db.execute(
+            select(TimesheetEntry, Timesheet)
+            .join(Timesheet, TimesheetEntry.timesheet_id == Timesheet.id)
+            .where(TimesheetEntry.id == eid)
+        ).first()
+        if eid is not None
+        else None
+    )
+    ensure_relationship(
+        row is not None
+        and user.employee_id is not None
+        and row[1].employee_id == user.employee_id
+    )
+    entry, ts = row
+    return TimesheetEntryOut(
+        id=str(entry.id),
+        timesheet_id=str(entry.timesheet_id),
+        employee_id=str(ts.employee_id),
+        project_id=str(entry.project_id),
+        work_date=entry.work_date,
+        hours=entry.hours,
+        status=ts.status,
     )
 
 
@@ -219,6 +256,37 @@ def list_attendance(
     )
 
 
+@router.get("/attendance/{record_id}", response_model=AttendanceOut)
+def get_attendance(
+    record_id: str,
+    user: CurrentUser,
+    db: DbSession,
+) -> AttendanceOut:
+    """One attendance record, readable only by the employee it belongs to.
+
+    Unknown, malformed or foreign ids are refused with one identical 403,
+    before any record data is loaded (fails closed)."""
+    try:
+        rid: uuid.UUID | None = uuid.UUID(record_id)
+    except ValueError:
+        rid = None
+    record = db.get(AttendanceRecord, rid) if rid is not None else None
+    ensure_relationship(
+        record is not None
+        and user.employee_id is not None
+        and record.employee_id == user.employee_id
+    )
+    return AttendanceOut(
+        id=str(record.id),
+        employee_id=str(record.employee_id),
+        work_date=record.work_date,
+        clock_in_at=record.clock_in_at,
+        clock_out_at=record.clock_out_at,
+        worked_minutes=record.worked_minutes,
+        is_regularised=record.is_regularised,
+    )
+
+
 @router.get("/leave-requests", response_model=LeaveRequestPage)
 def list_leave_requests(
     user: CurrentUser,
@@ -253,4 +321,35 @@ def list_leave_requests(
             for lr in rows
         ],
         total=total,
+    )
+
+
+@router.get("/leave-requests/{request_id}", response_model=LeaveRequestOut)
+def get_leave_request(
+    request_id: str,
+    user: CurrentUser,
+    db: DbSession,
+) -> LeaveRequestOut:
+    """One leave request, readable only by the employee who filed it.
+
+    Unknown, malformed or foreign ids are refused with one identical 403,
+    before any record data is loaded (fails closed)."""
+    try:
+        lid: uuid.UUID | None = uuid.UUID(request_id)
+    except ValueError:
+        lid = None
+    lr = db.get(LeaveRequest, lid) if lid is not None else None
+    ensure_relationship(
+        lr is not None
+        and user.employee_id is not None
+        and lr.employee_id == user.employee_id
+    )
+    return LeaveRequestOut(
+        id=str(lr.id),
+        employee_id=str(lr.employee_id),
+        leave_type_id=str(lr.leave_type_id),
+        start_date=lr.start_date,
+        end_date=lr.end_date,
+        day_count=lr.day_count,
+        status=lr.status,
     )

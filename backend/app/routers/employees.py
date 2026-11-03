@@ -333,9 +333,7 @@ def get_employee(
     if "employees.manage" in perms:
         employee = db.get(Employee, eid) if eid else None
         if employee is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
         return EmployeeOut.of(employee)
 
     employee = db.get(Employee, eid) if eid else None
@@ -344,6 +342,30 @@ def get_employee(
         or ("team.view" in perms and employee.reporting_manager_id == user.employee_id)
     )
     ensure_relationship(allowed)
+    return EmployeeOut.of(employee)
+
+
+@router.get("/my/team/{employee_id}", response_model=EmployeeOut)
+def my_team_member(
+    employee_id: str,
+    user: Annotated[User, Depends(current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> EmployeeOut:
+    """One direct report, readable only by their reporting manager.
+
+    An id that is unknown, malformed or not one of the caller's reports is
+    refused with one identical 403, before any record data reaches the response
+    (fails closed)."""
+    try:
+        eid: uuid.UUID | None = uuid.UUID(employee_id)
+    except ValueError:
+        eid = None
+    employee = db.get(Employee, eid) if eid else None
+    ensure_relationship(
+        employee is not None
+        and user.employee_id is not None
+        and employee.reporting_manager_id == user.employee_id
+    )
     return EmployeeOut.of(employee)
 
 
