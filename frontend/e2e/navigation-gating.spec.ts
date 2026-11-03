@@ -1,6 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const EMPLOYEE_PERMS = ["profile.own", "timesheet.own", "leave.own", "holidays.view", "approvals.track"];
+const EMPLOYEE_PERMS = [
+  "profile.own",
+  "timesheet.own",
+  "leave.own",
+  "holidays.view",
+  "approvals.track",
+];
 
 async function signInAs(page: Page, roles: string[], permissions: string[]) {
   await page.addInitScript(() => localStorage.setItem("session_token", "e2e-token"));
@@ -23,15 +29,28 @@ async function signInAs(page: Page, roles: string[], permissions: string[]) {
   await page.route("**/api/admin/**", (route) =>
     permissions.includes("users.manage")
       ? route.continue()
-      : route.fulfill({ status: 403, contentType: "application/json", body: JSON.stringify({ detail: "Forbidden" }) }),
+      : route.fulfill({
+          status: 403,
+          contentType: "application/json",
+          body: JSON.stringify({ detail: "Forbidden" }),
+        }),
   );
 }
 
-test("[AC-010] multi-role user sees both the employee and the manager/admin menus", async ({ page }) => {
+test("[AC-010] multi-role user sees both the employee and the manager/admin menus", async ({
+  page,
+}) => {
   await signInAs(
     page,
     ["EMPLOYEE", "REPORTING_MANAGER", "SYSTEM_ADMIN"],
-    [...EMPLOYEE_PERMS, "team.view", "team.approve", "team.reports", "users.manage", "roles.assign"],
+    [
+      ...EMPLOYEE_PERMS,
+      "team.view",
+      "team.approve",
+      "team.reports",
+      "users.manage",
+      "roles.assign",
+    ],
   );
   await page.goto("/home");
   const menu = page.getByRole("navigation", { name: "App menu" });
@@ -40,7 +59,9 @@ test("[AC-010] multi-role user sees both the employee and the manager/admin menu
   await expect(menu.getByRole("link", { name: "Administration" })).toBeVisible();
 });
 
-test("[AC-011] Employee-only user sees neither Team & Approvals nor Administration menus", async ({ page }) => {
+test("[AC-011] Employee-only user sees neither Team & Approvals nor Administration menus", async ({
+  page,
+}) => {
   await signInAs(page, ["EMPLOYEE"], EMPLOYEE_PERMS);
   await page.goto("/home");
   const menu = page.getByRole("navigation", { name: "App menu" });

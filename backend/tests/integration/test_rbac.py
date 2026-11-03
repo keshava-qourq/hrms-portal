@@ -77,9 +77,7 @@ def test_ac011_nfr004_employee_only_gets_403_without_data_on_admin_endpoint(make
     employee = make_roled("EMPLOYEE")
     target = make_roled("EMPLOYEE")
     headers = _headers(employee)
-    res = client.patch(
-        f"/api/admin/users/{target.id}", headers=headers, json={"is_active": False}
-    )
+    res = client.patch(f"/api/admin/users/{target.id}", headers=headers, json={"is_active": False})
     assert res.status_code == 403
     assert res.json() == {"detail": "Forbidden"}
     assert target.email not in res.text and str(target.id) not in res.text
@@ -155,9 +153,17 @@ def test_ac012_adding_role_grants_access_on_next_request(make_roled):
 
 
 def test_nfr021_only_five_fixed_roles_and_admin_cannot_create_others(make_roled):
-    assert set(ROLE_PERMISSIONS) == set(ROLE_NAMES) == {
-        "EMPLOYEE", "REPORTING_MANAGER", "HR_ADMIN", "PROJECT_MANAGER", "SYSTEM_ADMIN",
-    }
+    assert (
+        set(ROLE_PERMISSIONS)
+        == set(ROLE_NAMES)
+        == {
+            "EMPLOYEE",
+            "REPORTING_MANAGER",
+            "HR_ADMIN",
+            "PROJECT_MANAGER",
+            "SYSTEM_ADMIN",
+        }
+    )
     admin = make_roled("SYSTEM_ADMIN")
     target = make_roled("EMPLOYEE")
     h = _headers(admin)

@@ -22,25 +22,36 @@ ROLE_NAMES = {
 }
 
 _EMPLOYEE = {
-    "profile.own", "timesheet.own", "leave.own", "holidays.view", "approvals.track",
+    "profile.own",
+    "timesheet.own",
+    "leave.own",
+    "holidays.view",
+    "approvals.track",
 }
 
 ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
     "EMPLOYEE": frozenset(_EMPLOYEE),
-    "REPORTING_MANAGER": frozenset(
-        _EMPLOYEE | {"team.view", "team.approve", "team.reports"}
-    ),
+    "REPORTING_MANAGER": frozenset(_EMPLOYEE | {"team.view", "team.approve", "team.reports"}),
     "HR_ADMIN": frozenset(
-        {"employees.manage", "departments.manage", "leave.policy", "holidays.manage",
-         "attendance.manage", "reports.org", "approvals.reopen"}
+        {
+            "employees.manage",
+            "departments.manage",
+            "leave.policy",
+            "holidays.manage",
+            "attendance.manage",
+            "reports.org",
+            "approvals.reopen",
+        }
     ),
     "PROJECT_MANAGER": frozenset(
-        {"projects.manage", "assignments.manage", "project.timesheets.review",
-         "project.utilization"}
+        {
+            "projects.manage",
+            "assignments.manage",
+            "project.timesheets.review",
+            "project.utilization",
+        }
     ),
-    "SYSTEM_ADMIN": frozenset(
-        {"users.manage", "roles.assign", "settings.manage", "audit.view"}
-    ),
+    "SYSTEM_ADMIN": frozenset({"users.manage", "roles.assign", "settings.manage", "audit.view"}),
 }
 
 
