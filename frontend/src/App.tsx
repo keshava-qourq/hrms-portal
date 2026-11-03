@@ -1,4 +1,5 @@
 import { NavLink, Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Icons } from "@/lib/icons";
 import { getSessionToken } from "@/lib/api";
@@ -65,7 +66,17 @@ function AppShellLayout() {
   );
 }
 
+const queryClient = new QueryClient();
+
 export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppRoutes />
+    </QueryClientProvider>
+  );
+}
+
+function AppRoutes() {
   return (
     <Routes>
       <Route element={<AppShellLayout />}>

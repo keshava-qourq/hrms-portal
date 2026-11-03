@@ -1,11 +1,51 @@
 // @ts-nocheck -- generated from the approved design under its JS runtime contract; not hand-written TypeScript.
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import * as UI from "@/lib/ui";
 import { Icons } from "@/lib/icons";
 import { brand } from "@/lib/brand";
 import { formatDate, formatDateTime } from "@/lib/datetime";
+import { apiFetch } from "@/lib/api";
+
+// The API speaks role codes (SYSTEM_ADMIN); this screen's labels are the display names.
+const ROLE_CODE_TO_NAME = {
+  EMPLOYEE: "Employee",
+  REPORTING_MANAGER: "Reporting Manager",
+  HR_ADMIN: "HR Admin",
+  PROJECT_MANAGER: "Project Manager",
+  SYSTEM_ADMIN: "System Admin",
+};
+const ROLE_NAME_TO_CODE = Object.fromEntries(
+  Object.entries(ROLE_CODE_TO_NAME).map(([code, name]) => [name, code]),
+);
+const rolesToNames = (codes) => (codes || []).map((c) => ROLE_CODE_TO_NAME[c] || c);
+const rolesToCodes = (names) => (names || []).map((n) => ROLE_NAME_TO_CODE[n] || n);
+
+// There is no list endpoint in the contract (POST/PATCH /api/admin/users only), so the
+// table starts from the live-but-empty baseline and reflects the accounts created or
+// changed in this session, each appended from the API's own response.
+async function fetchAdminUsers() {
+  return [];
+}
+
+// The linked-employee picker needs the employee directory. GET /api/employees is the
+// documented source; a System Admin without HR Admin may be refused, in which case the
+// picker is simply empty rather than broken.
+async function fetchUserEmployees() {
+  try {
+    const data = await apiFetch("/api/employees");
+    return (data.items || []).map((e) => ({
+      id: e.id,
+      name: e.full_name || e.name || e.work_email || "—",
+      number: e.employee_number || e.number || "",
+      status: e.status || "Active",
+    }));
+  } catch {
+    return [];
+  }
+}
 
 const { Button, Input, Textarea, Label, Select, Table, THead, TBody, TR, TH, TD, Empty } = UI;
 
@@ -454,11 +494,42 @@ export default function Screen() {
     warn: "hsl(38 70% 68%)",
     bad: "hsl(5 78% 76%)",
   };
-  const visibleTabs = TABS.filter((t) => ME.roles.includes(t.need));
+  const queryClient = useQueryClient();
+  // Who is signed in, from the server — not a seeded identity. Role names drive which
+  // tabs show: Users & roles and Audit need System Admin (AC-008).
+  const { data: me } = useQuery({
+    queryKey: ["me"],
+    queryFn: () => apiFetch("/api/me"),
+  });
+  const myRoleNames = rolesToNames(me?.roles);
+  const myName = me?.display_name || me?.email || "—";
+  const visibleTabs = TABS.filter((t) => myRoleNames.includes(t.need));
 
   const [tab, setTab] = React.useState(visibleTabs[0] ? visibleTabs[0].key : "users");
   const [notice, setNotice] = React.useState(null);
-  const [users, setUsers] = React.useState(SEED_USERS);
+  // Live account list. The contract has no users-list endpoint, so this holds the
+  // accounts created or changed through POST/PATCH /api/admin/users this session.
+  const { data: users = [] } = useQuery({ queryKey: ["admin", "users"], queryFn: fetchAdminUsers });
+  const setUsers = (updater) =>
+    queryClient.setQueryData(["admin", "users"], (prev = []) =>
+      typeof updater === "function" ? updater(prev) : updater,
+    );
+  // The linked-employee picker's options come from the live directory.
+  const { data: userEmployees = [] } = useQuery({
+    queryKey: ["admin", "user-employees"],
+    queryFn: fetchUserEmployees,
+  });
+  // POST creates the account; PATCH changes roles/active state. Both audit-log server-side.
+  const createUserMutation = useMutation({
+    mutationFn: (body) =>
+      apiFetch("/api/admin/users", { method: "POST", body: JSON.stringify(body) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "users"] }),
+  });
+  const patchUserMutation = useMutation({
+    mutationFn: ({ userId, body }) =>
+      apiFetch(`/api/admin/users/${userId}`, { method: "PATCH", body: JSON.stringify(body) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "users"] }),
+  });
   const [audit, setAudit] = React.useState(SEED_AUDIT);
   const [employees, setEmployees] = React.useState(SEED_EMPLOYEES);
   const [depts, setDepts] = React.useState(SEED_DEPTS);
@@ -502,13 +573,19 @@ export default function Screen() {
     return d ? d.name : "—";
   };
   const activeEmps = employees.filter((e) => e.status === "Active");
+  // Users tab draws its linked employees from the live directory, keyed by the real id.
+  const userEmpById = (id) => userEmployees.find((e) => String(e.id) === String(id));
+  const userEmpName = (id) => {
+    const e = userEmpById(id);
+    return e ? e.name : "—";
+  };
   const notify = (tone, text) => setNotice({ tone, text, n: Date.now() });
   const log = (action, record, before, after, reason) =>
     setAudit((a) => [
       {
         id: nextId(a),
         ts: stampFor(a.length),
-        actor: ME.name,
+        actor: myName,
         action,
         record,
         before,
@@ -848,6 +925,8 @@ export default function Screen() {
     setUserSel(u.id);
     setUserForm({ email: u.email, employeeId: String(u.empId), roles: u.roles, active: u.active });
   };
+  // Email cannot change on an existing account via the contract; lock it while editing.
+  const emailLocked = userSel !== null;
   const toggleRole = (r, on) =>
     setUserForm((f) => ({
       ...f,
@@ -871,77 +950,71 @@ export default function Screen() {
       );
       return;
     }
-    const emp = empById(userForm.employeeId);
+    const emp = userEmpById(userForm.employeeId);
     if (userSel) {
       const u = users.find((x) => x.id === userSel);
-      const before = [];
-      const after = [];
-      if (u.email !== email) {
-        before.push(`email: ${u.email}`);
-        after.push(`email: ${email}`);
-      }
-      if (u.empId !== +userForm.employeeId) {
-        before.push(`employee: ${empName(u.empId)}`);
-        after.push(`employee: ${emp.name}`);
-      }
-      if (u.roles.join(", ") !== userForm.roles.join(", ")) {
-        before.push(`roles: ${u.roles.join(", ")}`);
-        after.push(`roles: ${userForm.roles.join(", ")}`);
-      }
-      if (u.active !== userForm.active) {
-        before.push(`is_active: ${u.active}`);
-        after.push(`is_active: ${userForm.active}`);
-      }
-      if (!before.length) {
+      // The contract's PATCH changes roles, active state and lock only.
+      const body = {};
+      if (u.roles.join(", ") !== userForm.roles.join(", "))
+        body.role_codes = rolesToCodes(userForm.roles);
+      if (u.active !== userForm.active) body.is_active = userForm.active;
+      if (!Object.keys(body).length) {
         notify("ok", "Nothing to save — the account already matches the form.");
         return;
       }
-      setUsers((l) =>
-        l.map((x) =>
-          x.id === userSel
-            ? {
-                ...x,
-                email,
-                empId: +userForm.employeeId,
-                roles: userForm.roles,
-                active: userForm.active,
-              }
-            : x,
-        ),
-      );
-      log(
-        u.active && !userForm.active ? "Account deactivated" : "Account edited",
-        `User · ${email}`,
-        before.join("; "),
-        after.join("; "),
-      );
-      notify("ok", `Saved ${email}. The change is in the audit log.`);
-    } else {
-      setUsers((l) => [
-        ...l,
+      patchUserMutation.mutate(
+        { userId: u.id, body },
         {
-          id: nextId(l),
-          email,
-          empId: +userForm.employeeId,
-          roles: userForm.roles,
-          active: userForm.active,
-          lockedAt: null,
-          failed: 0,
-          last: null,
+          onSuccess: (saved) => {
+            setUsers((l) =>
+              l.map((x) =>
+                x.id === userSel
+                  ? {
+                      ...x,
+                      roles: saved?.roles ? rolesToNames(saved.roles) : userForm.roles,
+                      active: saved?.is_active !== undefined ? saved.is_active : userForm.active,
+                    }
+                  : x,
+              ),
+            );
+            notify("ok", `Saved ${email}. The change is in the audit log.`);
+          },
+          onError: (err) =>
+            notify("err", err instanceof Error ? err.message : "The account was not saved."),
         },
-      ]);
-      log(
-        "Account created",
-        `User · ${email}`,
-        "—",
-        `roles: ${userForm.roles.join(", ")}; is_active: ${userForm.active}`,
-        `Linked to ${emp.name}.`,
       );
-      notify(
-        "ok",
-        `Account created for ${email} with ${userForm.roles.join(" and ")}. Issue a one-time password so they can sign in.`,
+    } else {
+      createUserMutation.mutate(
+        {
+          email,
+          employee_id: userForm.employeeId,
+          role_codes: rolesToCodes(userForm.roles),
+        },
+        {
+          onSuccess: (created) => {
+            setUsers((l) => [
+              ...l,
+              {
+                id: created?.user_id ?? email,
+                email: created?.email ?? email,
+                empId: userForm.employeeId,
+                roles: created?.roles ? rolesToNames(created.roles) : userForm.roles,
+                active: created?.is_active !== undefined ? created.is_active : true,
+                lockedAt: null,
+                failed: 0,
+                last: null,
+              },
+            ]);
+            notify(
+              "ok",
+              `Account created for ${email} with ${userForm.roles.join(" and ")}. Issue a one-time password so they can sign in.`,
+            );
+            setUserForm(BLANK_USER);
+          },
+          onError: (err) =>
+            notify("err", err instanceof Error ? err.message : "The account was not created."),
+        },
       );
-      setUserForm(BLANK_USER);
     }
   };
   const selectedUser = users.find((u) => u.id === userSel);
@@ -1012,9 +1085,9 @@ export default function Screen() {
                 <TR key={u.id} className="adm-row" style={rowStyle(s)}>
                   <TD style={tdS}>{rowLink(u.email, s, () => selectUser(u))}</TD>
                   <TD style={tdS}>
-                    {empName(u.empId)}
+                    {userEmpName(u.empId)}
                     <div style={{ ...mutedS, ...refS, fontWeight: 400 }}>
-                      {(empById(u.empId) || {}).number}
+                      {(userEmpById(u.empId) || {}).number}
                     </div>
                   </TD>
                   <TD style={{ ...tdS, maxWidth: 220 }}>{u.roles.join(", ")}</TD>
@@ -1051,7 +1124,12 @@ export default function Screen() {
               "Email",
               userForm.email,
               (v) => setUserForm((f) => ({ ...f, email: v })),
-              { type: "email", error: userErr.email, placeholder: "name@ashgrove.co" },
+              {
+                type: "email",
+                error: userErr.email,
+                placeholder: "name@ashgrove.co",
+                disabled: emailLocked,
+              },
             )}
             {sel(
               "u-emp",
@@ -1060,7 +1138,7 @@ export default function Screen() {
               userForm.employeeId,
               (v) => setUserForm((f) => ({ ...f, employeeId: v })),
               empOptions(
-                employees.filter(
+                userEmployees.filter(
                   (e) => e.status === "Active" || String(e.id) === userForm.employeeId,
                 ),
               ),
@@ -2470,7 +2548,7 @@ export default function Screen() {
           Administration
         </h1>
         <p style={{ margin: "12px 0 0", color: C.muted, fontSize: 14, lineHeight: 1.5 }}>
-          Signed in as <span style={{ color: C.text }}>{ME.name}</span> · {ME.roles.join(" · ")}
+          Signed in as <span style={{ color: C.text }}>{myName}</span> · {myRoleNames.join(" · ")}
         </p>
       </header>
 
