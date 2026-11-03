@@ -2,8 +2,8 @@
 
 import json
 
-from tests.integration.test_auth import PASSWORD, _login, client, make_user  # noqa: F401
 from app.security import get_redis
+from tests.integration.test_auth import PASSWORD, _login, client, make_user  # noqa: F401
 
 
 def test_nfr001_responses_and_session_never_contain_password_or_hash(make_user):  # noqa: F811

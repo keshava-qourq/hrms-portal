@@ -32,6 +32,7 @@ def _permissions_for(role_codes: list[str]) -> list[str]:
 
     return permissions_for(role_codes)
 
+
 GENERIC_LOGIN_ERROR = "email or password is incorrect"
 DEACTIVATED_ERROR = "This account is deactivated. Please contact an administrator."
 

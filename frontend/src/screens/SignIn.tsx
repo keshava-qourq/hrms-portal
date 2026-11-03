@@ -1,5 +1,5 @@
 // @ts-nocheck -- generated from the approved design under its JS runtime contract; not hand-written TypeScript.
- 
+
 import React from "react";
 
 import { brand } from "@/lib/brand";
