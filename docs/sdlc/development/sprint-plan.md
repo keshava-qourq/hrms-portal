@@ -7,7 +7,7 @@
 
 Foundations: sign-in, fixed role model, append-only audit service, departments and consistent date/time and language handling
 
-Capacity: 20 points · Committed: 19
+Capacity: 20 points · Committed: 20
 
 | Key | Type | Title | Points | Role | Depends on |
 |---|---|---|---|---|---|
@@ -16,6 +16,7 @@ Capacity: 20 points · Committed: 19
 | US-007 | Story | Immutable audit log of approvals, changes and admin actions | 5 | backend-agent | — |
 | US-011 | Story | HR Admin maintains departments | 2 | backend-agent | US-003 |
 | US-038 | Story | Single-language interface and consistent date/time display | 2 | frontend-agent | — |
+| US-041 | Story | Sign-in screen reads session_token from the login response | 1 | frontend-agent | — |
 
 ## Sprint 2: Sprint 2
 
@@ -121,7 +122,7 @@ Capacity: 20 points · Committed: 19
 
 Employee home dashboard, phone-browser layouts and the user guides
 
-Capacity: 20 points · Committed: 16
+Capacity: 20 points · Committed: 19
 
 | Key | Type | Title | Points | Role | Depends on |
 |---|---|---|---|---|---|
@@ -129,6 +130,17 @@ Capacity: 20 points · Committed: 16
 | US-037 | Story | Use the portal on a phone browser | 5 | frontend-agent | US-036, US-017, US-020, US-023 |
 | US-039 | Story | Employee user guide | 3 | frontend-agent | US-036, US-019, US-028 |
 | US-040 | Story | Administrator user guide | 3 | frontend-agent | US-034, US-029, US-022, US-002, US-007 |
+| US-042 | Story | Backend endpoint to change a password | 3 | backend-agent | — |
+
+## Sprint 10: Sprint 10
+
+Change requests (CHG-001)
+
+Capacity: 20 points · Committed: 2
+
+| Key | Type | Title | Points | Role | Depends on |
+|---|---|---|---|---|---|
+| US-043 | Story | Frontend sign-in test using the real login response | 2 | qa-agent | — |
 
 ## Unscheduled
 
