@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v12
+**Documentation version:** v13
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -48,13 +48,13 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Sprint plan](development/sprint-plan.md) | 10 sprints |
 | [Developer guide](development/developer-guide.md) | generated |
 | [API reference](development/api-reference.md) | 23 routes |
-| [Test report](testing/test-report.md) | failed |
+| [Test report](testing/test-report.md) | running |
 | [Tests](testing/test-cases.md) | 116 tests |
 | [Deployment guide](deployment/deployment-guide.md) | deployed |
 | [Runbook](deployment/runbook.md) | deployed |
-| [Release notes](deployment/release-notes.md) | 3 releases |
+| [Release notes](deployment/release-notes.md) | 4 releases |
 | [Traceability matrix](traceability-matrix.md) | 43 requirements |
-| [Changelog](CHANGELOG.md) | 12 versions |
+| [Changelog](CHANGELOG.md) | 13 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -210,14 +210,15 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Deployment
 
-- No deployment date recorded.
-- No release owner or approver recorded.
-- No change log / release notes for version 3726b65c9264.
-- No rollback or recovery plan documented.
-- No environment/configuration details (database, secrets, scaling) provided.
-- No post-deployment smoke-test or verification results recorded to confirm the live site is functioning.
-- Backend is exposed via an sslip.io host behind an IP address (184-198-241-75); whether this is intended production configuration or a temporary endpoint is not stated.
-- Cannot link this deployment to specific requirement keys (US-001..US-043) because no mapping of shipped features to this release was provided.
+- No deployment date or timestamp recorded.
+- No record of who triggered or approved the deployment.
+- Environment is not named; 'live' is given but production vs. staging is not stated.
+- No mapping from version 92f33dde62ab to requirements or user stories (US-001 to US-043), so no related_ids can be linked.
+- No health-check, smoke-test, or post-deploy verification results provided.
+- No rollback plan, previous version, or release notes provided.
+- No configuration details (environment variables, database, authentication/secrets handling) provided for RBAC and secure login.
+- Input does not confirm that the frontend and backend URLs are wired together or that the backend responds.
+- The project description text appears truncated at 'Employees can' in the RBAC requirements, so the full requirement set could not be confirmed against this deployment.
 
 ### Maintenance
 

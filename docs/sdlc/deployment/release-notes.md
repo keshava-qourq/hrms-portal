@@ -3,6 +3,15 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start releases -->
+## 92f33dde62ab — 2026-11-03
+
+**Commit:** `92f33dd`
+
+**Delivered:**
+- US-002: Administrator creates user accounts — no public self-registration
+- US-004: Access scoped by relationship, not only by role
+- US-009: HR Admin maintains employee records
+
 ## 3726b65c9264 — 2026-11-03
 
 **Commit:** `3726b65`
