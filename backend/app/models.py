@@ -6,14 +6,24 @@ the ticket that owns it.
 """
 
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, SmallInteger, String, Uuid, func
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    SmallInteger,
+    String,
+    Uuid,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
-__all__ = ["Base", "User", "Role", "UserRole"]
+__all__ = ["Base", "User", "Role", "UserRole", "Department", "Employee"]
 
 
 class Role(Base):
@@ -78,3 +88,45 @@ class User(Base):
     def display_name(self) -> str:
         """A name to greet the user with until the employee record supplies one."""
         return self.email.split("@", 1)[0]
+
+
+class Department(Base):
+    """A single shared department list; no country or entity scoping (NFR-022)."""
+
+    __tablename__ = "departments"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class Employee(Base):
+    """An employee record, linked to a department and (optionally) a reporting manager."""
+
+    __tablename__ = "employees"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    employee_number: Mapped[str] = mapped_column(String(32), unique=True, nullable=False)
+    full_name: Mapped[str] = mapped_column(String(160), nullable=False)
+    work_email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    mobile_number: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    personal_contact: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    department_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("departments.id"), nullable=False, index=True
+    )
+    reporting_manager_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("employees.id"), nullable=True, index=True
+    )
+    start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    end_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_erased: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    erased_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )

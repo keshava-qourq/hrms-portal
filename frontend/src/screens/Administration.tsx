@@ -8,6 +8,7 @@ import { Icons } from "@/lib/icons";
 import { brand } from "@/lib/brand";
 import { formatDate, formatDateTime } from "@/lib/datetime";
 import { apiFetch } from "@/lib/api";
+import EmployeesTab from "@/screens/EmployeesTab";
 
 // The API speaks role codes (SYSTEM_ADMIN); this screen's labels are the display names.
 const ROLE_CODE_TO_NAME = {
@@ -2474,7 +2475,7 @@ export default function Screen() {
   const bodies = {
     users: usersTab,
     audit: auditTab,
-    employees: employeesTab,
+    employees: <EmployeesTab />,
     departments: departmentsTab,
     leavetypes: leaveTypesTab,
     holidays: holidaysTab,
