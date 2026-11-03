@@ -9,6 +9,7 @@ import { apiFetch, setSessionToken } from "@/lib/api";
 // POST /api/auth/login returns the session token in its body: the API and this app
 // are on different origins once deployed, so a cookie would be dropped.
 type LoginResponse = {
+  session_token?: string;
   token?: string;
   access_token?: string;
   user_id: string;
@@ -41,7 +42,8 @@ export default function Screen() {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
-      setSessionToken(data.token ?? data.access_token ?? "");
+      const token = data.session_token || data.token || data.access_token || "";
+      if (token) setSessionToken(token);
       navigate("home");
     } catch (err) {
       // Shown verbatim: the API writes the generic failure and the deactivated-account

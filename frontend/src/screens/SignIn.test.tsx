@@ -62,4 +62,31 @@ describe("SignIn", () => {
     await submit();
     expect(await screen.findByRole("alert")).toHaveTextContent("Contact an administrator");
   });
+
+  it("[AC-142] stores session_token in preference to fallbacks and navigates home", async () => {
+    reply(200, {
+      session_token: "X",
+      token: "other",
+      user_id: "u",
+      display_name: "A",
+      roles: [],
+      must_change_password: false,
+    });
+    await submit();
+    await waitFor(() => expect(getSessionToken()).toBe("X"));
+    expect(await screen.findAllByText("Home")).not.toHaveLength(0);
+  });
+
+  it("[AC-143] falls back to token when session_token is empty, never storing empty", async () => {
+    reply(200, { session_token: "", access_token: "acc", user_id: "u" });
+    await submit();
+    await waitFor(() => expect(getSessionToken()).toBe("acc"));
+  });
+
+  it("[AC-143] does not store an empty token when no field has a value", async () => {
+    reply(200, { session_token: "", user_id: "u" });
+    await submit();
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+    expect(getSessionToken()).toBeNull();
+  });
 });
