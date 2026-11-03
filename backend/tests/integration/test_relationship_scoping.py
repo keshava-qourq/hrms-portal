@@ -95,8 +95,10 @@ def world():
                 text("UPDATE employees SET reporting_manager_id = NULL WHERE id = ANY(:ids)"),
                 {"ids": emp_ids},
             )
-            db.execute(text("UPDATE users SET employee_id = NULL WHERE employee_id = ANY(:ids)"),
-                       {"ids": emp_ids})
+            db.execute(
+                text("UPDATE users SET employee_id = NULL WHERE employee_id = ANY(:ids)"),
+                {"ids": emp_ids},
+            )
             db.execute(text("DELETE FROM employees WHERE id = ANY(:ids)"), {"ids": emp_ids})
         for did in dept_ids:
             db.execute(text("DELETE FROM departments WHERE id = :i"), {"i": did})

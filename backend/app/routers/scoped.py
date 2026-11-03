@@ -203,9 +203,7 @@ def get_timesheet_entry(
         else None
     )
     ensure_relationship(
-        row is not None
-        and user.employee_id is not None
-        and row[1].employee_id == user.employee_id
+        row is not None and user.employee_id is not None and row[1].employee_id == user.employee_id
     )
     entry, ts = row
     return TimesheetEntryOut(
@@ -340,9 +338,7 @@ def get_leave_request(
         lid = None
     lr = db.get(LeaveRequest, lid) if lid is not None else None
     ensure_relationship(
-        lr is not None
-        and user.employee_id is not None
-        and lr.employee_id == user.employee_id
+        lr is not None and user.employee_id is not None and lr.employee_id == user.employee_id
     )
     return LeaveRequestOut(
         id=str(lr.id),
