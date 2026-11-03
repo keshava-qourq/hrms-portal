@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v10
+**Documentation version:** v11
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -48,13 +48,13 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Sprint plan](development/sprint-plan.md) | 10 sprints |
 | [Developer guide](development/developer-guide.md) | generated |
 | [API reference](development/api-reference.md) | 6 routes |
-| [Test report](testing/test-report.md) | failed |
+| [Test report](testing/test-report.md) | running |
 | [Tests](testing/test-cases.md) | 72 tests |
 | [Deployment guide](deployment/deployment-guide.md) | deployed |
 | [Runbook](deployment/runbook.md) | deployed |
 | [Release notes](deployment/release-notes.md) | 3 releases |
 | [Traceability matrix](traceability-matrix.md) | 43 requirements |
-| [Changelog](CHANGELOG.md) | 10 versions |
+| [Changelog](CHANGELOG.md) | 11 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -188,19 +188,16 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Testing
 
-- The 4 checks are not named, so their scope and type are unknown.
-- No mapping from these checks to requirements US-001 through US-040, so requirement coverage cannot be established.
-- No run date or timestamp provided.
-- Not tied to any ticket (ticket=None), so there is no traceability to a specific change.
-- E2E run has not completed, so there is no pass/fail outcome.
-- 0/0 tests reported: it is unclear whether the suite is empty or tests have not started being counted.
-- No E2E scenarios or test cases listed, so there is no coverage of user stories or RBAC roles (Employee, Reporting Manager, HR Admin, Project Manager, System Admin).
-- No run id, start time, or duration provided.
-- No test plan, test cases, or requirement-to-test traceability provided.
-- No unit, integration, security, or RBAC-specific test results provided.
-- No defect or bug records provided.
-- No UAT or sign-off/approval recorded for the testing phase.
-- Re-document once the E2E run completes and results are available.
+- No ticket linkage (ticket=None) — cannot trace these checks to specific requirements or user stories.
+- The content/scope of the 4 checks is not described; unclear what was validated.
+- No timestamp recorded for the run.
+- E2E run is still running — no results to document yet.
+- 0/0 passed indicates no test cases have reported; unclear whether the suite has defined test cases or has not yet started executing them.
+- No mapping of E2E scenarios to requirement keys (US-001..US-043) was provided — requirement test coverage cannot be traced.
+- No test cases mapped to any of the 43 known requirements (US-001..US-043).
+- No defect/bug records provided.
+- No pass/fail acceptance criteria documented.
+- Compliance/security testing (e.g., secure login and RBAC per the RBAC requirements) is not evidenced by any test result in the input.
 
 ### Deployment
 

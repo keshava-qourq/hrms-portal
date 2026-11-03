@@ -3,47 +3,35 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start narrative -->
-### TEST-RUN-CHECKS · draft · source: testing:run_checks
+### TEST-RUN-CHECKS · approved · source: testing:run_checks
 
-An automated run_checks execution completed with status 'succeeded'. The reported detail is '4/4 checks passed'. The input does not identify the individual checks or the requirements they verify.
+An automated run_checks execution completed successfully with all checks passing. No ticket was associated with this run.
 
-- Source: run_checks (not tied to a ticket; ticket=None)
-- Status: succeeded
-- Result: 4 of 4 checks passed
-- Not stated in input: check names, check type (lint, build, unit, etc.), timestamp, executor, or the code version/commit tested.
+run_checks status: succeeded. Detail reported: 4/4 checks passed. No ticket id was provided, and the nature or scope of the individual checks was not specified in the input.
 
-- ⚠ The 4 checks are not named, so their scope and type are unknown.
-- ⚠ No mapping from these checks to requirements US-001 through US-040, so requirement coverage cannot be established.
-- ⚠ No run date or timestamp provided.
-- ⚠ Not tied to any ticket (ticket=None), so there is no traceability to a specific change.
+- ⚠ No ticket linkage (ticket=None) — cannot trace these checks to specific requirements or user stories.
+- ⚠ The content/scope of the 4 checks is not described; unclear what was validated.
+- ⚠ No timestamp recorded for the run.
 
-### TEST-E2E-LATEST · draft · source: testing:e2e_latest
+### TEST-E2E-LATEST · draft · source: testing:e2e
 
-The latest E2E run is in state 'running' with 0/0 tests passed, so it has produced no results yet. It targets the deployed Amplify URL https://p0b51fe7c3507.d13el1ykvx8z63.amplifyapp.com.
+The latest end-to-end test run is currently in progress and has not yet produced results. It targets the deployed Amplify environment.
 
-- Run status: running
-- Results so far: 0/0 passed (no tests executed or reported)
-- Target environment: https://p0b51fe7c3507.d13el1ykvx8z63.amplifyapp.com
-- No pass/fail outcome can be documented until the run completes.
+Latest E2E run status: running. Passed: 0/0 (no results yet). Target: https://p0b51fe7c3507.d13el1ykvx8z63.amplifyapp.com. Because the run is still executing, no pass/fail outcome is available.
 
-- ⚠ E2E run has not completed, so there is no pass/fail outcome.
-- ⚠ 0/0 tests reported: it is unclear whether the suite is empty or tests have not started being counted.
-- ⚠ No E2E scenarios or test cases listed, so there is no coverage of user stories or RBAC roles (Employee, Reporting Manager, HR Admin, Project Manager, System Admin).
-- ⚠ No run id, start time, or duration provided.
+- ⚠ E2E run is still running — no results to document yet.
+- ⚠ 0/0 passed indicates no test cases have reported; unclear whether the suite has defined test cases or has not yet started executing them.
+- ⚠ No mapping of E2E scenarios to requirement keys (US-001..US-043) was provided — requirement test coverage cannot be traced.
+- ⚠ No timestamp recorded for the run.
 
 ### TEST-COVERAGE-GAP · draft
 
-No test evidence ties to any of the 40 known requirement keys. Functional areas such as secure login, RBAC, employee management, timesheets, leave, and approval workflows have no documented test results.
+No per-requirement test coverage information was provided for this testing phase. The 43 known requirement keys cannot be traced to any specific test case.
 
-- Known requirements: US-001 to US-040.
-- Test evidence provided: one 4/4 run_checks result and one in-progress E2E run with no results.
-- Neither is linked to a specific requirement in the input.
+The input supplied only an aggregate run_checks result and an in-progress E2E run. No individual test cases, acceptance criteria, defects/bugs, or requirement-to-test mappings were provided, so coverage across US-001 through US-043 (including RBAC, Employee/Timesheet/Leave/Approval and related features) cannot be documented or confirmed.
 
-**Related:** US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018, US-019, US-020, US-021, US-022, US-023, US-024, US-025, US-026, US-027, US-028, US-029, US-030, US-031, US-032, US-033, US-034, US-035, US-036, US-037, US-038, US-039, US-040
-
-- ⚠ No test plan, test cases, or requirement-to-test traceability provided.
-- ⚠ No unit, integration, security, or RBAC-specific test results provided.
-- ⚠ No defect or bug records provided.
-- ⚠ No UAT or sign-off/approval recorded for the testing phase.
-- ⚠ Re-document once the E2E run completes and results are available.
+- ⚠ No test cases mapped to any of the 43 known requirements (US-001..US-043).
+- ⚠ No defect/bug records provided.
+- ⚠ No pass/fail acceptance criteria documented.
+- ⚠ Compliance/security testing (e.g., secure login and RBAC per the RBAC requirements) is not evidenced by any test result in the input.
 <!-- sdlc:auto:end narrative -->
