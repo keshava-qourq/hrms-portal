@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.audit import changed_fields, write_audit
 from app.authz import ROLE_NAMES, permissions_for, require_permission
 from app.database import get_db
 from app.models import Role, User, UserRole
@@ -46,6 +47,12 @@ def patch_user(
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
+    before = {
+        "is_active": user.is_active,
+        "role_codes": user.role_codes,
+        "failed_login_count": user.failed_login_count,
+        "locked_at": user.locked_at.isoformat() if user.locked_at else None,
+    }
     if payload.role_codes is not None:
         wanted = set(payload.role_codes)
         unknown = wanted - set(ROLE_NAMES)
@@ -72,6 +79,25 @@ def patch_user(
     if payload.unlock:
         user.failed_login_count = 0
         user.locked_at = None
+    db.flush()
+    db.refresh(user)
+    after = {
+        "is_active": user.is_active,
+        "role_codes": user.role_codes,
+        "failed_login_count": user.failed_login_count,
+        "locked_at": user.locked_at.isoformat() if user.locked_at else None,
+    }
+    old, new = changed_fields(before, after)
+    if new:
+        write_audit(
+            db,
+            actor=_admin,
+            action="user.update",
+            entity_type="user",
+            entity_id=user.id,
+            before=old,
+            after=new,
+        )
     db.commit()
     db.refresh(user)
     return AdminUser(

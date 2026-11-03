@@ -9,10 +9,14 @@ OpenAPI document and passes its tests before a single handler is implemented.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import models  # noqa: F401 -- imported so the tables register before create_all
+from app import (
+    audit,  # noqa: F401 -- registers the audit_logs table
+    models,  # noqa: F401 -- imported so the tables register before create_all
+)
 from app.config import settings
 from app.database import Base, engine
 from app.routers import admin, auth
+from app.routers import audit as audit_router
 from app.services import configured_services
 
 app = FastAPI(
@@ -39,6 +43,7 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
 app.include_router(admin.router)
+app.include_router(audit_router.router)
 
 
 @app.get("/health")
