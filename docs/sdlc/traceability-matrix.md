@@ -9,44 +9,44 @@ Built from recorded links, not written by a model: requirement key → plan item
 <!-- sdlc:auto:start matrix -->
 | Requirement | Epic | Title | Plan items | Sprint | Design | Code | Commits | Ticket | Tests | AC tests | Deployed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| US-001 | EPIC-001 | Sign in with email and password | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-002 | EPIC-001 | Administrator creates user accounts — no public self-registration | — | — | — | — | — | not started | not run | 0/5 tested · 0/5 passing | — |
-| US-003 | EPIC-001 | Permissions combine as a union across multiple roles | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-004 | EPIC-001 | Access scoped by relationship, not only by role | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-005 | EPIC-001 | Session timeout and account lockout | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-006 | EPIC-001 | Administrator-issued password reset | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-007 | EPIC-001 | Immutable audit log of approvals, changes and admin actions | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-008 | EPIC-002 | View and update my own profile | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-009 | EPIC-002 | HR Admin maintains employee records | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-010 | EPIC-002 | HR Admin corrects or erases a leaver's record | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-011 | EPIC-002 | HR Admin maintains departments | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-012 | EPIC-002 | Manager views their direct reports | — | — | — | — | — | not started | not run | 0/2 tested · 0/2 passing | — |
-| US-013 | EPIC-003 | Create and manage project records | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-014 | EPIC-003 | Assign employees to projects | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-015 | EPIC-003 | Employee sees their own project assignments | — | — | — | — | — | not started | not run | 0/2 tested · 0/2 passing | — |
-| US-016 | EPIC-004 | Log daily hours against assigned projects | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-017 | EPIC-004 | Enter and review a weekly timesheet | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-018 | EPIC-004 | Submit a timesheet and track its status on screen | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-019 | EPIC-004 | Correct and resubmit a rejected timesheet | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-020 | EPIC-005 | Clock in and clock out from any browser | — | — | — | — | — | not started | not run | 0/5 tested · 0/5 passing | — |
-| US-021 | EPIC-005 | View my own attendance history | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-022 | EPIC-005 | HR Admin views and corrects attendance punches | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-023 | EPIC-006 | Apply for leave by type and date range | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-024 | EPIC-006 | Request a half-day as the smallest leave increment | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-025 | EPIC-006 | Leave requests validate against weekends, holidays and available balance | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-026 | EPIC-006 | View my leave balances | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-027 | EPIC-006 | View my leave history and request status | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-028 | EPIC-006 | View the company holiday calendar | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-029 | EPIC-006 | HR Admin configures leave types, entitlements and holidays | — | — | — | — | — | not started | not run | 0/5 tested · 0/5 passing | — |
-| US-030 | EPIC-007 | Review pending timesheets and leave for my direct reports | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-031 | EPIC-007 | Approve a submitted timesheet or leave request | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-032 | EPIC-007 | Reject an item with a mandatory comment | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-033 | EPIC-007 | No self-approval for multi-role users | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-034 | EPIC-007 | HR Admin reopens an approved item | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-035 | EPIC-007 | In-app alerts for submissions and decisions | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-036 | EPIC-008 | See my timesheet, attendance and leave on one home dashboard | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-037 | EPIC-008 | Use the portal on a phone browser | — | — | — | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
-| US-038 | EPIC-008 | Single-language interface and consistent date/time display | — | — | — | — | — | not started | not run | 0/2 tested · 0/2 passing | — |
-| US-039 | EPIC-009 | Employee user guide | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
-| US-040 | EPIC-009 | Administrator user guide | — | — | — | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-001 | EPIC-001 | Sign in with email and password | US-001 | 1 | GET /api/me, POST /api/auth/login, api, db, redis, users, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-002 | EPIC-001 | Administrator creates user accounts — no public self-registration | US-002 | 2 | PATCH /api/admin/users/{user_id}, POST /api/admin/users, api, audit_logs, db, employees, roles, user_roles, users, web_app | — | — | not started | not run | 0/5 tested · 0/5 passing | — |
+| US-003 | EPIC-001 | Permissions combine as a union across multiple roles | US-003 | 1 | GET /api/me, api, db, roles, user_roles, users, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-004 | EPIC-001 | Access scoped by relationship, not only by role | US-004 | 2 | GET /api/employees, GET /api/my/team, api, db, employees, project_assignments, user_roles, users | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-005 | EPIC-001 | Session timeout and account lockout | US-005 | 3 | PATCH /api/admin/users/{user_id}, POST /api/auth/login, POST /api/auth/logout, api, audit_logs, redis, users, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-006 | EPIC-001 | Administrator-issued password reset | US-006 | 3 | POST /api/admin/users/{user_id}/password-reset, POST /api/auth/change-password, api, audit_logs, users, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-007 | EPIC-001 | Immutable audit log of approvals, changes and admin actions | US-007 | 1 | GET /api/admin/audit-logs, api, audit_logs, db | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-008 | EPIC-002 | View and update my own profile | US-008 | 3 | GET /api/me, PATCH /api/employees/{id}, api, audit_logs, employees, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-009 | EPIC-002 | HR Admin maintains employee records | US-009 | 2 | GET /api/employees, PATCH /api/employees/{id}, POST /api/employees, api, audit_logs, db, departments, employees, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-010 | EPIC-002 | HR Admin corrects or erases a leaver's record | US-010 | 3 | PATCH /api/employees/{id}, POST /api/employees/{id}/erase, api, audit_logs, db, employees, users, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-011 | EPIC-002 | HR Admin maintains departments | US-011 | 1 | GET /api/departments, POST /api/departments, api, db, departments, employees, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-012 | EPIC-002 | Manager views their direct reports | US-012 | 3 | GET /api/my/team, api, departments, employees, web_app | — | — | not started | not run | 0/2 tested · 0/2 passing | — |
+| US-013 | EPIC-003 | Create and manage project records | US-013 | 4 | GET /api/projects, POST /api/projects, api, db, project_assignments, projects, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-014 | EPIC-003 | Assign employees to projects | US-014 | 4 | DELETE /api/projects/{id}/assignments/{assignment_id}, POST /api/projects/{id}/assignments, api, employees, project_assignments, projects, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-015 | EPIC-003 | Employee sees their own project assignments | US-015 | 4 | GET /api/my/projects, api, project_assignments, projects, web_app | — | — | not started | not run | 0/2 tested · 0/2 passing | — |
+| US-016 | EPIC-004 | Log daily hours against assigned projects | US-016 | 4 | PUT /api/timesheets/week/{week_start}/entries, api, db, project_assignments, timesheet_entries, timesheets, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-017 | EPIC-004 | Enter and review a weekly timesheet | US-017 | 4 | GET /api/timesheets/week/{week_start}, PUT /api/timesheets/week/{week_start}/entries, api, timesheet_entries, timesheets, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-018 | EPIC-004 | Submit a timesheet and track its status on screen | US-018 | 5 | GET /api/timesheets, POST /api/timesheets/{id}/submit, api, approval_events, db, timesheet_entries, timesheets, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-019 | EPIC-004 | Correct and resubmit a rejected timesheet | US-019 | 8 | GET /api/timesheets, POST /api/timesheets/{id}/submit, api, approval_events, timesheets, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-020 | EPIC-005 | Clock in and clock out from any browser | US-020 | 5 | POST /api/attendance/clock-in, POST /api/attendance/clock-out, api, attendance_records, db, web_app | — | — | not started | not run | 0/5 tested · 0/5 passing | — |
+| US-021 | EPIC-005 | View my own attendance history | US-021 | 5 | GET /api/attendance, api, attendance_records, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-022 | EPIC-005 | HR Admin views and corrects attendance punches | US-022 | 6 | GET /api/attendance, PATCH /api/attendance/{id}/regularise, api, attendance_records, audit_logs, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-023 | EPIC-006 | Apply for leave by type and date range | US-023 | 6 | POST /api/leave-requests, api, approval_events, db, leave_requests, leave_types, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-024 | EPIC-006 | Request a half-day as the smallest leave increment | US-024 | 6 | POST /api/leave-requests, api, leave_requests, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-025 | EPIC-006 | Leave requests validate against weekends, holidays and available balance | US-025 | 6 | POST /api/leave-requests, api, audit_logs, db, holidays, leave_balances, leave_requests | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-026 | EPIC-006 | View my leave balances | US-026 | 6 | GET /api/leave-balances, api, leave_balances, leave_requests, leave_types, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-027 | EPIC-006 | View my leave history and request status | US-027 | 8 | GET /api/leave-requests, api, approval_events, leave_requests, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-028 | EPIC-006 | View the company holiday calendar | US-028 | 6 | GET /api/holidays, api, holidays, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-029 | EPIC-006 | HR Admin configures leave types, entitlements and holidays | US-029, US-029-T1, US-029-T2, US-029-T3 | 5 | POST /api/admin/holidays, POST /api/admin/leave-types, PUT /api/admin/leave-balances/{employee_id}/{leave_type_id}, api, audit_logs, db, holidays, leave_balances, leave_types, web_app | — | — | not started | not run | 0/5 tested · 0/5 passing | — |
+| US-030 | EPIC-007 | Review pending timesheets and leave for my direct reports | US-030 | 7 | GET /api/approvals/pending, api, approval_events, employees, leave_requests, timesheets, web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-031 | EPIC-007 | Approve a submitted timesheet or leave request | US-031, US-031-T1, US-031-T2, US-031-T3 | 7 | POST /api/approvals/{item_type}/{item_id}/approve, api, approval_events, audit_logs, db, leave_balances, leave_requests, notifications, timesheets, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-032 | EPIC-007 | Reject an item with a mandatory comment | US-032 | 8 | POST /api/approvals/{item_type}/{item_id}/reject, api, approval_events, leave_requests, notifications, timesheets, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-033 | EPIC-007 | No self-approval for multi-role users | US-033 | 8 | GET /api/approvals/pending, POST /api/approvals/{item_type}/{item_id}/approve, api, approval_events, audit_logs, db, employees, leave_requests, timesheets | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-034 | EPIC-007 | HR Admin reopens an approved item | US-034 | 8 | POST /api/approvals/{item_type}/{item_id}/reopen, api, approval_events, audit_logs, db, leave_balances, leave_requests, timesheets, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-035 | EPIC-007 | In-app alerts for submissions and decisions | US-035 | 7 | GET /api/notifications, api, db, notifications, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-036 | EPIC-008 | See my timesheet, attendance and leave on one home dashboard | US-036 | 9 | GET /api/approvals/pending, GET /api/leave-balances, GET /api/me, GET /api/timesheets, api, attendance_records, leave_balances, leave_requests, redis, timesheets, web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-037 | EPIC-008 | Use the portal on a phone browser | US-037 | 9 | web_app | — | — | not started | not run | 0/4 tested · 0/4 passing | — |
+| US-038 | EPIC-008 | Single-language interface and consistent date/time display | US-038 | 1 | web_app | — | — | not started | not run | 0/2 tested · 0/2 passing | — |
+| US-039 | EPIC-009 | Employee user guide | US-039 | 9 | web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
+| US-040 | EPIC-009 | Administrator user guide | US-040 | 9 | web_app | — | — | not started | not run | 0/3 tested · 0/3 passing | — |
 <!-- sdlc:auto:end matrix -->
