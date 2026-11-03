@@ -15,7 +15,7 @@ from app import (
 )
 from app.config import settings
 from app.database import Base, engine
-from app.routers import admin, auth, employees
+from app.routers import admin, auth, employees, scoped
 from app.routers import audit as audit_router
 from app.services import configured_services
 
@@ -45,6 +45,7 @@ app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(audit_router.router)
 app.include_router(employees.router)
+app.include_router(scoped.router)
 
 
 @app.get("/health")

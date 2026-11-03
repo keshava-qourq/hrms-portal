@@ -15,7 +15,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.audit import changed_fields, write_audit
-from app.authz import require_permission
+from app.authz import ensure_relationship, permissions_for, require_permission
 from app.database import get_db
 from app.models import Department, Employee, User
 from app.routers.auth import current_user
@@ -129,9 +129,7 @@ def list_departments(
     db: Annotated[Session, Depends(get_db)],
 ) -> list[DepartmentOut]:
     rows = db.scalars(select(Department).order_by(Department.name)).all()
-    return [
-        DepartmentOut(id=str(d.id), name=d.name, created_at=d.created_at) for d in rows
-    ]
+    return [DepartmentOut(id=str(d.id), name=d.name, created_at=d.created_at) for d in rows]
 
 
 @router.post("/departments", response_model=DepartmentOut, status_code=status.HTTP_201_CREATED)
@@ -176,9 +174,10 @@ def delete_department(
     dept = db.get(Department, did)
     if dept is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Department not found")
-    assigned = db.scalar(
-        select(func.count()).select_from(Employee).where(Employee.department_id == did)
-    ) or 0
+    assigned = (
+        db.scalar(select(func.count()).select_from(Employee).where(Employee.department_id == did))
+        or 0
+    )
     if assigned:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -311,6 +310,43 @@ def patch_employee(
     return EmployeeOut.of(employee)
 
 
+@router.get("/employees/{employee_id}", response_model=EmployeeOut)
+def get_employee(
+    employee_id: str,
+    user: Annotated[User, Depends(current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> EmployeeOut:
+    """One employee record, scoped to the caller's relationship to it.
+
+    HR Admin sees any record; a Reporting Manager sees a direct report; an
+    Employee sees only their own. For a relationship-scoped caller the refusal
+    is one identical 403 whether the id is unknown, malformed or simply not
+    theirs (AC-015), and it is raised before any record data reaches the
+    response (NFR-004).
+    """
+    perms = set(permissions_for(user.role_codes))
+    try:
+        eid: uuid.UUID | None = uuid.UUID(employee_id)
+    except ValueError:
+        eid = None
+
+    if "employees.manage" in perms:
+        employee = db.get(Employee, eid) if eid else None
+        if employee is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found"
+            )
+        return EmployeeOut.of(employee)
+
+    employee = db.get(Employee, eid) if eid else None
+    allowed = employee is not None and (
+        employee.id == user.employee_id
+        or ("team.view" in perms and employee.reporting_manager_id == user.employee_id)
+    )
+    ensure_relationship(allowed)
+    return EmployeeOut.of(employee)
+
+
 @router.get("/my/team", response_model=EmployeePage)
 def my_team(
     user: Annotated[User, Depends(current_user)],
@@ -323,10 +359,6 @@ def my_team(
     conds = [Employee.reporting_manager_id == user.employee_id]
     total = db.scalar(select(func.count()).select_from(Employee).where(*conds)) or 0
     rows = db.scalars(
-        select(Employee)
-        .where(*conds)
-        .order_by(Employee.full_name)
-        .limit(limit)
-        .offset(offset)
+        select(Employee).where(*conds).order_by(Employee.full_name).limit(limit).offset(offset)
     ).all()
     return EmployeePage(items=[EmployeeOut.of(e) for e in rows], total=total)
