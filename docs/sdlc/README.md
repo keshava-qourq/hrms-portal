@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v6
+**Documentation version:** v7
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -39,7 +39,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Requirements](requirements/README.md) | v1 approved |
 | [Architecture](architecture/README.md) | 22 entries |
 | [Development](development/README.md) | 7 entries |
-| [Testing](testing/README.md) | 1 entry |
+| [Testing](testing/README.md) | 3 entries |
 | [Deployment](deployment/README.md) | 2 entries |
 | [Maintenance](maintenance/README.md) | 1 entry |
 | [Data model](architecture/data-model.md) | generated |
@@ -54,7 +54,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Runbook](deployment/runbook.md) | deployed |
 | [Release notes](deployment/release-notes.md) | 2 releases |
 | [Traceability matrix](traceability-matrix.md) | 40 requirements |
-| [Changelog](CHANGELOG.md) | 6 versions |
+| [Changelog](CHANGELOG.md) | 7 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -201,12 +201,19 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Testing
 
-- Testing phase has not started — no test plan, cases, runs or results recorded.
-- No traceability from AC-001..AC-141 to test cases.
-- No security testing recorded against NFR-001..NFR-008.
-- No concurrency testing recorded against NFR-015 (double-deduction of leave balances).
-- No mobile/responsive verification recorded against NFR-016 (360px viewport).
-- No UAT plan or acceptance sign-off path recorded.
+- The 4 checks are not named, so their scope and type are unknown.
+- No mapping from these checks to requirements US-001 through US-040, so requirement coverage cannot be established.
+- No run date or timestamp provided.
+- Not tied to any ticket (ticket=None), so there is no traceability to a specific change.
+- E2E run has not completed, so there is no pass/fail outcome.
+- 0/0 tests reported: it is unclear whether the suite is empty or tests have not started being counted.
+- No E2E scenarios or test cases listed, so there is no coverage of user stories or RBAC roles (Employee, Reporting Manager, HR Admin, Project Manager, System Admin).
+- No run id, start time, or duration provided.
+- No test plan, test cases, or requirement-to-test traceability provided.
+- No unit, integration, security, or RBAC-specific test results provided.
+- No defect or bug records provided.
+- No UAT or sign-off/approval recorded for the testing phase.
+- Re-document once the E2E run completes and results are available.
 
 ### Deployment
 
