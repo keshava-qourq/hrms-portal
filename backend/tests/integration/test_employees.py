@@ -16,7 +16,7 @@ import uuid
 from datetime import date
 
 import pytest
-from sqlalchemy import select, text
+from sqlalchemy import text
 
 from app.database import SessionLocal
 from app.models import Employee, User
@@ -300,7 +300,7 @@ def test_ac035_unchanged_edit_records_nothing(make_roled, factory):  # noqa: F81
 
 
 def test_authz_non_hr_admin_cannot_create_employee(make_roled, factory):  # noqa: F811
-    hr = make_roled("HR_ADMIN")
+    make_roled("HR_ADMIN")
     dept = factory.department()
     manager = factory.employee(dept)
     payload = _full_payload(dept, manager)
