@@ -68,9 +68,7 @@ def create_user(
 
     existing = db.scalars(select(User).where(func.lower(User.email) == email)).first()
     if existing is not None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="email already in use"
-        )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="email already in use")
 
     # An unguessable initial password the admin never sees: the account must set
     # its own on first sign-in. The plain value is discarded, only its hash stored.
@@ -134,20 +132,8 @@ def patch_user(
         "locked_at": user.locked_at.isoformat() if user.locked_at else None,
     }
     if payload.role_codes is not None:
-        wanted = set(payload.role_codes)
-        unknown = wanted - set(ROLE_NAMES)
-        if unknown or not wanted:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="role_codes must be a non-empty subset of the five fixed roles",
-            )
-        existing = {r.code: r for r in db.scalars(select(Role))}
-        for code in wanted:
-            if code not in existing:
-                role = Role(code=code, name=ROLE_NAMES[code])
-                db.add(role)
-                db.flush()
-                existing[code] = role
+        existing = {r.code: r for r in _resolve_roles(db, payload.role_codes)}
+        wanted = set(existing)
         held = {link.role.code: link for link in user.roles}
         for code, link in held.items():
             if code not in wanted:
