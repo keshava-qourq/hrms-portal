@@ -1,20 +1,36 @@
-"""Pydantic request and response models.
+"""Pydantic request and response models."""
 
-One pair per entity in the approved data model, plus the placeholder every
-generated route returns until it has been implemented.
-"""
-
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class StubResponse(BaseModel):
-    """What a generated route returns until someone implements it.
+class LoginRequest(BaseModel):
+    """Credentials posted to /api/auth/login."""
 
-    A stub that returns a typed body rather than raising keeps the service
-    startable and its OpenAPI document complete, so the frontend can be built
-    against the agreed shape while the handlers are still being written.
+    email: str = Field(min_length=3, max_length=255)
+    password: str = Field(min_length=1, max_length=256)
+
+
+class LoginResponse(BaseModel):
+    """What a successful sign-in returns.
+
+    The session token is in the body, not a cookie: the SPA and the API are on
+    different origins, where a browser would drop the cookie.
     """
 
-    endpoint: str
-    status: str = "not_implemented"
-    detail: str = "Scaffolded from the approved API spec; no behaviour yet."
+    session_token: str
+    user_id: str
+    display_name: str
+    roles: list[str]
+    must_change_password: bool
+
+
+class MeResponse(BaseModel):
+    """The authenticated user behind the current session."""
+
+    user_id: str
+    email: str = Field(min_length=3, max_length=255)
+    display_name: str
+    roles: list[str]
+    permissions: list[str] = []
+    must_change_password: bool
+    is_active: bool

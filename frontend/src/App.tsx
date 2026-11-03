@@ -1,6 +1,7 @@
 import { NavLink, Navigate, Outlet, Route, Routes } from "react-router-dom";
 
 import { Icons } from "@/lib/icons";
+import { getSessionToken } from "@/lib/api";
 import SignIn from "@/screens/SignIn";
 import Home from "@/screens/Home";
 import Timesheet from "@/screens/Timesheet";
@@ -16,6 +17,10 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 // The app's menu, drawn around every screen except the ones routed outside it below.
 function AppShellLayout() {
+  // No session token means no signed-in user: every app screen sends you back to sign-in.
+  if (!getSessionToken()) {
+    return <Navigate to="/sign-in" replace />;
+  }
   return (
     <div className="flex min-h-screen">
       <aside

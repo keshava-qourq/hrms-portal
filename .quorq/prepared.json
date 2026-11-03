@@ -1,0 +1,68 @@
+{
+  "key": {
+    "app_design_id": "1befa436-ad7d-483e-b058-41434bc0e7a9",
+    "app_design_version": 1,
+    "architecture_document_id": "1bf2167f-d0aa-4ef2-9760-f1a182bc2c00",
+    "architecture_version": 1
+  },
+  "outcome": "prepared",
+  "packages": [
+    {
+      "ecosystem": "pypi",
+      "installed_version": "8.1.0",
+      "name": "redis",
+      "status": "installed",
+      "version": ">=5.0"
+    },
+    {
+      "ecosystem": "pypi",
+      "installed_version": "1.7.4",
+      "name": "passlib[bcrypt]",
+      "status": "installed",
+      "version": ">=1.7.4"
+    },
+    {
+      "ecosystem": "pypi",
+      "installed_version": "3.0.0",
+      "name": "rq",
+      "status": "installed",
+      "version": ">=1.16"
+    },
+    {
+      "ecosystem": "pypi",
+      "installed_version": "4.0.0",
+      "name": "python-dateutil",
+      "status": "installed",
+      "version": ">=2.9"
+    },
+    {
+      "ecosystem": "npm",
+      "error": "already provided by the scaffold",
+      "name": "date-fns",
+      "status": "skipped",
+      "version": ">=3.6"
+    },
+    {
+      "ecosystem": "npm",
+      "error": "already provided by the scaffold",
+      "name": "@tanstack/react-query",
+      "status": "skipped",
+      "version": ">=5.0"
+    },
+    {
+      "ecosystem": "npm",
+      "error": "already provided by the scaffold",
+      "name": "react-hook-form",
+      "status": "skipped",
+      "version": ">=7.50"
+    },
+    {
+      "ecosystem": "npm",
+      "error": "already provided by the scaffold",
+      "name": "react-day-picker",
+      "status": "skipped",
+      "version": ">=9.0"
+    }
+  ],
+  "prepared_by_run": "13cdc69a-fb7e-4c27-a0db-f4037031a28e"
+}
