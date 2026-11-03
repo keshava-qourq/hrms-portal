@@ -16,8 +16,12 @@
     "test:e2e:install": "playwright install chromium"
   },
   "dependencies": {
+    "@tanstack/react-query": ">=5.0",
+    "date-fns": ">=3.6",
     "react": "^19.0.0",
+    "react-day-picker": ">=9.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": ">=7.50",
     "react-router-dom": "^7.0.0"
   },
   "devDependencies": {
