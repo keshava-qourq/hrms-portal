@@ -86,9 +86,7 @@ describe("Administration · Users & roles", () => {
     expect(body).toEqual({
       email: "jun.watanabe@ashgrove.co",
       employee_id: "emp-2",
-      role_codes: ["Employee", "HR Admin"].map((n) =>
-        n === "Employee" ? "EMPLOYEE" : "HR_ADMIN",
-      ),
+      role_codes: ["Employee", "HR Admin"].map((n) => (n === "Employee" ? "EMPLOYEE" : "HR_ADMIN")),
     });
 
     // The new active account appears in the table.
