@@ -12,10 +12,6 @@ type LoginResponse = {
   session_token?: string;
   token?: string;
   access_token?: string;
-  user_id: string;
-  display_name: string;
-  roles: string[];
-  must_change_password: boolean;
 };
 
 const PRODUCT = "HRMS portal";
@@ -26,9 +22,6 @@ export default function Screen() {
   const navigate = useNavigate();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [otp, setOtp] = React.useState("");
-  const [newPassword, setNewPassword] = React.useState("");
-  const [confirmPassword, setConfirmPassword] = React.useState("");
   const [signInError, setSignInError] = React.useState("");
   const [busy, setBusy] = React.useState(false);
 
@@ -71,7 +64,7 @@ export default function Screen() {
       style={{ color: brand.primaryColor, fontFamily: brand.fontBody }}
     >
       <main
-        className="w-full max-w-4xl p-6 sm:p-10"
+        className="w-full max-w-md p-6 sm:p-10"
         style={{
           backgroundColor: "rgba(255,255,255,0.04)",
           border: HAIRLINE,
@@ -90,175 +83,72 @@ export default function Screen() {
           {SCREEN}
         </p>
 
-        <div className="mt-8 grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
-          <form
-            data-wf="b-1-0"
-            id="vl-signin-form"
-            aria-labelledby="vl-signin-title"
-            className="order-1 space-y-5 md:order-none"
-            onSubmit={onSignIn}
-          >
-            <h2 id="vl-signin-title" className="text-xl" style={{ fontFamily: brand.fontHeading }}>
-              Sign in with your work email
-            </h2>
-            <div className="space-y-2">
-              <label htmlFor="vl-email" className="block text-xs uppercase" style={label}>
-                Work email
-              </label>
-              <input
-                data-wf="i-1-0-0"
-                id="vl-email"
-                type="email"
-                autoComplete="username"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={"w-full px-3 text-sm " + focusRing}
-                style={field}
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="vl-password" className="block text-xs uppercase" style={label}>
-                Password
-              </label>
-              <input
-                data-wf="i-1-0-1"
-                id="vl-password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={"w-full px-3 text-sm " + focusRing}
-                style={field}
-              />
-            </div>
-            {signInError ? (
-              <p role="alert" className="text-sm" style={{ color: "hsl(6 78% 76%)" }}>
-                {signInError}
-              </p>
-            ) : null}
-          </form>
-
-          <div className="order-2 md:order-none md:row-start-2 md:col-start-1">
-            <button
-              data-wf="b-2-0"
-              type="submit"
-              form="vl-signin-form"
-              disabled={busy}
-              aria-busy={busy}
-              className={
-                "h-12 w-full text-xs font-bold uppercase tracking-[0.25em] transition-opacity hover:opacity-90 " +
-                focusRing
-              }
-              style={{
-                backgroundColor: brand.accentColor,
-                color: brand.backgroundColor,
-                borderRadius: brand.radius,
-                outlineColor: brand.primaryColor,
-              }}
-            >
-              Sign in
-            </button>
+        <form
+          data-wf="b-1-0"
+          id="vl-signin-form"
+          aria-labelledby="vl-signin-title"
+          className="mt-8 space-y-5"
+          onSubmit={onSignIn}
+        >
+          <h2 id="vl-signin-title" className="text-xl" style={{ fontFamily: brand.fontHeading }}>
+            Sign in with your work email
+          </h2>
+          <div className="space-y-2">
+            <label htmlFor="vl-email" className="block text-xs uppercase" style={label}>
+              Work email
+            </label>
+            <input
+              data-wf="i-1-0-0"
+              id="vl-email"
+              type="email"
+              autoComplete="username"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={"w-full px-3 text-sm " + focusRing}
+              style={field}
+            />
           </div>
-
-          <form
-            data-wf="b-1-1"
-            id="vl-reset-form"
-            aria-labelledby="vl-reset-title"
-            className="order-3 space-y-5 md:order-none md:row-start-1 md:col-start-2"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <h2 id="vl-reset-title" className="text-xl" style={{ fontFamily: brand.fontHeading }}>
-              Set a new password (required after an administrator reset)
-            </h2>
-            <div className="space-y-2">
-              <label htmlFor="vl-otp" className="block text-xs uppercase" style={label}>
-                One-time password
-              </label>
-              <input
-                data-wf="i-1-1-0"
-                id="vl-otp"
-                type="password"
-                autoComplete="one-time-code"
-                required
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className={"w-full px-3 text-sm " + focusRing}
-                style={field}
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="vl-new-password" className="block text-xs uppercase" style={label}>
-                New password
-              </label>
-              <input
-                data-wf="i-1-1-1"
-                id="vl-new-password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className={"w-full px-3 text-sm " + focusRing}
-                style={field}
-              />
-            </div>
-            <div className="space-y-2">
-              <label
-                htmlFor="vl-confirm-password"
-                className="block text-xs uppercase"
-                style={label}
-              >
-                Confirm new password
-              </label>
-              <input
-                data-wf="i-1-1-2"
-                id="vl-confirm-password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className={"w-full px-3 text-sm " + focusRing}
-                style={field}
-              />
-            </div>
-          </form>
-
-          <div className="order-4 md:order-none md:row-start-2 md:col-start-2">
-            <button
-              data-wf="b-2-1"
-              type="submit"
-              form="vl-reset-form"
-              onClick={() => navigate("home")}
-              className={
-                "h-12 w-full text-xs font-bold uppercase tracking-[0.25em] transition-opacity hover:opacity-90 " +
-                focusRing
-              }
-              style={{
-                backgroundColor: "transparent",
-                color: brand.accentColor,
-                border: "1px solid " + brand.accentColor,
-                borderRadius: brand.radius,
-                outlineColor: brand.primaryColor,
-              }}
-            >
-              Set new password and continue
-            </button>
+          <div className="space-y-2">
+            <label htmlFor="vl-password" className="block text-xs uppercase" style={label}>
+              Password
+            </label>
+            <input
+              data-wf="i-1-0-1"
+              id="vl-password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={"w-full px-3 text-sm " + focusRing}
+              style={field}
+            />
           </div>
-        </div>
-
-        <p className="mt-8 text-xs uppercase" style={label}>
-          No account?{" "}
+          {signInError ? (
+            <p role="alert" className="text-sm" style={{ color: "hsl(6 78% 76%)" }}>
+              {signInError}
+            </p>
+          ) : null}
           <button
-            type="button"
-            className={"underline underline-offset-4 " + focusRing}
-            style={{ color: brand.accentColor, outlineColor: brand.accentColor }}
+            data-wf="b-2-0"
+            type="submit"
+            disabled={busy}
+            aria-busy={busy}
+            className={
+              "h-12 w-full text-xs font-bold uppercase tracking-[0.25em] transition-opacity hover:opacity-90 " +
+              focusRing
+            }
+            style={{
+              backgroundColor: brand.accentColor,
+              color: brand.backgroundColor,
+              borderRadius: brand.radius,
+              outlineColor: brand.primaryColor,
+            }}
           >
-            Request an invitation
+            Sign in
           </button>
-        </p>
+        </form>
       </main>
     </div>
   );
