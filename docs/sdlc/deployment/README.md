@@ -3,18 +3,18 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start narrative -->
-### DEPLOY-GAP-001 · draft
+### DEPLOY-751d51135a62 · approved · source: deployment:751d51135a62
 
-No deployment input was provided. No environments, releases, deployment attempts or runbooks are recorded.
+HRMS portal is live at version 751d51135a62. Frontend is hosted on AWS Amplify and the backend is served via an sslip.io endpoint. Status reported as live.
 
-Requirements mandate AWS hosting in a single managed region inside the company's own country (NFR-011), encryption in transit and at rest (NFR-008), daily automated backups with point-in-time restore (NFR-012), and accept a single-region deployment with no failover (NFR-013). The only configuration secret named is REDIS_URL. Nothing has been provisioned, configured or released.
+Deployment status: live. Version/build identifier: 751d51135a62. Frontend URL: https://p0b51fe7c3507.d13el1ykvx8z63.amplifyapp.com. Backend URL: https://184-198-241-75.sslip.io/apps/0b51fe7c3507/. No deployer, deployment date, target environment (prod/staging), release notes, or validation/smoke-test results were provided in the input.
 
-**Related:** REQ-STACK-001, REQ-NFR-COMP-001, REQ-NFR-OPS-001
-
-- ⚠ No deployment recorded yet — no environments, pipeline, release versions or deployment history.
-- ⚠ The target AWS region (and therefore the data-residency commitment of NFR-011) is unconfirmed.
-- ⚠ No evidence that daily backups and point-in-time restore have been configured (NFR-012).
-- ⚠ No TLS/encryption-at-rest configuration evidence (NFR-008).
-- ⚠ No secrets-management approach for REDIS_URL and database credentials.
-- ⚠ No launch-data-loading plan, despite bulk import being excluded (NFR-020) and several hundred records needing manual entry at go-live.
+- ⚠ No deployment date recorded.
+- ⚠ No deployer or approver named.
+- ⚠ Target environment (production vs staging) not specified.
+- ⚠ No release notes or changelog linking this version to specific requirements (US-001..US-040).
+- ⚠ No rollback or recovery plan recorded.
+- ⚠ No post-deployment validation/smoke-test or health-check results provided.
+- ⚠ No mapping from deployed features to requirement keys, so deployment coverage of US-001..US-040 cannot be traced.
+- ⚠ Audit log / System Admin audit capability (per RBAC) deployment and configuration not documented.
 <!-- sdlc:auto:end narrative -->

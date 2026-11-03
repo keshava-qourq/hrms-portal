@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v2
+**Documentation version:** v4
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -38,7 +38,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 |---|---|
 | [Requirements](requirements/README.md) | v1 approved |
 | [Architecture](architecture/README.md) | 22 entries |
-| [Development](development/README.md) | 1 entry |
+| [Development](development/README.md) | 19 entries |
 | [Testing](testing/README.md) | 1 entry |
 | [Deployment](deployment/README.md) | 1 entry |
 | [Maintenance](maintenance/README.md) | 1 entry |
@@ -50,11 +50,11 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [API reference](development/api-reference.md) | 1 route |
 | [Test report](testing/test-report.md) | not run yet |
 | [Tests](testing/test-cases.md) | 0 tests |
-| [Deployment guide](deployment/deployment-guide.md) | not deployed yet |
-| [Runbook](deployment/runbook.md) | not deployed yet |
-| [Release notes](deployment/release-notes.md) | 0 releases |
+| [Deployment guide](deployment/deployment-guide.md) | deployed |
+| [Runbook](deployment/runbook.md) | deployed |
+| [Release notes](deployment/release-notes.md) | 1 release |
 | [Traceability matrix](traceability-matrix.md) | 40 requirements |
-| [Changelog](CHANGELOG.md) | 2 versions |
+| [Changelog](CHANGELOG.md) | 4 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -177,11 +177,36 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Development
 
-- Development phase has not started — no plan, sprints or tickets recorded.
-- No mapping from user stories (US-001..US-040) to implementation tickets.
-- No team, roles, capacity or schedule recorded.
-- No definition of done, branching strategy or code-review process recorded.
-- No record of which of the open requirement assumptions were resolved before build.
+- Approver and approval date for plan v1 were not provided.
+- No sprint-to-item assignment is given. Only sprint goals are listed, so it is unknown which stories fall in which sprint.
+- Capacity unit (story points, hours or other) is not stated. Total points (165) vs capacity (180) is comparable only if the unit is points.
+- No implementation evidence was supplied (tickets, commits, PRs, build or deploy output). Completion of every item is unknown.
+- Application build is not confirmed complete, so the user guide cannot be written yet.
+- The project description is truncated at 'RBAC Requirements, 2. Employees can'. RBAC requirements beyond item 1 could not be traced.
+- Role names differ between the project description (Reporting Manager, HR Admin, Project Manager, System Admin) and the plan (Manager, HR Admin, Administrator, 'fixed role model'). Mapping is not confirmed.
+- The project description lists team reports, organization-wide HR reports, team availability monitoring, and project-manager timesheet review and utilization monitoring. No plan item covers these.
+- The description mentions notifications. The plan covers only in-app alerts (US-035), and it is not stated whether email or other notifications are in or out of scope.
+- Only one qa-agent item (US-031-T3) is in the plan. No other test-related work items were provided.
+- No stories are explicitly assigned to this sprint.
+- No outcome, completion or velocity data provided.
+- US-029 is 8 points and carries three tasks. Whether it fits within one sprint's capacity of 20 alongside other work is not stated.
+- The goal's apparent scope would total about 22 points if the inferred stories were all included, which exceeds the stated capacity of 20. This is unconfirmed because no assignment was given.
+- The goal wording says 'self-approval escalation'. US-033 is titled 'No self-approval for multi-role users', and the escalation behaviour is not described in the input.
+- No implementation or completion status per story.
+- Lockout thresholds, timeout durations and password rules are not in the input.
+- Frontend work is planned only for US-008. HR employee and department screens have no frontend item in the plan.
+- The project description mentions project assignments under employee management. These are covered by EPIC-003.
+- The Project Manager role (create/manage projects, assign employees, review project timesheets, monitor utilization) is not named in these stories.
+- No plan item covers project utilization or allocated-hours monitoring.
+- The weekly grid is named in the Sprint 4 goal. Daily-entry UI is not separately described.
+- All three stories are assigned to backend-agent. No frontend item exists for the clock-in/out or attendance screens.
+- No implementation or completion status per story or task.
+- Tasks have no point estimates.
+- Leave application and balance views (US-023, US-026) have no frontend item.
+- Only direct-report approval is planned. Delegation, multi-level approval and email notifications are not in the input.
+- The Sprint 1 goal mentions language and date/time handling, while US-038 is the frontend story. How the two relate is not stated.
+- Supported phone browsers and breakpoints are not specified.
+- Guide content or location was not provided.
 
 ### Testing
 
@@ -194,12 +219,14 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Deployment
 
-- No deployment recorded yet — no environments, pipeline, release versions or deployment history.
-- The target AWS region (and therefore the data-residency commitment of NFR-011) is unconfirmed.
-- No evidence that daily backups and point-in-time restore have been configured (NFR-012).
-- No TLS/encryption-at-rest configuration evidence (NFR-008).
-- No secrets-management approach for REDIS_URL and database credentials.
-- No launch-data-loading plan, despite bulk import being excluded (NFR-020) and several hundred records needing manual entry at go-live.
+- No deployment date recorded.
+- No deployer or approver named.
+- Target environment (production vs staging) not specified.
+- No release notes or changelog linking this version to specific requirements (US-001..US-040).
+- No rollback or recovery plan recorded.
+- No post-deployment validation/smoke-test or health-check results provided.
+- No mapping from deployed features to requirement keys, so deployment coverage of US-001..US-040 cannot be traced.
+- Audit log / System Admin audit capability (per RBAC) deployment and configuration not documented.
 
 ### Maintenance
 
