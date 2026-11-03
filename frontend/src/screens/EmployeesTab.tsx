@@ -78,7 +78,10 @@ export default function EmployeesTab() {
     onSuccess: (created) => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       reset(BLANK);
-      setNotice({ tone: "ok", text: `${created?.full_name || "The employee"} is in the directory.` });
+      setNotice({
+        tone: "ok",
+        text: `${created?.full_name || "The employee"} is in the directory.`,
+      });
     },
     onError: (err) => setNotice({ tone: "err", text: err?.message || "The record was not saved." }),
   });

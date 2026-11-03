@@ -142,7 +142,9 @@ describe("Administration · Employees tab", () => {
       ]),
     );
     expect(
-      fetchMock.mock.calls.some(([url, init]) => url.endsWith("/api/employees") && init?.method === "POST"),
+      fetchMock.mock.calls.some(
+        ([url, init]) => url.endsWith("/api/employees") && init?.method === "POST",
+      ),
     ).toBe(false);
   });
 
