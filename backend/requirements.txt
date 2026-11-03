@@ -16,6 +16,8 @@ ruff>=0.6
 
 # BEGIN QUORQ ARCHITECTURE PACKAGES
 passlib[bcrypt]>=1.7.4
+# passlib 1.7.4 breaks against bcrypt >= 4.1 (it probes with an over-long secret).
+bcrypt==4.0.1
 python-dateutil>=2.9
 redis>=5.0
 rq>=1.16
