@@ -44,5 +44,6 @@ class MeResponse(BaseModel):
     email: str = Field(min_length=3, max_length=255)
     display_name: str
     roles: list[str]
+    permissions: list[str] = []
     must_change_password: bool
     is_active: bool

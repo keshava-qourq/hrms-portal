@@ -26,6 +26,12 @@ from app.security import (
 
 router = APIRouter(prefix="/api", tags=["auth"])
 
+
+def _permissions_for(role_codes: list[str]) -> list[str]:
+    from app.authz import permissions_for  # deferred: authz imports this module
+
+    return permissions_for(role_codes)
+
 GENERIC_LOGIN_ERROR = "email or password is incorrect"
 DEACTIVATED_ERROR = "This account is deactivated. Please contact an administrator."
 
@@ -108,6 +114,7 @@ def me(user: Annotated[User, Depends(current_user)]) -> MeResponse:
         email=user.email,
         display_name=user.display_name,
         roles=user.role_codes,
+        permissions=_permissions_for(user.role_codes),
         must_change_password=user.must_change_password,
         is_active=user.is_active,
     )

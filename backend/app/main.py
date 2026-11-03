@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import models  # noqa: F401 -- imported so the tables register before create_all
 from app.config import settings
 from app.database import Base, engine
-from app.routers import auth
+from app.routers import admin, auth
 from app.services import configured_services
 
 app = FastAPI(
@@ -38,6 +38,7 @@ app.add_middleware(
 Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
+app.include_router(admin.router)
 
 
 @app.get("/health")
