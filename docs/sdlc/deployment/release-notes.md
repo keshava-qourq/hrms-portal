@@ -3,6 +3,13 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start releases -->
+## 3726b65c9264 — 2026-11-03
+
+**Commit:** `3726b65`
+
+**Delivered:**
+- US-041: Sign-in screen reads session_token from the login response
+
 ## 86483a04d241 — 2026-11-03
 
 **Commit:** `86483a0`

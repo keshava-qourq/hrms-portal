@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v9
+**Documentation version:** v10
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -40,7 +40,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Architecture](architecture/README.md) | 22 entries |
 | [Development](development/README.md) | 13 entries |
 | [Testing](testing/README.md) | 3 entries |
-| [Deployment](deployment/README.md) | 2 entries |
+| [Deployment](deployment/README.md) | 1 entry |
 | [Maintenance](maintenance/README.md) | 1 entry |
 | [Data model](architecture/data-model.md) | generated |
 | [API (OpenAPI)](architecture/api/openapi.yaml) | generated |
@@ -52,9 +52,9 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Tests](testing/test-cases.md) | 72 tests |
 | [Deployment guide](deployment/deployment-guide.md) | deployed |
 | [Runbook](deployment/runbook.md) | deployed |
-| [Release notes](deployment/release-notes.md) | 2 releases |
+| [Release notes](deployment/release-notes.md) | 3 releases |
 | [Traceability matrix](traceability-matrix.md) | 43 requirements |
-| [Changelog](CHANGELOG.md) | 9 versions |
+| [Changelog](CHANGELOG.md) | 10 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -204,21 +204,14 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Deployment
 
-- No deployment date or timestamp was recorded.
-- No deployment id, environment name (e.g. production vs. staging), or deploying person/agent was provided.
-- No approval or sign-off for release to live was provided.
-- No deployment method, pipeline run, or infrastructure details were provided beyond the two URLs.
-- No health check, smoke test, or post-deploy verification results were provided; the live status is not backed by any recorded verification.
-- No rollback plan or previous version reference was provided.
-- No release notes or list of requirements (US-001 to US-040) included in this version were provided, so deployed scope cannot be linked to requirement ids.
-- Version 86483a04d241 is not tied to a specific commit, build or dev ticket in the input.
-- The backend URL is on a shared sslip.io wildcard-DNS host with a raw IP address; no input says whether this is intended as the permanent production endpoint, or whether a custom domain, TLS certificate ownership, or monitoring is in place.
-- The project description is truncated at 'RBAC Requirements, 2. Employees can', so the full access-control requirements could not be confirmed against the deployment.
-- No monitoring or alerting configuration provided.
-- No backup, disaster recovery, or data retention information provided.
-- No security configuration (authentication provider, secrets handling, audit log settings) provided for the live environment, although the project calls for secure login, RBAC and audit logs.
-- No incident, support or on-call ownership defined.
-- No known issues or post-release defects recorded.
+- No deployment date recorded.
+- No release owner or approver recorded.
+- No change log / release notes for version 3726b65c9264.
+- No rollback or recovery plan documented.
+- No environment/configuration details (database, secrets, scaling) provided.
+- No post-deployment smoke-test or verification results recorded to confirm the live site is functioning.
+- Backend is exposed via an sslip.io host behind an IP address (184-198-241-75); whether this is intended production configuration or a temporary endpoint is not stated.
+- Cannot link this deployment to specific requirement keys (US-001..US-043) because no mapping of shipped features to this release was provided.
 
 ### Maintenance
 
