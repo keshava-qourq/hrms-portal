@@ -6,11 +6,28 @@
 | Method | Path | Handler | Source | Summary |
 |---|---|---|---|---|
 | GET | /api/admin/audit-logs | list_audit_logs | `backend/app/routers/audit.py:36` | — |
-| PATCH | /api/admin/users/{user_id} | patch_user | `backend/app/routers/admin.py:33` | — |
+| POST | /api/admin/users | create_user | `backend/app/routers/admin.py:60` | — |
+| PATCH | /api/admin/users/{user_id} | patch_user | `backend/app/routers/admin.py:111` | — |
+| GET | /api/attendance | list_attendance | `backend/app/routers/scoped.py:220` | — |
+| GET | /api/attendance/{record_id} | get_attendance | `backend/app/routers/scoped.py:257` | — |
 | POST | /api/auth/login | login | `backend/app/routers/auth.py:71` | Authenticate and open a Redis-backed session. |
 | POST | /api/auth/logout | logout | `backend/app/routers/auth.py:103` | Invalidate the session behind the bearer token. Always 204. |
+| GET | /api/departments | list_departments | `backend/app/routers/employees.py:126` | — |
+| POST | /api/departments | create_department | `backend/app/routers/employees.py:135` | — |
+| DELETE | /api/departments/{department_id} | delete_department | `backend/app/routers/employees.py:162` | — |
+| GET | /api/employees | list_employees | `backend/app/routers/employees.py:199` | — |
+| POST | /api/employees | create_employee | `backend/app/routers/employees.py:213` | — |
+| GET | /api/employees/{employee_id} | get_employee | `backend/app/routers/employees.py:313` | — |
+| PATCH | /api/employees/{employee_id} | patch_employee | `backend/app/routers/employees.py:260` | — |
+| GET | /api/leave-requests | list_leave_requests | `backend/app/routers/scoped.py:288` | — |
+| GET | /api/leave-requests/{request_id} | get_leave_request | `backend/app/routers/scoped.py:325` | — |
 | GET | /api/me | me | `backend/app/routers/auth.py:110` | The authenticated user. |
-| GET | /health | health | `backend/app/main.py:49` | Liveness probe, and the only route here that is not a stub. |
+| GET | /api/my/projects | my_projects | `backend/app/routers/scoped.py:99` | — |
+| GET | /api/my/team | my_team | `backend/app/routers/employees.py:372` | — |
+| GET | /api/my/team/{employee_id} | my_team_member | `backend/app/routers/employees.py:348` | — |
+| GET | /api/timesheets | list_timesheets | `backend/app/routers/scoped.py:128` | — |
+| GET | /api/timesheets/{entry_id} | get_timesheet_entry | `backend/app/routers/scoped.py:181` | — |
+| GET | /health | health | `backend/app/main.py:51` | Liveness probe, and the only route here that is not a stub. |
 <!-- sdlc:auto:end endpoints -->
 
 <!-- sdlc:auto:start drift -->
@@ -18,24 +35,16 @@
 
 - DELETE /api/projects/{id}/assignments/{assignment_id}
 - GET /api/approvals/pending
-- GET /api/attendance
 - GET /api/dashboard
-- GET /api/departments
-- GET /api/employees
 - GET /api/holidays
 - GET /api/leave-balances
-- GET /api/leave-requests
-- GET /api/my/projects
-- GET /api/my/team
 - GET /api/notifications
 - GET /api/projects
-- GET /api/timesheets
 - GET /api/timesheets/week/{week_start}
 - PATCH /api/attendance/{id}/regularise
 - PATCH /api/employees/{id}
 - POST /api/admin/holidays
 - POST /api/admin/leave-types
-- POST /api/admin/users
 - POST /api/admin/users/{user_id}/password-reset
 - POST /api/approvals/{item_type}/{item_id}/approve
 - POST /api/approvals/{item_type}/{item_id}/reject
@@ -43,8 +52,6 @@
 - POST /api/attendance/clock-in
 - POST /api/attendance/clock-out
 - POST /api/auth/change-password
-- POST /api/departments
-- POST /api/employees
 - POST /api/employees/{id}/erase
 - POST /api/leave-requests
 - POST /api/notifications/{id}/read
@@ -53,8 +60,18 @@
 - POST /api/timesheets/{id}/submit
 - PUT /api/admin/leave-balances/{employee_id}/{leave_type_id}
 - PUT /api/timesheets/week/{week_start}/entries
+
+**Code only:**
+
+- DELETE /api/departments/{department_id}
+- GET /api/attendance/{record_id}
+- GET /api/employees/{employee_id}
+- GET /api/leave-requests/{request_id}
+- GET /api/my/team/{employee_id}
+- GET /api/timesheets/{entry_id}
+- PATCH /api/employees/{employee_id}
 <!-- sdlc:auto:end drift -->
 
 <!-- sdlc:auto:start source -->
-Generated from commit `3726b65`
+Generated from commit `92f33dd`
 <!-- sdlc:auto:end source -->

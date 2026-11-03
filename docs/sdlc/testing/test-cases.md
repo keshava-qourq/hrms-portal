@@ -3,9 +3,9 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start summary -->
-72 tests · Passed 52 · Failed 0 · Skipped 14 · Not run 6
+116 tests · Passed 102 · Failed 0 · Skipped 6 · Not run 8
 
-Acceptance criteria covered: 18/152 · passing: 10/152
+Acceptance criteria covered: 31/152 · passing: 22/152
 <!-- sdlc:auto:end summary -->
 
 <!-- sdlc:auto:start tests -->
@@ -81,19 +81,19 @@ Acceptance criteria covered: 18/152 · passing: 10/152
 
 | Criteria | Test | Level | Result | File |
 |---|---|---|---|---|
-| AC-039 | test_ac039_added_department_is_selectable | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| AC-040 | test_ac040_delete_unassigned_department_succeeds | Integration | Skipped | `backend/tests/integration/test_departments.py` |
+| AC-039 | test_ac039_added_department_is_selectable | Integration | Passed | `backend/tests/integration/test_departments.py` |
+| AC-040 | test_ac040_delete_unassigned_department_succeeds | Integration | Passed | `backend/tests/integration/test_departments.py` |
 | AC-040 | test_ac040_delete_with_assigned_employees_refused_with_count | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| AC-041 | test_ac041_departments_table_has_no_scoping_columns | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| AC-041 | test_ac041_one_shared_list_no_country_or_entity_variant | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| — | test_authz_non_hr_admin_cannot_create_department[EMPLOYEE] | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| — | test_authz_non_hr_admin_cannot_create_department[PROJECT_MANAGER] | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| — | test_authz_non_hr_admin_cannot_create_department[REPORTING_MANAGER] | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| — | test_authz_non_hr_admin_cannot_delete_department[EMPLOYEE] | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| — | test_authz_non_hr_admin_cannot_delete_department[PROJECT_MANAGER] | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| — | test_authz_non_hr_admin_cannot_delete_department[REPORTING_MANAGER] | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| — | test_authz_unauthenticated_is_401 | Integration | Skipped | `backend/tests/integration/test_departments.py` |
-| — | test_nfr022_single_shared_list_same_for_every_user | Integration | Skipped | `backend/tests/integration/test_departments.py` |
+| AC-041 | test_ac041_departments_table_has_no_scoping_columns | Integration | Passed | `backend/tests/integration/test_departments.py` |
+| AC-041 | test_ac041_one_shared_list_no_country_or_entity_variant | Integration | Passed | `backend/tests/integration/test_departments.py` |
+| — | test_authz_non_hr_admin_cannot_create_department[EMPLOYEE] | Integration | Passed | `backend/tests/integration/test_departments.py` |
+| — | test_authz_non_hr_admin_cannot_create_department[PROJECT_MANAGER] | Integration | Passed | `backend/tests/integration/test_departments.py` |
+| — | test_authz_non_hr_admin_cannot_create_department[REPORTING_MANAGER] | Integration | Passed | `backend/tests/integration/test_departments.py` |
+| — | test_authz_non_hr_admin_cannot_delete_department[EMPLOYEE] | Integration | Passed | `backend/tests/integration/test_departments.py` |
+| — | test_authz_non_hr_admin_cannot_delete_department[PROJECT_MANAGER] | Integration | Passed | `backend/tests/integration/test_departments.py` |
+| — | test_authz_non_hr_admin_cannot_delete_department[REPORTING_MANAGER] | Integration | Passed | `backend/tests/integration/test_departments.py` |
+| — | test_authz_unauthenticated_is_401 | Integration | Passed | `backend/tests/integration/test_departments.py` |
+| — | test_nfr022_single_shared_list_same_for_every_user | Integration | Passed | `backend/tests/integration/test_departments.py` |
 
 ### US-038: Single-language interface and consistent date/time display
 
@@ -104,6 +104,67 @@ Acceptance criteria covered: 18/152 · passing: 10/152
 | AC-134 | [AC-134] no language selector on the sign-in screen | E2E | Not run yet | `frontend/e2e/single-language-timestamps.spec.ts` |
 | AC-135 | [AC-135] [NFR-017] company-timezone formatting is independent of browser timezone | E2E | Not run yet | `frontend/e2e/single-language-timestamps.spec.ts` |
 | AC-135 | [AC-135] the same instant renders identically across screens and in company timezone | E2E | Not run yet | `frontend/e2e/single-language-timestamps.spec.ts` |
+
+## Sprint 2
+
+### US-002: Administrator creates user accounts — no public self-registration
+
+| Criteria | Test | Level | Result | File |
+|---|---|---|---|---|
+| AC-006 | Account creation is admin-only (no self-registration) > [AC-006] redirects an unauthenticated registration URL to the sign-in page | Unit | Passed | `frontend/src/screens/Administration.test.tsx` |
+| AC-005 | Administration · Users & roles > [AC-005] creates a user via POST /api/admin/users with email, employee and roles, then shows the new active account | Unit | Passed | `frontend/src/screens/Administration.test.tsx` |
+| AC-008 | Administration · Users & roles > [AC-008] hides the Users & roles and Audit tabs from a signed-in user without System Admin | Unit | Passed | `frontend/src/screens/Administration.test.tsx` |
+| AC-008 | Administration · Users & roles > [AC-008] shows the Users & roles and Audit tabs to a System Admin | Unit | Passed | `frontend/src/screens/Administration.test.tsx` |
+| AC-005 | test_ac005_create_returns_active_account_with_both_roles | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
+| AC-007 | test_ac007_duplicate_email_rejected_with_message | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
+| AC-008 | test_ac008_non_system_admin_gets_403_with_no_data[EMPLOYEE] | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
+| AC-008 | test_ac008_non_system_admin_gets_403_with_no_data[HR_ADMIN] | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
+| AC-008 | test_ac008_non_system_admin_gets_403_with_no_data[PROJECT_MANAGER] | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
+| AC-008 | test_ac008_non_system_admin_gets_403_with_no_data[REPORTING_MANAGER] | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
+| AC-008 | test_ac008_unauthenticated_create_is_401 | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
+| AC-009 | test_ac009_audit_entry_never_contains_password | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
+| AC-009 | test_ac009_create_edit_deactivate_each_produce_audit_entry | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
+| AC-006 | [AC-006] the sign-in screen itself exposes no self-registration affordance | E2E | Not run yet | `frontend/e2e/no-self-registration.spec.ts` |
+
+### US-004: Access scoped by relationship, not only by role
+
+| Criteria | Test | Level | Result | File |
+|---|---|---|---|---|
+| AC-013 | test_ac013_foreign_employee_id_is_refused_403_with_no_data | Integration | Passed | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-013 | test_ac013_manager_with_no_reports_gets_empty_team | Integration | Passed | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-013 | test_ac013_team_list_is_only_the_managers_direct_reports | Integration | Passed | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-014 | test_ac014_pm_filtering_an_unassigned_project_is_refused_or_empty | Integration | Passed | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-014 | test_ac014_pm_sees_only_assigned_project_hours | Integration | Skipped | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-015 | test_ac015_employee_only_may_read_own_records | Integration | Passed | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-015 | test_ac015_employee_only_refused_403_for_non_own_record[attendance-/api/attendance] | Integration | Passed | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-015 | test_ac015_employee_only_refused_403_for_non_own_record[leave-/api/leave-requests] | Integration | Passed | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-015 | test_ac015_employee_only_refused_403_for_non_own_record[timesheet-/api/timesheets] | Integration | Passed | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-016 | test_ac016_hr_admin_reaches_every_employee | Integration | Passed | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-016 | test_ac016_hr_admin_refused_403_on_settings[get-/api/admin/settings-None] | Integration | Skipped | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-016 | test_ac016_hr_admin_refused_403_on_settings[patch-/api/admin/settings-body1] | Integration | Skipped | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-016 | test_ac016_hr_admin_refused_403_on_settings[put-/api/admin/settings-body2] | Integration | Skipped | `backend/tests/integration/test_relationship_scoping.py` |
+| AC-016 | test_ac016_hr_admin_refused_403_on_user_management | Integration | Passed | `backend/tests/integration/test_relationship_scoping.py` |
+
+### US-009: HR Admin maintains employee records
+
+| Criteria | Test | Level | Result | File |
+|---|---|---|---|---|
+| AC-032 | Administration · Employees tab > [AC-032] creates a record and it appears in the directory from GET /api/employees | Unit | Passed | `frontend/src/screens/EmployeesTab.test.tsx` |
+| AC-033 | Administration · Employees tab > [AC-033] flags each missing mandatory field inline and blocks submit | Unit | Passed | `frontend/src/screens/EmployeesTab.test.tsx` |
+| AC-034 | Administration · Employees tab > [AC-034] changing reporting manager persists via PATCH and the directory reflects it | Unit | Passed | `frontend/src/screens/EmployeesTab.test.tsx` |
+| AC-032 | test_ac032_create_persists_and_is_listed | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| AC-033 | test_ac033_missing_mandatory_field_is_422_naming_it[department_id] | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| AC-033 | test_ac033_missing_mandatory_field_is_422_naming_it[employee_number] | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| AC-033 | test_ac033_missing_mandatory_field_is_422_naming_it[full_name] | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| AC-033 | test_ac033_missing_mandatory_field_is_422_naming_it[reporting_manager_id] | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| AC-033 | test_ac033_missing_mandatory_field_is_422_naming_it[start_date] | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| AC-033 | test_ac033_missing_mandatory_field_is_422_naming_it[work_email] | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| AC-034 | test_ac034_manager_change_moves_employee_between_team_lists | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| AC-035 | test_ac035_edit_records_field_old_new_actor_timestamp | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| AC-035 | test_ac035_unchanged_edit_records_nothing | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| — | test_authz_non_hr_admin_cannot_create_employee | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| — | test_authz_unauthenticated_create_is_401 | Integration | Passed | `backend/tests/integration/test_employees.py` |
+| — | [US-009-3] missing mandatory field shows inline validation, then create succeeds and appears in the directory | E2E | Not run yet | `frontend/e2e/employee-create.spec.ts` |
 
 ## Project setup
 
