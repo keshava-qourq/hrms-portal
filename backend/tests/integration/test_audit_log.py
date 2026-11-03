@@ -8,6 +8,7 @@ import uuid
 
 import pytest
 from sqlalchemy import text
+from sqlalchemy.exc import DBAPIError
 
 from app.database import SessionLocal
 from tests.integration.test_auth import client
@@ -82,7 +83,9 @@ def test_ac026_unchanged_fields_not_recorded(make_roled):  # noqa: F811
     admin = make_roled("SYSTEM_ADMIN")
     target = make_roled("EMPLOYEE")
     _logs(admin)
-    client.patch(f"/api/admin/users/{target.id}", headers=_headers(admin), json={"is_active": False})
+    client.patch(
+        f"/api/admin/users/{target.id}", headers=_headers(admin), json={"is_active": False}
+    )
     e = _items_for(admin, target.id)[0]
     assert "email" not in (e["after_values"] or {})
     assert "password_hash" not in str(e)
@@ -91,7 +94,9 @@ def test_ac026_unchanged_fields_not_recorded(make_roled):  # noqa: F811
 @pytest.mark.parametrize("verb", ["post", "put", "patch", "delete"])
 def test_ac027_nfr010_no_write_verbs_on_collection(make_roled, verb):  # noqa: F811
     admin = make_roled("SYSTEM_ADMIN")
-    res = getattr(client, verb)(URL, headers=_headers(admin), **({} if verb == "delete" else {"json": {}}))
+    res = getattr(client, verb)(
+        URL, headers=_headers(admin), **({} if verb == "delete" else {"json": {}})
+    )
     assert res.status_code in (404, 405)
 
 
@@ -114,13 +119,15 @@ def test_ac027_nfr010_database_refuses_update_and_delete(make_roled):  # noqa: F
     admin = make_roled("SYSTEM_ADMIN")
     target = make_roled("EMPLOYEE")
     _logs(admin)
-    client.patch(f"/api/admin/users/{target.id}", headers=_headers(admin), json={"is_active": False})
+    client.patch(
+        f"/api/admin/users/{target.id}", headers=_headers(admin), json={"is_active": False}
+    )
     for sql in (
         "UPDATE audit_logs SET action = 'tampered' WHERE entity_id = :e",
         "DELETE FROM audit_logs WHERE entity_id = :e",
     ):
         with SessionLocal() as db:
-            with pytest.raises(Exception):
+            with pytest.raises(DBAPIError):
                 db.execute(text(sql), {"e": str(target.id)})
                 db.commit()
     with SessionLocal() as db:
@@ -134,7 +141,9 @@ def test_ac027_user_deletion_cannot_erase_entries(make_roled):  # noqa: F811
     admin = make_roled("SYSTEM_ADMIN")
     target = make_roled("EMPLOYEE")
     _logs(admin)
-    client.patch(f"/api/admin/users/{target.id}", headers=_headers(admin), json={"is_active": False})
+    client.patch(
+        f"/api/admin/users/{target.id}", headers=_headers(admin), json={"is_active": False}
+    )
     with SessionLocal() as db:
         before = db.execute(text("SELECT count(*) FROM audit_logs")).scalar()
     with SessionLocal() as db:
@@ -168,7 +177,9 @@ def test_nfr008_passwords_never_appear_in_audit_entries(make_roled):  # noqa: F8
     admin = make_roled("SYSTEM_ADMIN")
     target = make_roled("EMPLOYEE")
     _logs(admin)
-    client.patch(f"/api/admin/users/{target.id}", headers=_headers(admin), json={"is_active": False})
+    client.patch(
+        f"/api/admin/users/{target.id}", headers=_headers(admin), json={"is_active": False}
+    )
     res = client.get(URL, headers=_headers(admin))
     assert target.password_hash not in res.text
 

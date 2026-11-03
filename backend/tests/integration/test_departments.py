@@ -59,7 +59,7 @@ def test_ac039_added_department_is_selectable(make_roled):  # noqa: F811
     try:
         res = _create(h, name)
         assert res.status_code in (200, 201), res.text
-        # Selectable = offered in the list every authenticated user (e.g. on an employee form) reads.
+        # Selectable = offered in the list every authenticated user reads.
         for headers in (h, _headers(emp)):
             names = [d["name"] for d in _items(client.get(URL, headers=headers).json())]
             assert name in names
@@ -78,11 +78,10 @@ def test_ac040_delete_with_assigned_employees_refused_with_count(make_roled):  #
         assert dept_id is not None
         try:
             with SessionLocal() as db:
-                for i in range(3):
+                for _i in range(3):
                     db.execute(
                         text(
-                            "INSERT INTO employees (id, department_id, email) "
-                            "VALUES (:i, :d, :e)"
+                            "INSERT INTO employees (id, department_id, email) VALUES (:i, :d, :e)"
                         ),
                         {"i": str(uuid.uuid4()), "d": dept_id, "e": f"{uuid.uuid4().hex}@x.com"},
                     )

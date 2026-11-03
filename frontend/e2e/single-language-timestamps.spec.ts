@@ -2,7 +2,14 @@ import { expect, test, type Page } from "@playwright/test";
 
 const PERMS = ["profile.own", "timesheet.own", "leave.own", "holidays.view", "approvals.track"];
 const SCREENS = ["/home", "/timesheet", "/leave", "/approvals", "/administration"];
-const ALL_PERMS = [...PERMS, "team.view", "team.approve", "team.reports", "users.manage", "roles.assign"];
+const ALL_PERMS = [
+  ...PERMS,
+  "team.view",
+  "team.approve",
+  "team.reports",
+  "users.manage",
+  "roles.assign",
+];
 
 async function signIn(page: Page) {
   await page.addInitScript(() => localStorage.setItem("session_token", "e2e-token"));
@@ -46,11 +53,15 @@ for (const path of SCREENS) {
     // Every <select> option list must not offer language names.
     const options = await page.locator("select option").allTextContents();
     for (const o of options) {
-      expect(o).not.toMatch(/^(English|Español|Français|Deutsch|हिन्दी|Hindi|French|German|Spanish)$/i);
+      expect(o).not.toMatch(
+        /^(English|Español|Français|Deutsch|हिन्दी|Hindi|French|German|Spanish)$/i,
+      );
     }
     // Page text is in one script: no non-Latin letters.
     const text = await page.locator("body").innerText();
-    expect(text).not.toMatch(/[Ѐ-ӿ֐-׿؀-ۿऀ-ॿ一-鿿]/);
+    expect(text).not.toMatch(
+      /\p{Script=Cyrillic}|\p{Script=Hebrew}|\p{Script=Arabic}|\p{Script=Devanagari}|\p{Script=Han}/u,
+    );
   });
 }
 
