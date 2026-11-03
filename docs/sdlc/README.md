@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v13
+**Documentation version:** v14
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -54,7 +54,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Runbook](deployment/runbook.md) | deployed |
 | [Release notes](deployment/release-notes.md) | 4 releases |
 | [Traceability matrix](traceability-matrix.md) | 43 requirements |
-| [Changelog](CHANGELOG.md) | 13 versions |
+| [Changelog](CHANGELOG.md) | 14 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -197,16 +197,20 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Testing
 
-- No ticket linkage (ticket=None) — cannot trace these checks to specific requirements or user stories.
-- The content/scope of the 4 checks is not described; unclear what was validated.
-- No timestamp recorded for the run.
-- E2E run is still running — no results to document yet.
-- 0/0 passed indicates no test cases have reported; unclear whether the suite has defined test cases or has not yet started executing them.
-- No mapping of E2E scenarios to requirement keys (US-001..US-043) was provided — requirement test coverage cannot be traced.
-- No test cases mapped to any of the 43 known requirements (US-001..US-043).
-- No defect/bug records provided.
-- No pass/fail acceptance criteria documented.
-- Compliance/security testing (e.g., secure login and RBAC per the RBAC requirements) is not evidenced by any test result in the input.
+- The four checks are not named, so what was verified is unknown.
+- No ticket is linked (ticket=None), so the run cannot be traced to a requirement or user story.
+- No timestamp or environment is recorded for this run.
+- No mapping from these checks to US-001 through US-043.
+- E2E run has not finished, so there is no final outcome.
+- 0/0 means no test cases have been reported; the total number of scenarios is unknown.
+- No E2E scenarios are mapped to requirements (login/RBAC, employee management, timesheets, leave, approval workflows).
+- No start time or run identifier is provided.
+- The target is an Amplify URL; the input does not say whether it is a test/staging environment.
+- No requirement-to-test traceability was provided for any of US-001 through US-043.
+- No RBAC or security test results (secure login, role-restricted access for Employee, Reporting Manager, HR Admin, Project Manager, System Admin) were provided.
+- No functional test results for timesheets, leave, approval workflows, or employee management were provided.
+- No defects, test plan, or sign-off/approval were recorded.
+- The project description is truncated at the RBAC requirements list ('2. Employees can'), so the full RBAC requirements cannot be confirmed as tested.
 
 ### Deployment
 
