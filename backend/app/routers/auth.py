@@ -7,6 +7,7 @@ has been verified.
 """
 
 import uuid
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy import func, select
@@ -39,7 +40,10 @@ def _bearer_token(request: Request) -> str:
     return token.strip() if scheme.lower() == "bearer" else ""
 
 
-def current_user(request: Request, db: Session = Depends(get_db)) -> User:
+DbSession = Annotated[Session, Depends(get_db)]
+
+
+def current_user(request: Request, db: DbSession) -> User:
     """The user behind the request's session token, or 401. Fails closed."""
     session = read_session(_bearer_token(request))
     user = None
@@ -58,7 +62,7 @@ def current_user(request: Request, db: Session = Depends(get_db)) -> User:
 
 
 @router.post("/auth/login", response_model=LoginResponse)
-def login(payload: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse:
+def login(payload: LoginRequest, db: DbSession) -> LoginResponse:
     """Authenticate and open a Redis-backed session."""
     email = payload.email.strip().lower()
     user = db.scalars(select(User).where(func.lower(User.email) == email)).first()
@@ -97,7 +101,7 @@ def logout(request: Request) -> Response:
 
 
 @router.get("/me", response_model=MeResponse)
-def me(user: User = Depends(current_user)) -> MeResponse:
+def me(user: Annotated[User, Depends(current_user)]) -> MeResponse:
     """The authenticated user."""
     return MeResponse(
         user_id=str(user.id),
