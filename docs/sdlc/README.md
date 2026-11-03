@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v1
+**Documentation version:** v2
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -37,14 +37,14 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | Document | State |
 |---|---|
 | [Requirements](requirements/README.md) | v1 approved |
-| [Architecture](architecture/README.md) | 1 entry |
+| [Architecture](architecture/README.md) | 22 entries |
 | [Development](development/README.md) | 1 entry |
 | [Testing](testing/README.md) | 1 entry |
 | [Deployment](deployment/README.md) | 1 entry |
 | [Maintenance](maintenance/README.md) | 1 entry |
-| [Data model](architecture/data-model.md) | not generated yet |
-| [API (OpenAPI)](architecture/api/openapi.yaml) | not generated yet |
-| [Decisions (ADRs)](architecture/adr/README.md) | 0 decisions |
+| [Data model](architecture/data-model.md) | generated |
+| [API (OpenAPI)](architecture/api/openapi.yaml) | generated |
+| [Decisions (ADRs)](architecture/adr/README.md) | 4 decisions |
 | [Sprint plan](development/sprint-plan.md) | not generated yet |
 | [Developer guide](development/developer-guide.md) | not generated yet |
 | [API reference](development/api-reference.md) | 0 routes |
@@ -54,7 +54,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Runbook](deployment/runbook.md) | not deployed yet |
 | [Release notes](deployment/release-notes.md) | 0 releases |
 | [Traceability matrix](traceability-matrix.md) | 40 requirements |
-| [Changelog](CHANGELOG.md) | 1 version |
+| [Changelog](CHANGELOG.md) | 2 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -128,13 +128,52 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Architecture
 
-- Architecture phase has not started — no design documents, diagrams or decision records exist.
-- No data model for employees, departments, reporting lines, projects, assignments, timesheets, punches, leave types, balances, holidays, approvals, alerts or audit entries.
-- No design for server-side RBAC plus relationship scoping (NFR-004) or for the self-approval escalation routing (US-033).
-- No design for append-only audit storage (NFR-010) or for transactional balance updates (NFR-015).
-- No session/timeout/lockout design showing how Redis holds sessions.
-- No background-job design, even though a Redis queue is mandated while its stated workloads (import, export, reminder emails) are out of scope.
-- No AWS deployment topology, region choice, encryption-at-rest configuration or backup/restore design (NFR-008, NFR-011, NFR-012).
+- Input does not say who approved the architecture or when.
+- The summary says Redis has 'two approved roles' but the Redis component also lists the job queue as a third function. Confirm the intended count.
+- NFR-008, NFR-012 and NFR-015 are cited but their definitions were not provided.
+- No requirement ids are linked to this component in the input.
+- Retry policy (attempts, backoff) and failure handling for jobs that keep failing are not specified.
+- Backup retention period and RPO/RTO are not stated.
+- Session idle TTL value and lockout threshold/duration are not specified.
+- Redis persistence/availability behaviour is not described. A Redis loss would affect sessions and lockout counters.
+- No user story ids are linked in the input for this path (only NFR-001, NFR-002, NFR-005).
+- Behaviour when no one above the submitter exists and no HR Admin is configured is not specified.
+- Handling of shifts crossing midnight is not addressed. The one-punch-pair-per-calendar-day rule implies it is not supported, but this is not stated.
+- Status value sets for timesheets and leave_requests (e.g. Draft/Submitted/Approved/Rejected) are only partly implied by endpoint text and not enumerated.
+- The five role codes are not listed in the entities. The endpoint text says 'five fixed roles'.
+- Only Draft, Submitted, approved and rejected-as-draft are implied. Whether rejected items keep a distinct status is unclear.
+- How employees.is_erased interacts with audit_logs (which keeps who erased and when) is described only at a high level.
+- No password policy (length/complexity/expiry) is specified.
+- No self-service forgotten-password flow is listed. Only administrator reset exists.
+- No user story ids are linked to these endpoints in the input.
+- A department delete endpoint is not listed, yet deletion behaviour is described under POST /api/departments.
+- No endpoint is listed for editing or closing a project, or for editing assignment allocated hours after creation.
+- No endpoint is listed for employees to view or edit their own profile beyond PATCH /api/employees/{id}.
+- The role description grants Project Managers 'monitor project utilization and allocated hours' and 'review project-specific timesheets'. No dedicated endpoint for these is listed.
+- The role description grants HR Admin 'manage departments' and Reporting Managers 'monitor team availability'. Only team status is covered (GET /api/my/team).
+- Hours granularity (decimal places) for timesheet cells is not stated.
+- The project description mentions daily/weekly timesheets. Only a weekly grid is specified (daily entry is via day columns).
+- No endpoint is listed for HR-wide attendance reports beyond the single-date query.
+- No endpoint is listed for an employee to cancel or withdraw a pending leave request, although the project description says to 'track requests'.
+- How an HR override is supplied on POST /api/leave-requests (field or separate call) is not specified.
+- Carry-forward or year-rollover of leave balances is not described.
+- Single shared holiday calendar: regional or per-location calendars are not supported or discussed.
+- Approval is single-step only. Multi-level approval is not supported.
+- The project description asks for approval 'notifications'. The architecture provides in-app alerts only, with no email/SMS/push. Confirm this meets the requirement.
+- Manager behaviour when away or unavailable (delegation) is not described.
+- Production/staging deployment nodes are not itemised. Only dev nodes are listed.
+- The specific AWS region/country is not named.
+- The dev nodes use a Redis container while the cloud decision names ElastiCache. This is consistent in intent but not explicitly mapped.
+- No CI/CD, environment promotion, monitoring or logging approach is described.
+- AC-054 and AC-055 are cited but are not in the supplied requirement keys, and their content was not provided.
+- Expected data volume and user count are referenced ('at this volume') but not stated.
+- The company's country and the chosen region are not named, so the in-country claim cannot be verified from the input.
+- Discrepancy: the project description's headline names four groups (Employees, Managers, HR, Admins) but its permissions table lists five roles (adds Project Manager). The architecture follows five.
+- Conflict: the permissions table gives Reporting Managers 'access team reports' and HR Admin 'organization-wide HR reports'. The architecture excludes reporting dashboards and lists no report endpoints. Confirm whether a limited report is intended.
+- The project description text is truncated at 'RBAC Requirements ... 2. Employees can', so RBAC requirements beyond item 1 could not be traced.
+- The description lists 'attendance records' for HR Admin. Only a per-date attendance query and regularisation are specified.
+- No endpoint covers role/permission management beyond assigning the five fixed roles, although System Admin is described as managing 'permissions' and 'organization settings and system configurations'. No settings endpoint is listed.
+- US-001 to US-040 are known requirement keys, but the architecture input only cites US-018, US-020 to US-026, US-031 and US-033. The remaining stories have no explicit architecture linkage in the input.
 
 ### Development
 

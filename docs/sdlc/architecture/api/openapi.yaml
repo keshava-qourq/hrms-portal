@@ -2,6 +2,1298 @@
 openapi: 3.1.0
 info:
   title: HRMS portal
-  version: architecture-v0
+  version: architecture-v1
   description: Designed API from the approved architecture (not extracted from code).
-paths: {}
+paths:
+  /api/admin/audit-logs:
+    get:
+      summary: Read the append-only audit log filtered by actor, entity, action or
+        date range. No write, update or delete verb exists o
+      description: Read the append-only audit log filtered by actor, entity, action
+        or date range. No write, update or delete verb exists on this resource.
+      operationId: get_api_admin_audit_logs
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[{actor, action, entity_type, entity_id, before_values,
+            after_values, reason_or_comment, created_at}], total}
+      security:
+      - bearerAuth: []
+  /api/admin/holidays:
+    post:
+      summary: Add, edit or remove a holiday date - takes effect for future leave
+        day-counts and is audit-logged.
+      description: Add, edit or remove a holiday date - takes effect for future leave
+        day-counts and is audit-logged.
+      operationId: post_api_admin_holidays
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{holiday_date, name}'
+      responses:
+        '200':
+          description: 201 {holiday}
+      security:
+      - bearerAuth: []
+  /api/admin/leave-balances/{employee_id}/{leave_type_id}:
+    put:
+      summary: Set or adjust an employee's opening balance. Old and new values audit-logged.
+      description: Set or adjust an employee's opening balance. Old and new values
+        audit-logged.
+      operationId: put_api_admin_leave_balances_employee_id_leave_type_id
+      parameters:
+      - name: employee_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: leave_type_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{year, entitlement_days}'
+      responses:
+        '200':
+          description: 200 {balance}
+      security:
+      - bearerAuth: []
+  /api/admin/leave-types:
+    post:
+      summary: Create or update a leave type with an annual entitlement, unpaid flag
+        and active flag.
+      description: Create or update a leave type with an annual entitlement, unpaid
+        flag and active flag.
+      operationId: post_api_admin_leave_types
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{name, annual_entitlement_days, is_unpaid, is_active}'
+      responses:
+        '200':
+          description: 201 {leave_type}
+      security:
+      - bearerAuth: []
+  /api/admin/users:
+    post:
+      summary: Create a portal account linked to an employee record with one or more
+        of the five fixed roles. Duplicate email rejected,
+      description: Create a portal account linked to an employee record with one or
+        more of the five fixed roles. Duplicate email rejected, action audit-logged.
+      operationId: post_api_admin_users
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{email, employee_id, role_codes[]}'
+      responses:
+        '200':
+          description: 201 {user_id, is_active} | 409 email already in use
+      security:
+      - bearerAuth: []
+  /api/admin/users/{user_id}:
+    patch:
+      summary: Activate, deactivate, change roles, or unlock a locked account. Every
+        change audit-logged.
+      description: Activate, deactivate, change roles, or unlock a locked account.
+        Every change audit-logged.
+      operationId: patch_api_admin_users_user_id
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{is_active?, role_codes?, unlock?}'
+      responses:
+        '200':
+          description: 200 {user}
+      security:
+      - bearerAuth: []
+  /api/admin/users/{user_id}/password-reset:
+    post:
+      summary: 'Issue an administrator reset: generates a one-time password returned
+        once for secure hand-off and replaces the stored ha'
+      description: 'Issue an administrator reset: generates a one-time password returned
+        once for secure hand-off and replaces the stored hash.'
+      operationId: post_api_admin_users_user_id_password_reset
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: empty
+      responses:
+        '200':
+          description: 200 {one_time_password}
+      security:
+      - bearerAuth: []
+  /api/approvals/pending:
+    get:
+      summary: One list of timesheets and leave requests awaiting my decision. Never
+        includes my own submissions and never items from p
+      description: One list of timesheets and leave requests awaiting my decision.
+        Never includes my own submissions and never items from people outside my relationship
+        scope.
+      operationId: get_api_approvals_pending
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[{item_type, item_id, employee_name, period_or_dates,
+            submitted_at}], count}
+      security:
+      - bearerAuth: []
+  /api/approvals/{item_type}/{item_id}/approve:
+    post:
+      summary: 'Approve a submitted item: a timesheet locks, a leave request moves
+        its days from pending to taken inside one transaction'
+      description: 'Approve a submitted item: a timesheet locks, a leave request moves
+        its days from pending to taken inside one transaction. Audit-logged and notified
+        in-app.'
+      operationId: post_api_approvals_item_type_item_id_approve
+      parameters:
+      - name: item_type
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{comment?}'
+      responses:
+        '200':
+          description: 200 {status, approver, decided_at} | 403 cannot approve your
+            own submission
+      security:
+      - bearerAuth: []
+  /api/approvals/{item_type}/{item_id}/reject:
+    post:
+      summary: 'Reject with a mandatory comment: the item returns to the employee
+        as an editable draft and no leave days are deducted.'
+      description: 'Reject with a mandatory comment: the item returns to the employee
+        as an editable draft and no leave days are deducted.'
+      operationId: post_api_approvals_item_type_item_id_reject
+      parameters:
+      - name: item_type
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{comment}'
+      responses:
+        '200':
+          description: 200 {status} | 422 comment is required
+      security:
+      - bearerAuth: []
+  /api/approvals/{item_type}/{item_id}/reopen:
+    post:
+      summary: 'HR reopen of an approved item with a reason: a timesheet returns to
+        Draft, a leave request returns its deducted days. Re'
+      description: 'HR reopen of an approved item with a reason: a timesheet returns
+        to Draft, a leave request returns its deducted days. Reversal audit-logged
+        with previous status.'
+      operationId: post_api_approvals_item_type_item_id_reopen
+      parameters:
+      - name: item_type
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{reason}'
+      responses:
+        '200':
+          description: 200 {status}
+      security:
+      - bearerAuth: []
+  /api/attendance:
+    get:
+      summary: My attendance history with arrival, departure and worked duration,
+        incomplete punches flagged. HR Admin may query all em
+      description: My attendance history with arrival, departure and worked duration,
+        incomplete punches flagged. HR Admin may query all employees for a date.
+      operationId: get_api_attendance
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[]} | 403 for another employee's records
+      security:
+      - bearerAuth: []
+  /api/attendance/clock-in:
+    post:
+      summary: Record arrival stamped from the server clock. One clock-in per calendar
+        day, no location or device check.
+      description: Record arrival stamped from the server clock. One clock-in per
+        calendar day, no location or device check.
+      operationId: post_api_attendance_clock_in
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: empty
+      responses:
+        '200':
+          description: 201 {work_date, clock_in_at} | 409 already clocked in
+      security:
+      - bearerAuth: []
+  /api/attendance/clock-out:
+    post:
+      summary: Record departure from the server clock and return the worked duration
+        for the day.
+      description: Record departure from the server clock and return the worked duration
+        for the day.
+      operationId: post_api_attendance_clock_out
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: empty
+      responses:
+        '200':
+          description: 200 {clock_out_at, worked_minutes}
+      security:
+      - bearerAuth: []
+  /api/attendance/{id}/regularise:
+    patch:
+      summary: 'HR correction of a missed punch with a mandatory reason: record marked
+        regularised, duration recalculated, before/after '
+      description: 'HR correction of a missed punch with a mandatory reason: record
+        marked regularised, duration recalculated, before/after values audit-logged.'
+      operationId: patch_api_attendance_id_regularise
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{clock_in_at?, clock_out_at?, reason}'
+      responses:
+        '200':
+          description: 200 {record}
+      security:
+      - bearerAuth: []
+  /api/auth/change-password:
+    post:
+      summary: Set a new password, required before any other screen when an administrator
+        issued a one-time password.
+      description: Set a new password, required before any other screen when an administrator
+        issued a one-time password.
+      operationId: post_api_auth_change_password
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{current_password, new_password}'
+      responses:
+        '200':
+          description: '204'
+      security:
+      - bearerAuth: []
+  /api/auth/login:
+    post:
+      summary: 'Sign in with work email and password. Generic failure message, deactivated
+        and locked accounts refused, failed attempts '
+      description: Sign in with work email and password. Generic failure message,
+        deactivated and locked accounts refused, failed attempts counted toward lockout.
+      operationId: post_api_auth_login
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{email, password}'
+      responses:
+        '200':
+          description: 200 {user_id, display_name, roles[], must_change_password}
+            + HttpOnly Secure session cookie | 401 generic error | 403 contact an
+            administrator
+      security:
+      - bearerAuth: []
+  /api/auth/logout:
+    post:
+      summary: Invalidate the server-side session immediately so protected pages are
+        unreachable, including via browser back.
+      description: Invalidate the server-side session immediately so protected pages
+        are unreachable, including via browser back.
+      operationId: post_api_auth_logout
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: empty
+      responses:
+        '200':
+          description: '204'
+      security:
+      - bearerAuth: []
+  /api/dashboard:
+    get:
+      summary: 'Home dashboard aggregate: current timesheet status, today''s clock-in
+        state, remaining leave balances, pending leave requ'
+      description: 'Home dashboard aggregate: current timesheet status, today''s clock-in
+        state, remaining leave balances, pending leave requests, and a pending-approval
+        count when I hold an approving role.'
+      operationId: get_api_dashboard
+      parameters: []
+      responses:
+        '200':
+          description: 200 {timesheet_summary, attendance_today, leave_balances[],
+            pending_leave[], approvals_waiting_count}
+      security:
+      - bearerAuth: []
+  /api/departments:
+    get:
+      summary: The single shared department list.
+      description: The single shared department list.
+      operationId: get_api_departments
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[]}
+      security:
+      - bearerAuth: []
+    post:
+      summary: Add a department. Deletion is refused while employees are assigned,
+        naming the count.
+      description: Add a department. Deletion is refused while employees are assigned,
+        naming the count.
+      operationId: post_api_departments
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{name}'
+      responses:
+        '200':
+          description: 201 {department}
+      security:
+      - bearerAuth: []
+  /api/employees:
+    get:
+      summary: Employee directory. HR Admin sees the organisation, a Reporting Manager
+        sees only direct reports, anyone else is refused
+      description: Employee directory. HR Admin sees the organisation, a Reporting
+        Manager sees only direct reports, anyone else is refused.
+      operationId: get_api_employees
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[], total}
+      security:
+      - bearerAuth: []
+    post:
+      summary: Create an employee record with name, employee number, work email, department,
+        reporting manager and start date.
+      description: Create an employee record with name, employee number, work email,
+        department, reporting manager and start date.
+      operationId: post_api_employees
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{employee_number, full_name, work_email, department_id,
+                reporting_manager_id, start_date}'
+      responses:
+        '200':
+          description: 201 {employee} | 422 missing mandatory fields
+      security:
+      - bearerAuth: []
+  /api/employees/{id}:
+    patch:
+      summary: Edit an employee record (HR Admin) or the employee's own permitted
+        contact fields. Department, reporting manager and emp
+      description: Edit an employee record (HR Admin) or the employee's own permitted
+        contact fields. Department, reporting manager and employee number are HR-only.
+        Field-level before/after values audit-logged.
+      operationId: patch_api_employees_id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{mobile_number?, personal_contact?, department_id?, reporting_manager_id?,
+                end_date?}'
+      responses:
+        '200':
+          description: 200 {employee} | 403 field not editable
+      security:
+      - bearerAuth: []
+  /api/employees/{id}/erase:
+    post:
+      summary: Irreversibly erase a leaver's identifying personal fields on request
+        while the audit entry of who erased and when surviv
+      description: Irreversibly erase a leaver's identifying personal fields on request
+        while the audit entry of who erased and when survives.
+      operationId: post_api_employees_id_erase
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{confirmation}'
+      responses:
+        '200':
+          description: 200 {employee_id, is_erased}
+      security:
+      - bearerAuth: []
+  /api/holidays:
+    get:
+      summary: The single shared company holiday calendar for a year, with date, weekday
+        and name.
+      description: The single shared company holiday calendar for a year, with date,
+        weekday and name.
+      operationId: get_api_holidays
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[]}
+      security:
+      - bearerAuth: []
+  /api/leave-balances:
+    get:
+      summary: 'Per leave type: entitlement, taken, pending and remaining for the
+        current year.'
+      description: 'Per leave type: entitlement, taken, pending and remaining for
+        the current year.'
+      operationId: get_api_leave_balances
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[{leave_type, entitlement_days, taken_days, pending_days,
+            remaining_days}]}
+      security:
+      - bearerAuth: []
+  /api/leave-requests:
+    get:
+      summary: My leave history, most recent first, filterable by leave type and status,
+        showing decision date and any manager comment.
+      description: My leave history, most recent first, filterable by leave type and
+        status, showing decision date and any manager comment.
+      operationId: get_api_leave_requests
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[], total}
+      security:
+      - bearerAuth: []
+    post:
+      summary: Apply for leave by active type and date range with an optional half-day
+        portion. Excludes weekends and holidays, refuses
+      description: Apply for leave by active type and date range with an optional
+        half-day portion. Excludes weekends and holidays, refuses reversed dates,
+        overlaps and over-draws unless an HR override is applied.
+      operationId: post_api_leave_requests
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{leave_type_id, start_date, end_date, half_day_portion,
+                reason, hr_override?}'
+      responses:
+        '200':
+          description: 201 {request, day_count, breakdown} | 422 overlap / insufficient
+            balance
+      security:
+      - bearerAuth: []
+  /api/me:
+    get:
+      summary: Current user, linked employee record and the union of permissions from
+        all held roles, used to build navigation.
+      description: Current user, linked employee record and the union of permissions
+        from all held roles, used to build navigation.
+      operationId: get_api_me
+      parameters: []
+      responses:
+        '200':
+          description: '{user, employee, roles[], permissions[]}'
+      security:
+      - bearerAuth: []
+  /api/my/projects:
+    get:
+      summary: Active projects I am assigned to, with name, code and status.
+      description: Active projects I am assigned to, with name, code and status.
+      operationId: get_api_my_projects
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[]}
+      security:
+      - bearerAuth: []
+  /api/my/team:
+    get:
+      summary: Exactly the employees whose reporting manager is me, with department
+        and current timesheet/leave status.
+      description: Exactly the employees whose reporting manager is me, with department
+        and current timesheet/leave status.
+      operationId: get_api_my_team
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[{employee, department, timesheet_status, leave_status}]}
+      security:
+      - bearerAuth: []
+  /api/notifications:
+    get:
+      summary: My in-app alerts with unread count. No email, SMS or push channel exists.
+      description: My in-app alerts with unread count. No email, SMS or push channel
+        exists.
+      operationId: get_api_notifications
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[], unread_count}
+      security:
+      - bearerAuth: []
+  /api/notifications/{id}/read:
+    post:
+      summary: Mark an alert read and decrement the unread count.
+      description: Mark an alert read and decrement the unread count.
+      operationId: post_api_notifications_id_read
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: empty
+      responses:
+        '200':
+          description: '204'
+      security:
+      - bearerAuth: []
+  /api/projects:
+    get:
+      summary: Projects a Project Manager manages, or (for employees) their own active
+        assignments. Requesting a project I do not manag
+      description: Projects a Project Manager manages, or (for employees) their own
+        active assignments. Requesting a project I do not manage is refused.
+      operationId: get_api_projects
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[]} | 403
+      security:
+      - bearerAuth: []
+    post:
+      summary: Create a project with name, code, start date and status.
+      description: Create a project with name, code, start date and status.
+      operationId: post_api_projects
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{code, name, start_date, status}'
+      responses:
+        '200':
+          description: 201 {project}
+      security:
+      - bearerAuth: []
+  /api/projects/{id}/assignments:
+    post:
+      summary: Assign an employee to a project I manage with optional allocated hours.
+        Assigning to another manager's project is refuse
+      description: Assign an employee to a project I manage with optional allocated
+        hours. Assigning to another manager's project is refused.
+      operationId: post_api_projects_id_assignments
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{employee_id, allocated_hours?}'
+      responses:
+        '200':
+          description: 201 {assignment} | 403
+      security:
+      - bearerAuth: []
+  /api/projects/{id}/assignments/{assignment_id}:
+    delete:
+      summary: Unassign an employee - the project leaves their picker for new entries
+        while recorded hours are retained.
+      description: Unassign an employee - the project leaves their picker for new
+        entries while recorded hours are retained.
+      operationId: delete_api_projects_id_assignments_assignment_id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: assignment_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: '204'
+      security:
+      - bearerAuth: []
+  /api/timesheets:
+    get:
+      summary: My timesheet periods with status, decision date and any manager comment.
+      description: My timesheet periods with status, decision date and any manager
+        comment.
+      operationId: get_api_timesheets
+      parameters: []
+      responses:
+        '200':
+          description: 200 {items[{week_start_date, status, total_hours, decided_at,
+            decision_comment}]}
+      security:
+      - bearerAuth: []
+  /api/timesheets/week/{week_start}:
+    get:
+      summary: 'The weekly grid: a row per assigned project, a column per day, with
+        row, column and week totals.'
+      description: 'The weekly grid: a row per assigned project, a column per day,
+        with row, column and week totals.'
+      operationId: get_api_timesheets_week_week_start
+      parameters:
+      - name: week_start
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 200 {timesheet, rows[], totals}
+      security:
+      - bearerAuth: []
+  /api/timesheets/week/{week_start}/entries:
+    put:
+      summary: Save draft cells. Rejects negative or non-numeric hours and any day
+        whose total would exceed 24 hours.
+      description: Save draft cells. Rejects negative or non-numeric hours and any
+        day whose total would exceed 24 hours.
+      operationId: put_api_timesheets_week_week_start_entries
+      parameters:
+      - name: week_start
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{cells:[{project_id, work_date, hours}]}'
+      responses:
+        '200':
+          description: 200 {timesheet, totals} | 422 validation errors
+      security:
+      - bearerAuth: []
+  /api/timesheets/{id}/submit:
+    post:
+      summary: 'Submit a week with at least one entry: status becomes Submitted, entries
+        lock, and the item is routed to the approver (n'
+      description: 'Submit a week with at least one entry: status becomes Submitted,
+        entries lock, and the item is routed to the approver (never the submitter
+        - escalates up the line or to the HR queue).'
+      operationId: post_api_timesheets_id_submit
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: empty
+      responses:
+        '200':
+          description: 200 {status, approver, escalated_to_hr} | 422 at least one
+            entry required
+      security:
+      - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    users:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        password_hash:
+          type: string
+        must_change_password:
+          type: boolean
+        is_active:
+          type: boolean
+        failed_login_count:
+          type: integer
+        locked_at:
+          type: string
+          format: date-time
+        last_login_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - email
+      - password_hash
+      - must_change_password
+      - is_active
+      - failed_login_count
+      - created_at
+    roles:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+      required:
+      - id
+      - code
+      - name
+    user_roles:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        role_id:
+          type: string
+        granted_at:
+          type: string
+          format: date-time
+      required:
+      - user_id
+      - role_id
+      - granted_at
+    departments:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+      - created_at
+    employees:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee_number:
+          type: string
+        full_name:
+          type: string
+        work_email:
+          type: string
+        mobile_number:
+          type: string
+        personal_contact:
+          type: string
+        department_id:
+          type: string
+          format: uuid
+        reporting_manager_id:
+          type: string
+          format: uuid
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        is_active:
+          type: boolean
+        is_erased:
+          type: boolean
+        erased_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - employee_number
+      - full_name
+      - work_email
+      - department_id
+      - start_date
+      - is_active
+      - is_erased
+      - updated_at
+    projects:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        project_manager_id:
+          type: string
+          format: uuid
+        start_date:
+          type: string
+          format: date
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - code
+      - name
+      - project_manager_id
+      - start_date
+      - status
+      - created_at
+    project_assignments:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          format: uuid
+        allocated_hours:
+          type: number
+        assigned_on:
+          type: string
+          format: date
+        unassigned_on:
+          type: string
+          format: date
+        is_active:
+          type: boolean
+      required:
+      - id
+      - project_id
+      - employee_id
+      - assigned_on
+      - is_active
+    timesheets:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          format: uuid
+        week_start_date:
+          type: string
+          format: date
+        status:
+          type: string
+        submitted_at:
+          type: string
+          format: date-time
+        approver_user_id:
+          type: string
+          format: uuid
+        escalated_to_hr:
+          type: boolean
+        decided_at:
+          type: string
+          format: date-time
+        decision_comment:
+          type: string
+        total_hours:
+          type: number
+      required:
+      - id
+      - employee_id
+      - week_start_date
+      - status
+      - escalated_to_hr
+      - total_hours
+    timesheet_entries:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        timesheet_id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        work_date:
+          type: string
+          format: date
+        hours:
+          type: number
+      required:
+      - id
+      - timesheet_id
+      - project_id
+      - work_date
+      - hours
+    attendance_records:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          format: uuid
+        work_date:
+          type: string
+          format: date
+        clock_in_at:
+          type: string
+          format: date-time
+        clock_out_at:
+          type: string
+          format: date-time
+        worked_minutes:
+          type: integer
+        is_regularised:
+          type: boolean
+        regularised_by_user_id:
+          type: string
+          format: uuid
+        regularisation_reason:
+          type: string
+      required:
+      - id
+      - employee_id
+      - work_date
+      - is_regularised
+    leave_types:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        annual_entitlement_days:
+          type: number
+        is_unpaid:
+          type: boolean
+        is_active:
+          type: boolean
+      required:
+      - id
+      - name
+      - is_unpaid
+      - is_active
+    leave_balances:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          format: uuid
+        leave_type_id:
+          type: string
+          format: uuid
+        year:
+          type: string
+        entitlement_days:
+          type: number
+        taken_days:
+          type: number
+        pending_days:
+          type: number
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - employee_id
+      - leave_type_id
+      - year
+      - entitlement_days
+      - taken_days
+      - pending_days
+      - updated_at
+    leave_requests:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          format: uuid
+        leave_type_id:
+          type: string
+          format: uuid
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        half_day_portion:
+          type: string
+        day_count:
+          type: number
+        reason:
+          type: string
+        status:
+          type: string
+        approver_user_id:
+          type: string
+          format: uuid
+        escalated_to_hr:
+          type: boolean
+        decided_at:
+          type: string
+          format: date-time
+        decision_comment:
+          type: string
+        override_by_user_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - employee_id
+      - leave_type_id
+      - start_date
+      - end_date
+      - half_day_portion
+      - day_count
+      - status
+      - escalated_to_hr
+      - created_at
+    holidays:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        holiday_date:
+          type: string
+          format: date
+        name:
+          type: string
+        year:
+          type: string
+      required:
+      - id
+      - holiday_date
+      - name
+      - year
+    approval_events:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        item_type:
+          type: string
+        item_id:
+          type: string
+          format: uuid
+        actor_user_id:
+          type: string
+          format: uuid
+        from_status:
+          type: string
+        to_status:
+          type: string
+        comment:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - item_type
+      - item_id
+      - actor_user_id
+      - to_status
+      - created_at
+    notifications:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        message:
+          type: string
+        item_type:
+          type: string
+        item_id:
+          type: string
+          format: uuid
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - user_id
+      - kind
+      - message
+      - is_read
+      - created_at
+    audit_logs:
+      type: object
+      properties:
+        id:
+          type: string
+        actor_user_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+        entity_type:
+          type: string
+        entity_id:
+          type: string
+        before_values:
+          type: string
+        after_values:
+          type: string
+        reason_or_comment:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - action
+      - entity_type
+      - created_at
