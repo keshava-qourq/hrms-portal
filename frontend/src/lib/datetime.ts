@@ -35,7 +35,8 @@ function toCompanyDate(value: string | Date): Date {
 /** Calendar date, e.g. "03 Nov 2026". A date-only string is shown as-is (no zone shift). */
 export function formatDate(value: string | Date | null | undefined): string {
   if (!value) return "—";
-  const d = typeof value === "string" && !value.includes("T") ? parseISO(value) : toCompanyDate(value);
+  const d =
+    typeof value === "string" && !value.includes("T") ? parseISO(value) : toCompanyDate(value);
   return format(d, DATE_FORMAT);
 }
 
