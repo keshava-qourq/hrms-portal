@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v15
+**Documentation version:** v16
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -38,7 +38,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 |---|---|
 | [Requirements](requirements/README.md) | v3 approved |
 | [Architecture](architecture/README.md) | 22 entries |
-| [Development](development/README.md) | 5 entries |
+| [Development](development/README.md) | 7 entries |
 | [Testing](testing/README.md) | 3 entries |
 | [Deployment](deployment/README.md) | 1 entry |
 | [Maintenance](maintenance/README.md) | 1 entry |
@@ -47,14 +47,14 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Decisions (ADRs)](architecture/adr/README.md) | 4 decisions |
 | [Sprint plan](development/sprint-plan.md) | 10 sprints |
 | [Developer guide](development/developer-guide.md) | generated |
-| [API reference](development/api-reference.md) | 23 routes |
+| [API reference](development/api-reference.md) | 26 routes |
 | [Test report](testing/test-report.md) | failed |
-| [Tests](testing/test-cases.md) | 116 tests |
+| [Tests](testing/test-cases.md) | 195 tests |
 | [Deployment guide](deployment/deployment-guide.md) | deployed |
 | [Runbook](deployment/runbook.md) | deployed |
 | [Release notes](deployment/release-notes.md) | 4 releases |
 | [Traceability matrix](traceability-matrix.md) | 46 requirements |
-| [Changelog](CHANGELOG.md) | 15 versions |
+| [Changelog](CHANGELOG.md) | 16 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -186,27 +186,30 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Development
 
-- The input does not map items to sprints, so which sprint each story belongs to cannot be confirmed.
-- Sprint 10 (CHG-001) has no identified items; it is unclear whether US-041 to US-043 belong to it.
-- US-041, US-042 and US-043 are not under any epic in the input, and no stated requirement ties them to a parent feature.
-- Several RBAC items are not in the plan as separate stories. The description lists Project Manager and System Admin roles with permissions such as managing roles, organization settings and system configuration, while Sprint 1 refers only to a 'fixed role model'. The role definitions and how they map to the plan are unconfirmed.
-- The project description is cut off at 'RBAC Requirements ... 2. Employees can', so the full RBAC requirement list was not available.
-- No description of the implementation (endpoints, data model, validation) was provided.
-- No review, test result or approval is recorded for this ticket.
-- The delivery date was not provided.
-- Delivered status is not confirmed by any test evidence.
-- No description of how relationship scoping was implemented (e.g. manager to direct reports, project to assignees) was provided.
-- No security review, test result or approval is recorded.
-- US-003 (union of permissions across multiple roles) has no delivery record, but relationship-scoped access plausibly depends on it. The dependency is not stated in the input.
-- No description of the supported record fields or operations was provided.
-- No frontend work or ticket for HR employee-record screens is recorded, so it is unknown whether HR can use this from the UI.
-- No review, test result or approval is recorded.
-- Run status 'completed' conflicts with only 3 of 43 stories having a delivered ticket. It is unclear whether the remaining items were not built, not reported, or out of scope for this run.
-- US-001 (sign-in) has no delivery record, although many delivered items depend on authentication.
-- No delivery status was recorded for the tasks US-029-T1 to T3 and US-031-T1 to T3.
-- No test or QA results, code review outcomes or approvals are provided for any ticket.
-- No delivery dates or sprint assignment of delivered work was provided.
-- The application's screens (screen keys such as SCR-001) were not provided, so usage documentation cannot be derived from this input.
+- The input does not map individual stories to sprints; only sprint goals are given.
+- US-041 to US-046 are not tied to any named sprint or epic. Sprint 10 mentions CHG-001, but the input does not say these stories belong to it.
+- The project description is truncated at RBAC requirement 2 ('Employees can'), so the full RBAC requirements cannot be checked against the plan.
+- The plan refers to a 'fixed role model', but the description lists five roles (Employee, Reporting Manager, HR Admin, Project Manager, System Admin). The input does not confirm how the plan's role model maps to these five.
+- No dates, plan approver or approval date, or version history (v1, v2) is provided.
+- The run is 'completed' but 41 of 46 planned stories (e.g. US-001 to US-004, US-007, US-009, US-011, US-013 to US-040) have no ticket or commit. It is unclear whether they were not attempted, are out of this run's scope, or were not reported.
+- Epics and tasks (e.g. US-029-T1 to T3, US-031-T1 to T3) have no delivery records.
+- No test, review or QA results are provided for any delivered ticket.
+- No details of the implementation are provided, such as timeout duration, lockout threshold or unlock behaviour.
+- No test results or review/approval are recorded.
+- The input does not explicitly state this ticket's sprint.
+- Dependency US-001 (sign-in) has no delivery record.
+- No details of the implementation are provided.
+- The input does not say how US-044 to US-046 relate to US-006. They may be follow-ups, but this is inferred from titles only.
+- No test results or review are recorded, and US-046 (admin reset tests) has no delivery record.
+- The input does not confirm whether a frontend for the reset exists, since US-045 is not delivered.
+- The input does not state which profile fields are viewable or editable.
+- The backend supporting the profile (e.g. US-009 HR records) has no delivery record.
+- No test results or review are recorded.
+- No details are provided on what 'correct' and 'erase' do, such as retention rules or audit entries.
+- The commit is shared with US-012, so the changes for each ticket cannot be separated from the input.
+- US-007 (audit log) has no delivery record, so audit coverage of erasure is unconfirmed.
+- The commit is shared with US-010, so the changes for each ticket cannot be separated from the input.
+- The dependency on relationship-scoped access (US-004) has no delivery record.
 
 ### Testing
 

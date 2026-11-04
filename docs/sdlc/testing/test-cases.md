@@ -3,9 +3,9 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start summary -->
-116 tests · Passed 102 · Failed 0 · Skipped 6 · Not run 8
+195 tests · Passed 171 · Failed 0 · Skipped 7 · Not run 17
 
-Acceptance criteria covered: 31/163 · passing: 22/163
+Acceptance criteria covered: 45/163 · passing: 28/163
 <!-- sdlc:auto:end summary -->
 
 <!-- sdlc:auto:start tests -->
@@ -16,6 +16,8 @@ Acceptance criteria covered: 31/163 · passing: 22/163
 | Criteria | Test | Level | Result | File |
 |---|---|---|---|---|
 | AC-004 | App > [AC-004] redirects unauthenticated access to the sign-in screen | Unit | Passed | `frontend/src/App.test.tsx` |
+| AC-017 | App > [AC-017] a 401 on any call ends the session and returns to sign-in | Unit | Passed | `frontend/src/App.test.tsx` |
+| AC-020 | App > [AC-020] sign out calls logout, clears the token and returns to sign-in | Unit | Passed | `frontend/src/App.test.tsx` |
 | — | App > renders a screen inside the app shell and shows its menu | Unit | Passed | `frontend/src/App.test.tsx` |
 | AC-001 | SignIn > [AC-001] stores the token and navigates home on success | Unit | Passed | `frontend/src/screens/SignIn.test.tsx` |
 | AC-002 | SignIn > [AC-002] shows the generic message from the API | Unit | Passed | `frontend/src/screens/SignIn.test.tsx` |
@@ -165,6 +167,105 @@ Acceptance criteria covered: 31/163 · passing: 22/163
 | — | test_authz_non_hr_admin_cannot_create_employee | Integration | Passed | `backend/tests/integration/test_employees.py` |
 | — | test_authz_unauthenticated_create_is_401 | Integration | Passed | `backend/tests/integration/test_employees.py` |
 | — | [US-009-3] missing mandatory field shows inline validation, then create succeeds and appears in the directory | E2E | Not run yet | `frontend/e2e/employee-create.spec.ts` |
+
+## Sprint 3
+
+### US-006: Administrator-issued password reset
+
+| Criteria | Test | Level | Result | File |
+|---|---|---|---|---|
+| AC-021 | forced password change > [AC-021] sign-in tells users to contact an administrator, with no reset link | Unit | Passed | `frontend/src/screens/ChangePassword.test.tsx` |
+| AC-023 | forced password change > [AC-023] changing the password calls the API and goes home | Unit | Passed | `frontend/src/screens/ChangePassword.test.tsx` |
+| AC-023 | forced password change > [AC-023] mismatched confirmation blocks submit | Unit | Passed | `frontend/src/screens/ChangePassword.test.tsx` |
+| AC-023 | forced password change > [AC-023] must_change_password login stores the token and routes to change-password | Unit | Passed | `frontend/src/screens/ChangePassword.test.tsx` |
+| AC-023 | forced password change > [AC-023] other routes redirect to change-password while the flag is set | Unit | Passed | `frontend/src/screens/ChangePassword.test.tsx` |
+| AC-021 | test_ac021_no_self_service_reset_route_exists | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-022 | test_ac022_non_admin_gets_403_and_unknown_user_404 | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-022 | test_ac022_reset_returns_one_time_password_and_replaces_hash | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-022 | test_ac022_second_reset_invalidates_first_one_time_password | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-023 | test_ac023_logout_allowed_while_change_required | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-023 | test_ac023_must_change_blocks_other_routes_until_change | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-023 | test_ac023_new_password_must_differ | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-023 | test_ac023_normal_user_unaffected[/api/me] | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-024 | test_ac024_non_admin_cannot_read_audit_of_reset | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-024 | test_ac024_reset_and_change_are_audited_without_password | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-024 | test_ac024_reset_audit_entry_has_actor_account_timestamp_and_no_otp | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
+| AC-021 | [AC-021] sign-in tells the user to contact an administrator and offers no self-service reset | E2E | Not run yet | `frontend/e2e/forced-password-change.spec.ts` |
+| AC-023 | [AC-023] one-time password sign-in is forced to change password before any other screen | E2E | Not run yet | `frontend/e2e/forced-password-change.spec.ts` |
+
+### US-008: View and update my own profile
+
+| Criteria | Test | Level | Result | File |
+|---|---|---|---|---|
+| AC-029 | My Profile > [AC-029] shows my details | Unit | Passed | `frontend/src/screens/Profile.test.tsx` |
+| AC-030 | My Profile > [AC-030] saves only the two editable fields and confirms | Unit | Passed | `frontend/src/screens/Profile.test.tsx` |
+| AC-030 | My Profile > [AC-030] shows the API error on failure | Unit | Passed | `frontend/src/screens/Profile.test.tsx` |
+| AC-031 | My Profile > [AC-031] identity fields are read-only | Unit | Passed | `frontend/src/screens/Profile.test.tsx` |
+| AC-029 | test_ac029_other_employee_record_is_403 | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-029 | test_ac029_own_profile_shows_identity_fields | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-030 | test_ac030_personal_contact_editable | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-030 | test_ac030_update_mobile_is_stored_and_audited | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-031 | test_ac031_cannot_patch_another_employee | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-031 | test_ac031_direct_patch_of_restricted_field_is_403_and_unsaved[department_id] | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-031 | test_ac031_direct_patch_of_restricted_field_is_403_and_unsaved[employee_number] | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-031 | test_ac031_direct_patch_of_restricted_field_is_403_and_unsaved[reporting_manager_id] | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-031 | test_ac031_mixed_payload_is_refused_whole | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-031 | test_ac031_refused_attempt_writes_no_audit | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-031 | test_ac031_unauthenticated_patch_is_401 | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
+| AC-029 | [AC-029] My Profile displays name, employee ID, department, manager, work email and contact details | E2E | Not run yet | `frontend/e2e/my-profile.spec.ts` |
+| AC-030 | [AC-030] changing the mobile number saves, sends only editable fields and confirms on screen | E2E | Not run yet | `frontend/e2e/my-profile.spec.ts` |
+| AC-031 | [AC-031] department, reporting manager and employee ID are read-only | E2E | Not run yet | `frontend/e2e/my-profile.spec.ts` |
+
+### US-010: HR Admin corrects or erases a leaver's record
+
+| Criteria | Test | Level | Result | File |
+|---|---|---|---|---|
+| AC-036 | test_ac036_leaver_disappears_from_team_list | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-036 | test_ac036_leaver_marking_is_audited | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-036 | test_ac036_leaver_not_offered_in_assignment_picker | Integration | Skipped | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-036 | test_ac036_leaver_requires_end_date | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-036 | test_ac036_linked_portal_account_deactivated_and_session_dropped | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-037 | test_ac037_active_employee_cannot_be_erased | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-037 | test_ac037_audit_retains_who_and_when_without_pii | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-037 | test_ac037_erased_leaver_absent_from_team_list | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-037 | test_ac037_erasure_removes_identifying_fields_irreversibly | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-037 | test_ac037_unknown_employee_is_404 | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_employee_cannot_mark_self_leaver | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_non_hr_admin_cannot_erase[EMPLOYEE] | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_non_hr_admin_cannot_erase[PROJECT_MANAGER] | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_non_hr_admin_cannot_erase[REPORTING_MANAGER] | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_non_hr_admin_cannot_erase[SYSTEM_ADMIN] | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_non_hr_admin_cannot_mark_leaver[EMPLOYEE] | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_non_hr_admin_cannot_mark_leaver[PROJECT_MANAGER] | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_non_hr_admin_cannot_mark_leaver[REPORTING_MANAGER] | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_non_hr_admin_cannot_mark_leaver[SYSTEM_ADMIN] | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_refused_attempts_write_no_audit | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+| AC-038 | test_ac038_unauthenticated_is_401 | Integration | Passed | `backend/tests/integration/test_leaver_erasure.py` |
+
+### US-012: Manager views their direct reports
+
+| Criteria | Test | Level | Result | File |
+|---|---|---|---|---|
+| AC-042 | My Team > [AC-042] lists exactly the returned reports with department and statuses | Unit | Passed | `frontend/src/screens/MyTeam.test.tsx` |
+| AC-042 | My Team > [AC-042] shows an error state | Unit | Passed | `frontend/src/screens/MyTeam.test.tsx` |
+| AC-042 | My Team > [AC-042] shows the empty state | Unit | Passed | `frontend/src/screens/MyTeam.test.tsx` |
+| AC-043 | My Team > [AC-043] renders no links, so no profile outside the list is reachable | Unit | Passed | `frontend/src/screens/MyTeam.test.tsx` |
+| AC-042 | test_ac042_each_member_carries_department | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-042 | test_ac042_each_member_carries_leave_and_timesheet_status | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-042 | test_ac042_employee_without_employee_record_gets_empty_team | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-042 | test_ac042_exactly_the_three_reports_are_listed | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-043 | test_ac043_direct_report_profile_is_reachable | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-043 | test_ac043_employee_only_user_cannot_read_a_colleague | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-043 | test_ac043_non_report_is_not_listed | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-043 | test_ac043_non_report_profile_is_refused_403_without_data[malformed] | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-043 | test_ac043_non_report_profile_is_refused_403_without_data[outsider] | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-043 | test_ac043_non_report_profile_is_refused_403_without_data[unassigned] | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-043 | test_ac043_non_report_profile_is_refused_403_without_data[unknown] | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-043 | test_ac043_unauthenticated_is_401 | Integration | Passed | `backend/tests/integration/test_my_team.py` |
+| AC-042 | [AC-042] My Team lists exactly the three reports with department and leave/timesheet status | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
+| AC-042 | [AC-042] a manager with no reports sees the empty state | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
+| AC-043 | [AC-043] a non-report is not listed on My Team | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
+| AC-043 | [AC-043] a non-report's profile is not reachable from the screen | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
 
 ## Project setup
 

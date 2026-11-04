@@ -7,88 +7,93 @@ _Up to date._
 <!-- sdlc:auto:end status -->
 
 <!-- sdlc:auto:start source -->
-Generated from commit `92f33dd` · model `auto`
+Generated from commit `688a7f9` · model `auto`
 <!-- sdlc:auto:end source -->
 
 <!-- sdlc:auto:start overview -->
-HRMS portal is a two-app repository. `frontend/` is a Vite + React 19 + TypeScript SPA (React Router, TanStack Query, Tailwind 4) with screens for sign-in, home, timesheet, leave, approvals and administration. Per its README, most screens still render seeded sample data. `backend/` is a FastAPI 0.115 service using SQLAlchemy 2 and Pydantic 2. It defaults to a local SQLite file and can use PostgreSQL via DATABASE_URL. It implements bearer-token sign-in with Redis-backed sessions, role/permission checks, admin user management, an audit log, departments, employees, a manager team view, and relationship-scoped reads of timesheets, attendance, leave and projects. Tables are created from the models on startup (no migrations). A GitHub Actions workflow deploys the API image and the frontend bundle.
+HRMS portal is a two-app repository. `backend/` is a FastAPI service using SQLAlchemy 2 and Pydantic 2. It defaults to a local SQLite file (`DATABASE_URL` switches it to Postgres), creates tables from the models on startup, and uses Redis-backed bearer-token sessions. It exposes `/api/*` routes for auth, admin user management, an audit log, departments, employees, a manager's team view, and relationship-scoped timesheets, attendance, leave and projects. `frontend/` is a Vite + React 19 SPA with React Router, TanStack Query and Tailwind. It has screens for sign-in, change-password, home, timesheet, leave, profile, my team, approvals and administration. The app shell and sign-in call the API through `src/lib/api.ts`; the README says some screens still run on seeded sample data. Deployment is a GitHub Actions workflow that pushes the backend image to ECR and publishes the frontend to AWS Amplify.
 <!-- sdlc:auto:end overview -->
 
 <!-- sdlc:auto:start prerequisites -->
-- Python 3.12 (the version used in backend/Dockerfile)
-- Node.js and npm (no version is pinned in the repo; use a current LTS that supports Vite 6)
-- Docker with Docker Compose (optional, for the local PostgreSQL 16 and Redis 7 services in docker-compose.yml)
-- A Redis instance reachable by the backend (sessions are Redis-backed per backend/app/routers/auth.py; the backend depends on redis and rq)
+- Python 3.12 (the backend Dockerfile uses python:3.12-slim)
+- Node.js and npm (React 19 / Vite 6 / Vitest 2 toolchain; the exact version is not pinned in the files)
+- Docker with Docker Compose (optional; for local Postgres 16 and Redis 7 from docker-compose.yml, and for building the backend image)
+- A running Redis instance (login sessions are Redis-backed; see troubleshooting)
 <!-- sdlc:auto:end prerequisites -->
 
 <!-- sdlc:auto:start setup -->
-1. (Optional) Start the local services: docker compose up -d
-2. Create the backend virtualenv: cd backend && python -m venv .venv && source .venv/bin/activate
-3. Install backend dependencies (includes the test and lint tools): pip install -r requirements.txt
-4. Review .env.example and ENVIRONMENT.md for the environment variables the backend needs (not shown in the inspected files). DATABASE_URL and ALLOWED_ORIGINS are referenced in the code; DATABASE_URL defaults to sqlite:///./app.db
-5. Install frontend dependencies: cd frontend && npm install
-6. (Optional) Point the frontend at a backend by setting VITE_API_BASE_URL at build/dev time; it defaults to http://localhost:8000
+1. cd backend && python -m venv .venv && source .venv/bin/activate
+2. pip install -r requirements.txt
+3. docker compose up -d db redis   # run from the repo root; optional for Postgres, but needed for Redis sessions
+4. cd frontend && npm install
+5. npm run test:e2e:install   # only needed for Playwright end-to-end tests
+6. Optional: set DATABASE_URL (default sqlite:///./app.db), ALLOWED_ORIGINS (comma-separated CORS origins) for the backend, and VITE_API_BASE_URL (default http://localhost:8000) for the frontend. See .env.example and ENVIRONMENT.md for the full list; they were not in the provided files.
 <!-- sdlc:auto:end setup -->
 
 <!-- sdlc:auto:start run -->
 | Name | Command | Description |
 |---|---|---|
-| backend dev | `cd backend && uvicorn app.main:app --reload` | Starts the FastAPI API on port 8000 with auto-reload. Health check at GET /health, OpenAPI docs at /docs. |
-| frontend dev | `cd frontend && npm run dev` | Starts the Vite dev server for the React SPA. |
-| frontend build | `cd frontend && npm run build` | Bundles the app with Vite. This does not typecheck. |
+| backend dev | `cd backend && uvicorn app.main:app --reload` | Starts the FastAPI API on port 8000 with auto-reload; the health check is at GET /health. |
+| frontend dev | `cd frontend && npm run dev` | Starts the Vite dev server for the SPA. |
+| frontend build | `cd frontend && npm run build` | Bundles the SPA with Vite. It does not typecheck. |
 | frontend preview | `cd frontend && npm run preview` | Serves the built bundle locally. |
-| frontend typecheck | `cd frontend && npm run typecheck` | Runs tsc --noEmit. |
-| local services | `docker compose up -d` | Starts PostgreSQL 16 and the Redis containers defined in docker-compose.yml. |
-| frontend format | `cd frontend && npm run format` | Formats the frontend with Prettier (npm run format:check only checks). |
-| backend format | `cd backend && ruff format .` | Formats the backend code with Ruff. |
+| typecheck | `cd frontend && npm run typecheck` | Runs tsc --noEmit over the frontend sources. |
+| local services | `docker compose up -d db redis` | Starts Postgres 16 (user, password and database all 'app') and Redis from docker-compose.yml. |
+| backend image | `docker build -t hrms-backend ./backend` | Builds the backend container image, which runs uvicorn on port 8000 as a non-root user. |
 <!-- sdlc:auto:end run -->
 
 <!-- sdlc:auto:start structure -->
 | Path | Purpose |
 |---|---|
 | `.devcontainer/` | Dev container configuration. |
-| `.github/workflows/` | deploy.yml: on push to main, builds and pushes the API image to ECR and publishes the frontend build to AWS Amplify. |
-| `.quorq/` | Quorq platform handoff/prepared metadata. |
-| `backend/app/` | FastAPI application: main.py entry point, config, database, models, schemas, security (sessions/passwords), authz (roles/permissions), audit, services. |
-| `backend/app/routers/` | Route modules: auth, admin, audit, employees (departments, employees, team) and scoped (projects, timesheets, attendance, leave). |
-| `backend/scripts/` | Utility scripts, e.g. check_connections.py. |
-| `backend/tests/` | Pytest suite: test_health.py plus integration/ tests for auth, RBAC, audit log, departments, employees, user creation and relationship scoping. |
-| `frontend/e2e/` | Playwright acceptance specs (employee create, navigation gating, no self-registration, timestamps). |
-| `frontend/src/` | SPA source: main.tsx, App.tsx (shell and route table), index.css, test setup. |
-| `frontend/src/lib/` | Shared helpers: api.ts (fetch client and session token), brand tokens, datetime, icons, navigate, ui components. |
-| `frontend/src/screens/` | One module per screen (SignIn, Home, Timesheet, Leave, Approvals, Administration, EmployeesTab) with Vitest tests beside them. |
+| `.github/workflows/` | deploy.yml: on push to main, builds and pushes the API image to ECR and deploys the frontend to AWS Amplify. |
+| `.quorq/` | Quorq platform metadata (handoff.json, prepared.json). |
+| `backend/app/` | FastAPI application: main.py (app, CORS, health), models.py, schemas.py, database.py, config.py, security.py (sessions, hashing), authz.py (roles and permissions), audit.py, services.py. |
+| `backend/app/routers/` | Route modules: auth, admin, audit, employees (departments, employees, my team) and scoped (projects, timesheets, attendance, leave). |
+| `backend/scripts/` | Helper scripts (check_connections.py). |
+| `backend/tests/` | Pytest suite: test_health.py plus integration/ tests. |
+| `backend/tests/integration/` | Integration tests for auth, RBAC, relationship scoping, employees, departments, audit log, password reset, user creation, leaver erasure and my-team. |
+| `frontend/e2e/` | Playwright acceptance specs. |
+| `frontend/src/` | SPA source: App.tsx (shell and routes), main.tsx, index.css, test-setup.ts. |
+| `frontend/src/lib/` | Shared helpers: api.ts (fetch client and session token), mustChange.ts, datetime.ts, navigate.ts, ui.tsx, icons.tsx, brand.ts. |
+| `frontend/src/screens/` | One module per screen, with Vitest tests beside them. |
 <!-- sdlc:auto:end structure -->
 
 <!-- sdlc:auto:start conventions -->
-- Backend routers live in backend/app/routers and use /api-prefixed paths, except GET /health.
-- Endpoints are guarded with dependencies: current_user for authentication and require_permission("<permission>") for role-based access (e.g. users.manage, employees.manage, audit.view).
-- Relationship-scoped endpoints fail closed with one identical 403 via ensure_relationship, whether an id is unknown, malformed or not the caller's.
-- Mutating endpoints write to the append-only audit log (write_audit, changed_fields) with before/after values.
-- Models use SQLAlchemy 2 typed Mapped columns with UUID primary keys, and API schemas return ids as strings.
-- The API returns the session token in the login response body (not a cookie); the frontend stores it in localStorage and sends it as a Bearer token.
-- Frontend uses the "@" alias for src/, function components, and Vitest tests beside components in src/.
-- Backend linting/formatting uses Ruff; frontend uses ESLint and Prettier.
+- Backend routers use the /api prefix and FastAPI dependency injection: get_db for a per-request session, current_user for authentication, require_permission('<perm>') for RBAC.
+- A user with must_change_password gets 403 'Password change required' from current_user. Only /api/me, change-password and logout use current_user_allow_change.
+- Relationship-scoped endpoints fail closed: ensure_relationship produces one identical 403 for unknown, malformed or foreign ids.
+- Mutating endpoints write to the audit log via write_audit, with before/after values.
+- Ids are UUIDs, serialised as strings in responses. List endpoints take limit (1-200) and offset and return {items, total}.
+- The frontend uses the '@' alias for src/, calls the API only through apiFetch, and sends the session token as a Bearer header. A 401 clears the token and returns the user to sign-in.
+- Frontend tests sit next to the code as *.test.ts(x). Playwright specs live in frontend/e2e.
+- Python style is enforced with ruff (backend/ruff.toml). Frontend style uses ESLint and Prettier.
+- There are no migrations. Tables are created with Base.metadata.create_all at startup; main.py notes this should be replaced with Alembic before the database holds data worth keeping.
 <!-- sdlc:auto:end conventions -->
 
 <!-- sdlc:auto:start testing -->
 | Name | Command | Description |
 |---|---|---|
-| backend tests | `cd backend && pytest` | Runs the pytest suite in backend/tests (pytest.ini sets pythonpath and testpaths). |
-| backend lint | `cd backend && ruff check .` | Lints the backend with Ruff. |
-| frontend unit tests | `cd frontend && npm test` | Runs Vitest component/unit tests (vitest run, scoped to src/). |
-| frontend lint | `cd frontend && npm run lint` | Runs ESLint over the frontend (npm run lint:fix applies fixes). |
-| install e2e browser | `cd frontend && npm run test:e2e:install` | Installs Chromium for Playwright. |
-| e2e tests | `cd frontend && npm run test:e2e` | Runs Playwright specs from frontend/e2e. Without E2E_BASE_URL it starts the backend from backend/.venv on port 8000 and builds/previews the frontend on port 4173; with E2E_BASE_URL set it tests that deployed URL. |
+| backend tests | `cd backend && pytest` | Runs the pytest suite in backend/tests (pytest.ini sets pythonpath to the backend directory). |
+| backend lint | `cd backend && ruff check .` | Lints the backend with ruff. |
+| backend format | `cd backend && ruff format .` | Formats the backend code with ruff. |
+| frontend unit tests | `cd frontend && npm test` | Runs Vitest component and unit tests under src/ (jsdom). |
+| frontend lint | `cd frontend && npm run lint` | Runs ESLint over the frontend. |
+| frontend format check | `cd frontend && npm run format:check` | Checks Prettier formatting. |
+| e2e | `cd frontend && npm run test:e2e` | Runs Playwright specs from e2e/. Without E2E_BASE_URL it starts the backend from backend/.venv and builds and serves the frontend on port 4173. With E2E_BASE_URL set it runs against that URL instead. |
 <!-- sdlc:auto:end testing -->
 
 <!-- sdlc:auto:start troubleshooting -->
 | Problem | Solution |
 |---|---|
-| Playwright cannot start the backend (.venv/bin/python not found). | playwright.config.ts launches the API with backend/.venv/bin/python. Create the venv in backend/ and run pip install -r requirements.txt, or set E2E_BASE_URL to test an already running deployment. |
-| Browser calls from the SPA are blocked by CORS. | The API only allows origins from settings.cors_origins(). Set ALLOWED_ORIGINS (comma separated) to the frontend's origin. |
-| The frontend calls the wrong API or requests return 401. | The API base URL comes from VITE_API_BASE_URL, falling back to http://localhost:8000. Rebuild or restart the dev server after changing it. Protected screens redirect to /sign-in until a session token is stored. |
-| `docker compose up` fails with a port 6379 conflict. | Both the redis-queue and redis services in docker-compose.yml publish host port 6379. Start only one (e.g. docker compose up -d db redis) or change one host port mapping. |
-| `npm run build` succeeds but `npm run typecheck` reports errors. | This is expected: the build does not typecheck and generated screens may have type errors. Fix the errors reported by tsc --noEmit. |
-| The backend uses a local SQLite file instead of PostgreSQL. | DATABASE_URL defaults to sqlite:///./app.db. Set it to a PostgreSQL URL for the psycopg driver (the compose db service uses user, password and database `app`). |
-| Login or session errors when Redis is unavailable. | Sessions are Redis-backed. Start Redis (docker compose up -d redis) and check the Redis settings in .env.example / ENVIRONMENT.md. |
+| Login or authenticated calls fail, or the sessions code cannot reach Redis. | Sessions are stored in Redis (create_session and get_redis in app/security.py). Start Redis with `docker compose up -d redis` and check the Redis settings in .env.example / ENVIRONMENT.md; security.py was not provided, so the variable name is not confirmed here. |
+| `docker compose up` fails with a port 6379 already allocated error. | Both redis-queue and redis publish host port 6379. Start only what you need, e.g. `docker compose up -d db redis`, or change one of the port mappings. |
+| The browser blocks API calls with a CORS error. | The SPA and API run on different origins. Set ALLOWED_ORIGINS (comma-separated) on the backend to the frontend's origin. |
+| The frontend calls the wrong API host. | The API URL is baked in at build time from VITE_API_BASE_URL, defaulting to http://localhost:8000. Set it before `npm run dev` or `npm run build`. |
+| `npm run build` succeeds but `npm run typecheck` reports errors. | The build does not typecheck (per frontend/README.md). Run `npm run typecheck` and fix the reported types. |
+| Playwright e2e cannot start the backend (missing .venv/bin/python). | Create backend/.venv and install requirements first: `cd backend && python -m venv .venv && .venv/bin/pip install -r requirements.txt`. Also run `npm run test:e2e:install` for the browser. |
+| A user gets 403 'Password change required' after signing in. | The account has must_change_password set (new or admin-reset accounts). Change the password at /change-password, which calls POST /api/auth/change-password. The new password must be 12-72 characters and differ from the current one. |
+| Password hashing errors with bcrypt. | requirements.txt pins bcrypt==4.0.1 because passlib 1.7.4 breaks with bcrypt 4.1 or later. Reinstall from requirements.txt. |
+| Schema changes do not appear in an existing database. | create_all only creates missing tables and there are no migrations. With the default SQLite file, delete backend/app.db to recreate it, or add Alembic. |
+| Credentials are committed in the deploy workflow. | deploy.yml sets VITE_API_SECRET_KEY and NEXT_PUBLIC_API_SECRET_KEY as literals in the build env, and the frontend bundle exposes the Vite one. Treat that value as public, and move any real secret out of the repository. |
 <!-- sdlc:auto:end troubleshooting -->
