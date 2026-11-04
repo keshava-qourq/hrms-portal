@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v17
+**Documentation version:** v18
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -39,7 +39,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Requirements](requirements/README.md) | v3 approved |
 | [Architecture](architecture/README.md) | 22 entries |
 | [Development](development/README.md) | 7 entries |
-| [Testing](testing/README.md) | 3 entries |
+| [Testing](testing/README.md) | 2 entries |
 | [Deployment](deployment/README.md) | 1 entry |
 | [Maintenance](maintenance/README.md) | 1 entry |
 | [Data model](architecture/data-model.md) | generated |
@@ -54,7 +54,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Runbook](deployment/runbook.md) | deployed |
 | [Release notes](deployment/release-notes.md) | 5 releases |
 | [Traceability matrix](traceability-matrix.md) | 46 requirements |
-| [Changelog](CHANGELOG.md) | 17 versions |
+| [Changelog](CHANGELOG.md) | 18 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -213,20 +213,16 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Testing
 
-- The four checks are not named, so what was verified is unknown.
-- No ticket is linked (ticket=None), so the run cannot be traced to a requirement or user story.
-- No timestamp or environment is recorded for this run.
-- No mapping from these checks to US-001 through US-043.
-- E2E run has not finished, so there is no final outcome.
-- 0/0 means no test cases have been reported; the total number of scenarios is unknown.
-- No E2E scenarios are mapped to requirements (login/RBAC, employee management, timesheets, leave, approval workflows).
-- No start time or run identifier is provided.
-- The target is an Amplify URL; the input does not say whether it is a test/staging environment.
-- No requirement-to-test traceability was provided for any of US-001 through US-043.
-- No RBAC or security test results (secure login, role-restricted access for Employee, Reporting Manager, HR Admin, Project Manager, System Admin) were provided.
-- No functional test results for timesheets, leave, approval workflows, or employee management were provided.
-- No defects, test plan, or sign-off/approval were recorded.
-- The project description is truncated at the RBAC requirements list ('2. Employees can'), so the full RBAC requirements cannot be confirmed as tested.
+- The names and types of the 4 checks (lint, unit, build, etc.) are not stated.
+- No ticket is associated with this run (ticket=None), so it cannot be traced to a specific requirement.
+- No timestamp was provided.
+- No code coverage or per-requirement coverage data was provided.
+- It is unclear which user stories (US-001 to US-046) these checks cover, if any.
+- The E2E run has not finished, so there are no pass/fail results.
+- The 0/0 count means either no tests were discovered or none have reported yet. The input does not say which.
+- The E2E scenarios in scope are not listed, so coverage of login, RBAC, employee management, timesheets, leave and approval workflows is unknown.
+- No start time or run id was provided.
+- It is not stated whether the target URL is a test or production environment.
 
 ### Deployment
 
