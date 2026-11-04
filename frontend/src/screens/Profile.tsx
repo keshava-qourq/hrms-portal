@@ -62,7 +62,10 @@ export default function Screen() {
   });
   React.useEffect(() => {
     if (emp)
-      reset({ mobile_number: emp.mobile_number ?? "", personal_contact: emp.personal_contact ?? "" });
+      reset({
+        mobile_number: emp.mobile_number ?? "",
+        personal_contact: emp.personal_contact ?? "",
+      });
   }, [emp, reset]);
 
   const save = useMutation({
@@ -79,7 +82,10 @@ export default function Screen() {
       setNotice({ ok: true, text: "Your contact details were saved." });
     },
     onError: (err) =>
-      setNotice({ ok: false, text: err instanceof Error ? err.message : "The change was not saved." }),
+      setNotice({
+        ok: false,
+        text: err instanceof Error ? err.message : "The change was not saved.",
+      }),
   });
 
   const deptName = deptQuery.data?.find((d) => String(d.id) === String(emp?.department_id))?.name;

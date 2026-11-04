@@ -46,7 +46,9 @@ async function setup(page: Page) {
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify([{ id: "d-1", name: "Engineering", created_at: "2026-01-01T00:00:00Z" }]),
+      body: JSON.stringify([
+        { id: "d-1", name: "Engineering", created_at: "2026-01-01T00:00:00Z" },
+      ]),
     }),
   );
   await page.route("**/api/employees/*", async (route) => {

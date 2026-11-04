@@ -23,8 +23,10 @@ function stub(patch: [number, unknown] = [200, EMP]) {
     const method = init?.method ?? "GET";
     let r: [number, unknown] = [200, {}];
     if (url.endsWith("/api/me")) r = [200, { employee_id: "emp-2" }];
-    else if (url.endsWith("/api/departments")) r = [200, { items: [{ id: "d1", name: "Engineering" }] }];
-    else if (url.endsWith("/api/employees/emp-1")) r = [200, { ...EMP, id: "emp-1", full_name: "Helena Brandt" }];
+    else if (url.endsWith("/api/departments"))
+      r = [200, { items: [{ id: "d1", name: "Engineering" }] }];
+    else if (url.endsWith("/api/employees/emp-1"))
+      r = [200, { ...EMP, id: "emp-1", full_name: "Helena Brandt" }];
     else if (url.endsWith("/api/employees/emp-2")) r = method === "PATCH" ? patch : [200, EMP];
     return Promise.resolve({ ok: r[0] < 400, status: r[0], json: async () => r[1] });
   });
@@ -90,6 +92,8 @@ describe("My Profile", () => {
     renderIt();
     await screen.findByDisplayValue("0700");
     await userEvent.click(screen.getByRole("button", { name: "Save changes" }));
-    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Mobile number too long"));
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent("Mobile number too long"),
+    );
   });
 });

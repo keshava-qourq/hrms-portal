@@ -130,9 +130,7 @@ def test_ac031_cannot_patch_another_employee(me):
     user, _emp, f = me
     other = f.employee(f.dept)
     before = _row(other)
-    res = client.patch(
-        f"{EMPLOYEES}/{other}", headers=_headers(user), json={"mobile_number": "1"}
-    )
+    res = client.patch(f"{EMPLOYEES}/{other}", headers=_headers(user), json={"mobile_number": "1"})
     assert res.status_code == 403
     assert _row(other) == before
 
