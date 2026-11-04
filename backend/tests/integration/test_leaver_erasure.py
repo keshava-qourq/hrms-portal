@@ -195,7 +195,9 @@ def test_ac037_erased_leaver_absent_from_team_list(team):
 # ---------------------------------------------------------------- AC-038
 
 
-@pytest.mark.parametrize("role", ["EMPLOYEE", "REPORTING_MANAGER", "PROJECT_MANAGER", "SYSTEM_ADMIN"])
+@pytest.mark.parametrize(
+    "role", ["EMPLOYEE", "REPORTING_MANAGER", "PROJECT_MANAGER", "SYSTEM_ADMIN"]
+)
 def test_ac038_non_hr_admin_cannot_mark_leaver(team, make_roled, role):  # noqa: F811
     _mgr, emp, f = team
     actor = make_roled(role)
@@ -207,7 +209,9 @@ def test_ac038_non_hr_admin_cannot_mark_leaver(team, make_roled, role):  # noqa:
         assert db.get(User, f.acct.id).is_active is True
 
 
-@pytest.mark.parametrize("role", ["EMPLOYEE", "REPORTING_MANAGER", "PROJECT_MANAGER", "SYSTEM_ADMIN"])
+@pytest.mark.parametrize(
+    "role", ["EMPLOYEE", "REPORTING_MANAGER", "PROJECT_MANAGER", "SYSTEM_ADMIN"]
+)
 def test_ac038_non_hr_admin_cannot_erase(team, make_roled, role):  # noqa: F811
     _mgr, emp, f = team
     assert _leave(f.hr, emp).status_code == 200
