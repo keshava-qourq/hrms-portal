@@ -10,9 +10,11 @@ import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.audit import write_audit
 from app.database import get_db
 from app.models import User
 from app.schemas import LoginRequest, LoginResponse, MeResponse
@@ -50,8 +52,10 @@ def _bearer_token(request: Request) -> str:
 DbSession = Annotated[Session, Depends(get_db)]
 
 
-def current_user(request: Request, db: DbSession) -> User:
-    """The user behind the request's session token, or 401. Fails closed."""
+def current_user_allow_change(request: Request, db: DbSession) -> User:
+    """The user behind the request's session token, or 401. Fails closed.
+
+    Does not enforce a pending password change: only for /me, change-password, logout."""
     session = read_session(_bearer_token(request))
     user = None
     if session:
@@ -66,6 +70,44 @@ def current_user(request: Request, db: DbSession) -> User:
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user
+
+
+def current_user(user: Annotated[User, Depends(current_user_allow_change)]) -> User:
+    """Default dependency: 403 while the user must change their password."""
+    if user.must_change_password:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Password change required"
+        )
+    return user
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(min_length=1, max_length=72)
+    new_password: str = Field(min_length=12, max_length=72)
+
+
+@router.post("/auth/change-password", status_code=status.HTTP_204_NO_CONTENT)
+def change_password(
+    payload: ChangePasswordRequest,
+    user: Annotated[User, Depends(current_user_allow_change)],
+    db: DbSession,
+) -> Response:
+    if not verify_password(payload.current_password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect"
+        )
+    if payload.new_password == payload.current_password:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="New password must differ from the current password",
+        )
+    user.password_hash = hash_password(payload.new_password)
+    user.must_change_password = False
+    write_audit(
+        db, actor=user, action="user.password_change", entity_type="user", entity_id=user.id
+    )
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("/auth/login", response_model=LoginResponse)
@@ -108,7 +150,7 @@ def logout(request: Request) -> Response:
 
 
 @router.get("/me", response_model=MeResponse)
-def me(user: Annotated[User, Depends(current_user)]) -> MeResponse:
+def me(user: Annotated[User, Depends(current_user_allow_change)]) -> MeResponse:
     """The authenticated user."""
     return MeResponse(
         user_id=str(user.id),

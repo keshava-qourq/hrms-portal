@@ -5,6 +5,7 @@ import React from "react";
 import { brand } from "@/lib/brand";
 import { useNavigate } from "@/lib/navigate";
 import { apiFetch, setSessionToken } from "@/lib/api";
+import { setMustChange } from "@/lib/mustChange";
 
 // POST /api/auth/login returns the session token in its body: the API and this app
 // are on different origins once deployed, so a cookie would be dropped.
@@ -12,6 +13,7 @@ type LoginResponse = {
   session_token?: string;
   token?: string;
   access_token?: string;
+  must_change_password?: boolean;
 };
 
 const PRODUCT = "HRMS portal";
@@ -37,7 +39,9 @@ export default function Screen() {
       });
       const token = data.session_token || data.token || data.access_token || "";
       if (token) setSessionToken(token);
-      navigate("home");
+      const mustChange = data.must_change_password === true;
+      setMustChange(mustChange);
+      navigate(mustChange ? "change-password" : "home");
     } catch (err) {
       // Shown verbatim: the API writes the generic failure and the deactivated-account
       // message, and the screen must never say which of the two applies to an email.
@@ -148,6 +152,9 @@ export default function Screen() {
           >
             Sign in
           </button>
+          <p className="text-sm" style={{ color: brand.neutralColor }}>
+            Can't sign in? Contact an administrator.
+          </p>
         </form>
       </main>
     </div>
