@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v16
+**Documentation version:** v17
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -48,13 +48,13 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Sprint plan](development/sprint-plan.md) | 10 sprints |
 | [Developer guide](development/developer-guide.md) | generated |
 | [API reference](development/api-reference.md) | 26 routes |
-| [Test report](testing/test-report.md) | failed |
+| [Test report](testing/test-report.md) | running |
 | [Tests](testing/test-cases.md) | 195 tests |
 | [Deployment guide](deployment/deployment-guide.md) | deployed |
 | [Runbook](deployment/runbook.md) | deployed |
-| [Release notes](deployment/release-notes.md) | 4 releases |
+| [Release notes](deployment/release-notes.md) | 5 releases |
 | [Traceability matrix](traceability-matrix.md) | 46 requirements |
-| [Changelog](CHANGELOG.md) | 16 versions |
+| [Changelog](CHANGELOG.md) | 17 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -230,15 +230,14 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Deployment
 
-- No deployment date or timestamp recorded.
-- No record of who triggered or approved the deployment.
-- Environment is not named; 'live' is given but production vs. staging is not stated.
-- No mapping from version 92f33dde62ab to requirements or user stories (US-001 to US-043), so no related_ids can be linked.
-- No health-check, smoke-test, or post-deploy verification results provided.
-- No rollback plan, previous version, or release notes provided.
-- No configuration details (environment variables, database, authentication/secrets handling) provided for RBAC and secure login.
-- Input does not confirm that the frontend and backend URLs are wired together or that the backend responds.
-- The project description text appears truncated at 'Employees can' in the RBAC requirements, so the full requirement set could not be confirmed against this deployment.
+- No deployment date/timestamp provided.
+- No deployment id, environment name (prod/staging), or approver recorded.
+- No mapping of this version to the requirements (US-001..US-046) it delivers, so related_ids is empty.
+- No smoke-test, health-check, or post-deploy verification results provided.
+- No rollback plan or previous-version reference provided.
+- Backend URL uses an sslip.io wildcard-DNS host on a raw IP; whether this is intended for production use is not stated.
+- The project description is truncated at RBAC requirement 2 ('Employees can'), so the full RBAC requirements could not be checked against this release.
+- Security and compliance items for a login/RBAC HR system (e.g. TLS config, audit logging, personal-data protection) are not documented for this deployment.
 
 ### Maintenance
 

@@ -3,6 +3,17 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start releases -->
+## 688a7f9cb4c3 — 2026-11-04
+
+**Commit:** `688a7f9`
+
+**Delivered:**
+- US-005: Session timeout and account lockout
+- US-006: Administrator-issued password reset
+- US-008: View and update my own profile
+- US-010: HR Admin corrects or erases a leaver's record
+- US-012: Manager views their direct reports
+
 ## 92f33dde62ab — 2026-11-03
 
 **Commit:** `92f33dd`
