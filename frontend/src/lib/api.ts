@@ -60,6 +60,12 @@ export class ApiError extends Error {
   }
 }
 
+// The app shell registers what happens when the session ends (clear cache, go to sign-in).
+let sessionExpiredHandler: (() => void) | null = null;
+export function setSessionExpiredHandler(handler: (() => void) | null): void {
+  sessionExpiredHandler = handler;
+}
+
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const bearer = getSessionToken() ?? API_SECRET_KEY;
   // Join with exactly one slash: API_BASE_URL is baked with a trailing slash (the API
@@ -74,6 +80,10 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     },
   });
   if (!response.ok) {
+    if (response.status === 401 && path !== "/api/auth/login") {
+      clearSessionToken();
+      sessionExpiredHandler?.();
+    }
     let message = `${init?.method ?? "GET"} ${path} failed: ${response.status}`;
     try {
       const body = (await response.json()) as { detail?: unknown; message?: unknown };

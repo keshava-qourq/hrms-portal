@@ -1019,27 +1019,30 @@ export default function Screen() {
     }
   };
   const selectedUser = users.find((u) => u.id === userSel);
-  const unlockUser = () => {
-    if (!selectedUser) {
+  const unlockUser = (target) => {
+    const u = target || selectedUser;
+    if (!u) {
       notify("err", "Select an account in the table first.");
       return;
     }
-    if (!selectedUser.lockedAt) {
-      notify("err", `${selectedUser.email} is not locked, so there is nothing to unlock.`);
+    if (!u.lockedAt) {
+      notify("err", `${u.email} is not locked, so there is nothing to unlock.`);
       return;
     }
-    setUsers((l) =>
-      l.map((u) => (u.id === selectedUser.id ? { ...u, lockedAt: null, failed: 0 } : u)),
-    );
-    log(
-      "Account unlocked",
-      `User · ${selectedUser.email}`,
-      `failed_login_count: ${selectedUser.failed}; locked_at: ${fmtStamp(selectedUser.lockedAt)}`,
-      "failed_login_count: 0; locked_at: —",
-    );
-    notify(
-      "ok",
-      `${selectedUser.email} is unlocked. They can sign in with their existing password.`,
+    patchUserMutation.mutate(
+      { userId: u.id, body: { unlock: true } },
+      {
+        onSuccess: (saved) => {
+          setUsers((l) =>
+            l.map((x) =>
+              x.id === u.id ? { ...x, lockedAt: saved?.locked_at || null, failed: 0 } : x,
+            ),
+          );
+          notify("ok", `${u.email} is unlocked. They can sign in with their existing password.`);
+        },
+        onError: (err) =>
+          notify("err", err instanceof Error ? err.message : "The account was not unlocked."),
+      },
     );
   };
   const resetPassword = () => {
@@ -1095,6 +1098,16 @@ export default function Screen() {
                   <TD style={tdS}>
                     {pill(k, label)}
                     {u.lockedAt ? <div style={mutedS}>{u.failed} failed attempts</div> : null}
+                    {u.lockedAt ? (
+                      <button
+                        type="button"
+                        aria-label={`Unlock ${u.email}`}
+                        onClick={() => unlockUser(u)}
+                        style={{ ...btn("ghost"), width: "auto", marginTop: 8 }}
+                      >
+                        Unlock
+                      </button>
+                    ) : null}
                   </TD>
                   <TD style={{ ...tdS, whiteSpace: "nowrap" }}>
                     {u.last ? fmtStamp(u.last) : <span style={mutedS}>Never signed in</span>}
@@ -1195,7 +1208,7 @@ export default function Screen() {
           <Button
             data-wf="b-3-1"
             type="button"
-            onClick={unlockUser}
+            onClick={() => unlockUser()}
             className="adm-btn s3"
             style={btn("secondary")}
           >

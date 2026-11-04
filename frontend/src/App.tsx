@@ -1,8 +1,14 @@
-import { NavLink, Navigate, Outlet, Route, Routes } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { NavLink, Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 
 import { Icons } from "@/lib/icons";
-import { getSessionToken } from "@/lib/api";
+import {
+  apiFetch,
+  clearSessionToken,
+  getSessionToken,
+  setSessionExpiredHandler,
+} from "@/lib/api";
 import SignIn from "@/screens/SignIn";
 import Home from "@/screens/Home";
 import Timesheet from "@/screens/Timesheet";
@@ -18,8 +24,39 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 // The app's menu, drawn around every screen except the ones routed outside it below.
 function AppShellLayout() {
+  const navigate = useNavigate();
+  const client = useQueryClient();
+  const hasToken = !!getSessionToken();
+
+  // Back/forward and bfcache restores can show a stale protected page: re-check the token.
+  useEffect(() => {
+    const recheck = () => {
+      if (!getSessionToken()) {
+        client.clear();
+        navigate("/sign-in", { replace: true });
+      }
+    };
+    window.addEventListener("popstate", recheck);
+    window.addEventListener("pageshow", recheck);
+    return () => {
+      window.removeEventListener("popstate", recheck);
+      window.removeEventListener("pageshow", recheck);
+    };
+  }, [client, navigate]);
+
+  const signOut = async () => {
+    try {
+      await apiFetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // The session is ended locally either way.
+    }
+    clearSessionToken();
+    client.clear();
+    navigate("/sign-in", { replace: true });
+  };
+
   // No session token means no signed-in user: every app screen sends you back to sign-in.
-  if (!getSessionToken()) {
+  if (!hasToken) {
     return <Navigate to="/sign-in" replace />;
   }
   return (
@@ -58,6 +95,14 @@ function AppShellLayout() {
             {"Administration"}
           </NavLink>
         </nav>
+        <button
+          type="button"
+          onClick={signOut}
+          className="mt-4 w-full rounded-[var(--brand-radius)] px-3 py-2 text-left text-sm font-medium"
+          style={{ color: "var(--brand-fg-muted)" }}
+        >
+          {"Sign out"}
+        </button>
       </aside>
       <main className="flex-1 overflow-auto">
         <Outlet />
@@ -77,6 +122,15 @@ export default function App() {
 }
 
 function AppRoutes() {
+  const navigate = useNavigate();
+  const client = useQueryClient();
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      client.clear();
+      navigate("/sign-in", { replace: true });
+    });
+    return () => setSessionExpiredHandler(null);
+  }, [client, navigate]);
   return (
     <Routes>
       <Route element={<AppShellLayout />}>
