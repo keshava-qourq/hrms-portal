@@ -28,7 +28,9 @@ export default function Screen() {
     handleSubmit,
     getValues,
     formState: { errors, isSubmitting },
-  } = useForm<Values>({ defaultValues: { current_password: "", new_password: "", confirm_password: "" } });
+  } = useForm<Values>({
+    defaultValues: { current_password: "", new_password: "", confirm_password: "" },
+  });
 
   const onSubmit = async (v: Values) => {
     setError("");
@@ -50,11 +52,7 @@ export default function Screen() {
 
   const fields: Array<[keyof Values, string, object]> = [
     ["current_password", "Current password", { required: "Current password is required." }],
-    [
-      "new_password",
-      "New password",
-      { required: "New password is required." },
-    ],
+    ["new_password", "New password", { required: "New password is required." }],
     [
       "confirm_password",
       "Confirm new password",
@@ -72,7 +70,11 @@ export default function Screen() {
     >
       <main
         className="w-full max-w-md p-6 sm:p-10"
-        style={{ backgroundColor: "rgba(255,255,255,0.04)", border: HAIRLINE, borderRadius: brand.radius }}
+        style={{
+          backgroundColor: "rgba(255,255,255,0.04)",
+          border: HAIRLINE,
+          borderRadius: brand.radius,
+        }}
       >
         <h1 className="text-2xl" style={{ fontFamily: brand.fontHeading }}>
           Set a new password
@@ -111,7 +113,11 @@ export default function Screen() {
             type="submit"
             disabled={isSubmitting}
             className="w-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.25em]"
-            style={{ backgroundColor: brand.accentColor, color: brand.backgroundColor, borderRadius: brand.radius }}
+            style={{
+              backgroundColor: brand.accentColor,
+              color: brand.backgroundColor,
+              borderRadius: brand.radius,
+            }}
           >
             Change password
           </button>

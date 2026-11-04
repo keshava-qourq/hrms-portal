@@ -8,12 +8,12 @@ test("[AC-021] sign-in tells the user to contact an administrator and offers no 
 }) => {
   await page.goto("/sign-in");
   await expect(page.getByText(/contact an administrator/i)).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: /forgot|reset|email me|send.*link/i }),
-  ).toHaveCount(0);
-  await expect(
-    page.getByRole("button", { name: /forgot|reset|email me|send.*link/i }),
-  ).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /forgot|reset|email me|send.*link/i })).toHaveCount(
+    0,
+  );
+  await expect(page.getByRole("button", { name: /forgot|reset|email me|send.*link/i })).toHaveCount(
+    0,
+  );
 });
 
 async function mockForcedChange(page: Page) {

@@ -63,9 +63,7 @@ describe("forced password change", () => {
   it("[AC-023] changing the password calls the API and goes home", async () => {
     setSessionToken("t");
     setMustChange(true);
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
     vi.stubGlobal("fetch", fetchMock);
     render(
       <MemoryRouter initialEntries={["/change-password"]}>
@@ -86,9 +84,7 @@ describe("forced password change", () => {
   it("[AC-023] mismatched confirmation blocks submit", async () => {
     setSessionToken("t");
     setMustChange(true);
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
     vi.stubGlobal("fetch", fetchMock);
     render(
       <MemoryRouter initialEntries={["/change-password"]}>
