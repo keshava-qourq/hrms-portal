@@ -6,7 +6,7 @@ exactly the employees whose reporting manager is the caller.
 """
 
 import uuid
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session, object_session
 from app.audit import changed_fields, write_audit
 from app.authz import ensure_relationship, permissions_for, require_permission
 from app.database import get_db
-from app.models import Department, Employee, User
+from app.models import Department, Employee, LeaveRequest, Timesheet, User
 from app.routers.auth import current_user
 from app.security import SESSION_KEY_PREFIX, get_redis
 
@@ -468,22 +468,85 @@ def my_team_member(
     return EmployeeOut.of(employee)
 
 
-@router.get("/my/team", response_model=EmployeePage)
+class TeamMemberOut(BaseModel):
+    id: str
+    employee_number: str
+    full_name: str
+    work_email: str
+    department_id: str
+    department_name: str | None
+    reporting_manager_id: str | None
+    start_date: date
+    end_date: date | None
+    is_active: bool
+    leave_status: str
+    timesheet_status: str
+
+
+class TeamPage(BaseModel):
+    items: list[TeamMemberOut]
+    total: int
+
+
+@router.get("/my/team", response_model=TeamPage)
 def my_team(
     user: Annotated[User, Depends(current_user)],
     db: Annotated[Session, Depends(get_db)],
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
-) -> EmployeePage:
+) -> TeamPage:
     if user.employee_id is None:
-        return EmployeePage(items=[], total=0)
+        return TeamPage(items=[], total=0)
+    today = datetime.now(UTC).date()
+    week_start = today - timedelta(days=today.weekday())
     conds = [
         Employee.reporting_manager_id == user.employee_id,
         Employee.is_active.is_(True),
         Employee.is_erased.is_(False),
     ]
     total = db.scalar(select(func.count()).select_from(Employee).where(*conds)) or 0
-    rows = db.scalars(
-        select(Employee).where(*conds).order_by(Employee.full_name).limit(limit).offset(offset)
+    on_leave = (
+        select(LeaveRequest.id)
+        .where(
+            LeaveRequest.employee_id == Employee.id,
+            LeaveRequest.status == "approved",
+            LeaveRequest.start_date <= today,
+            LeaveRequest.end_date >= today,
+        )
+        .exists()
+    )
+    ts_status = (
+        select(Timesheet.status)
+        .where(Timesheet.employee_id == Employee.id, Timesheet.week_start_date == week_start)
+        .order_by(Timesheet.status)
+        .limit(1)
+        .scalar_subquery()
+    )
+    rows = db.execute(
+        select(Employee, Department.name, on_leave.label("on_leave"), ts_status.label("ts"))
+        .join(Department, Department.id == Employee.department_id)
+        .where(*conds)
+        .order_by(Employee.full_name, Employee.id)
+        .limit(limit)
+        .offset(offset)
     ).all()
-    return EmployeePage(items=[EmployeeOut.of(e) for e in rows], total=total)
+    return TeamPage(
+        items=[
+            TeamMemberOut(
+                id=str(e.id),
+                employee_number=e.employee_number,
+                full_name=e.full_name,
+                work_email=e.work_email,
+                department_id=str(e.department_id),
+                department_name=dept_name,
+                reporting_manager_id=str(e.reporting_manager_id),
+                start_date=e.start_date,
+                end_date=e.end_date,
+                is_active=e.is_active,
+                leave_status="on_leave" if leave else "available",
+                timesheet_status=ts or "not_started",
+            )
+            for e, dept_name, leave, ts in rows
+        ],
+        total=total,
+    )

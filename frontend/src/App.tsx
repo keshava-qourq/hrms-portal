@@ -11,6 +11,7 @@ import Home from "@/screens/Home";
 import Timesheet from "@/screens/Timesheet";
 import Leave from "@/screens/Leave";
 import Approvals from "@/screens/Approvals";
+import MyTeam from "@/screens/MyTeam";
 import Administration from "@/screens/Administration";
 import Profile from "@/screens/Profile";
 
@@ -30,7 +31,9 @@ function AppShellLayout() {
   const { data: me } = useQuery({
     queryKey: ["me"],
     queryFn: async () =>
-      (await apiFetch<{ must_change_password?: boolean } | undefined>("/api/me")) ?? null,
+      (await apiFetch<{ must_change_password?: boolean; permissions?: string[] } | undefined>(
+        "/api/me",
+      )) ?? null,
     enabled: hasToken,
   });
   if (me && me.must_change_password) setMustChange(true);
@@ -110,6 +113,11 @@ function AppShellLayout() {
           <NavLink to="/profile" className={navLinkClass}>
             {"My Profile"}
           </NavLink>
+          {me?.permissions?.includes("team.view") ? (
+            <NavLink to="/my-team" className={navLinkClass}>
+              {"My Team"}
+            </NavLink>
+          ) : null}
           <NavLink to="/approvals" className={navLinkClass}>
             <Icons.User size={16} />
             {"Team & Approvals"}
@@ -162,6 +170,7 @@ function AppRoutes() {
         <Route path="/timesheet" element={<Timesheet />} />
         <Route path="/leave" element={<Leave />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/my-team" element={<MyTeam />} />
         <Route path="/approvals" element={<Approvals />} />
         <Route path="/administration" element={<Administration />} />
       </Route>
