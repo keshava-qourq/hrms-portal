@@ -12,7 +12,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, object_session
 
 from app.audit import changed_fields, write_audit
 from app.authz import ensure_relationship, permissions_for, require_permission
@@ -41,10 +41,21 @@ class EmployeeOut(BaseModel):
     start_date: date
     end_date: date | None
     is_active: bool
+    department_name: str | None = None
+    reporting_manager_name: str | None = None
 
     @classmethod
     def of(cls, e: Employee) -> "EmployeeOut":
+        session = object_session(e)
+        dept = session.get(Department, e.department_id) if session else None
+        mgr = (
+            session.get(Employee, e.reporting_manager_id)
+            if session and e.reporting_manager_id
+            else None
+        )
         return cls(
+            department_name=dept.name if dept else None,
+            reporting_manager_name=mgr.full_name if mgr else None,
             id=str(e.id),
             employee_number=e.employee_number,
             full_name=e.full_name,
@@ -86,6 +97,9 @@ class EmployeePatch(BaseModel):
     start_date: date | None = None
     end_date: date | None = None
     is_active: bool | None = None
+
+
+OWN_EDITABLE = {"mobile_number", "personal_contact"}
 
 
 def _require_department(db: Session, department_id: uuid.UUID) -> None:
@@ -261,9 +275,20 @@ def create_employee(
 def patch_employee(
     employee_id: str,
     payload: EmployeePatch,
-    hr: Annotated[User, Depends(require_permission("employees.manage"))],
+    hr: Annotated[User, Depends(current_user)],
     db: Annotated[Session, Depends(get_db)],
 ) -> EmployeeOut:
+    perms = set(permissions_for(hr.role_codes))
+    fields = payload.model_dump(exclude_unset=True)
+    is_hr = "employees.manage" in perms
+    if not is_hr:
+        # Own-profile edit: refuse before anything is loaded or saved.
+        ensure_relationship(
+            "profile.own" in perms
+            and hr.employee_id is not None
+            and employee_id.lower() == str(hr.employee_id)
+            and set(fields) <= OWN_EDITABLE
+        )
     try:
         eid = uuid.UUID(employee_id)
     except ValueError:
@@ -274,7 +299,6 @@ def patch_employee(
     if employee is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
 
-    fields = payload.model_dump(exclude_unset=True)
     if "department_id" in fields and fields["department_id"] is not None:
         _require_department(db, fields["department_id"])
     if "reporting_manager_id" in fields and fields["reporting_manager_id"] is not None:

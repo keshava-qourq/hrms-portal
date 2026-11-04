@@ -1,11 +1,6 @@
 import { useEffect } from "react";
 import { NavLink, Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMustChange, isPasswordChangeRequired, setMustChange } from "@/lib/mustChange";
 import ChangePassword from "@/screens/ChangePassword";
 
@@ -17,6 +12,7 @@ import Timesheet from "@/screens/Timesheet";
 import Leave from "@/screens/Leave";
 import Approvals from "@/screens/Approvals";
 import Administration from "@/screens/Administration";
+import Profile from "@/screens/Profile";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -111,6 +107,9 @@ function AppShellLayout() {
           <NavLink to="/leave" className={navLinkClass}>
             {"Leave"}
           </NavLink>
+          <NavLink to="/profile" className={navLinkClass}>
+            {"My Profile"}
+          </NavLink>
           <NavLink to="/approvals" className={navLinkClass}>
             <Icons.User size={16} />
             {"Team & Approvals"}
@@ -162,6 +161,7 @@ function AppRoutes() {
         <Route path="/home" element={<Home />} />
         <Route path="/timesheet" element={<Timesheet />} />
         <Route path="/leave" element={<Leave />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/approvals" element={<Approvals />} />
         <Route path="/administration" element={<Administration />} />
       </Route>

@@ -160,4 +160,5 @@ def me(user: Annotated[User, Depends(current_user_allow_change)]) -> MeResponse:
         permissions=_permissions_for(user.role_codes),
         must_change_password=user.must_change_password,
         is_active=user.is_active,
+        employee_id=str(user.employee_id) if user.employee_id else None,
     )

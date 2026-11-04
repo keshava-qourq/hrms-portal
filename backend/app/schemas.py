@@ -34,3 +34,4 @@ class MeResponse(BaseModel):
     permissions: list[str] = []
     must_change_password: bool
     is_active: bool
+    employee_id: str | None = None
