@@ -1,14 +1,19 @@
-import { NavLink, Navigate, Outlet, Route, Routes } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { NavLink, Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getMustChange, isPasswordChangeRequired, setMustChange } from "@/lib/mustChange";
+import ChangePassword from "@/screens/ChangePassword";
 
 import { Icons } from "@/lib/icons";
-import { getSessionToken } from "@/lib/api";
+import { apiFetch, clearSessionToken, getSessionToken, setSessionExpiredHandler } from "@/lib/api";
 import SignIn from "@/screens/SignIn";
 import Home from "@/screens/Home";
 import Timesheet from "@/screens/Timesheet";
 import Leave from "@/screens/Leave";
 import Approvals from "@/screens/Approvals";
+import MyTeam from "@/screens/MyTeam";
 import Administration from "@/screens/Administration";
+import Profile from "@/screens/Profile";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -18,9 +23,65 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 // The app's menu, drawn around every screen except the ones routed outside it below.
 function AppShellLayout() {
+  const navigate = useNavigate();
+  const client = useQueryClient();
+  const hasToken = !!getSessionToken();
+
+  // The flag comes from login, from GET /api/me, or from a 403 "Password change required".
+  const { data: me } = useQuery({
+    queryKey: ["me"],
+    queryFn: async () =>
+      (await apiFetch<{ must_change_password?: boolean; permissions?: string[] } | undefined>(
+        "/api/me",
+      )) ?? null,
+    enabled: hasToken,
+  });
+  if (me && me.must_change_password) setMustChange(true);
+  useEffect(() => {
+    return client.getQueryCache().subscribe((event) => {
+      if (event.type === "updated" && event.action.type === "error") {
+        if (isPasswordChangeRequired(event.action.error)) {
+          setMustChange(true);
+          navigate("/change-password", { replace: true });
+        }
+      }
+    });
+  }, [client, navigate]);
+
+  // Back/forward and bfcache restores can show a stale protected page: re-check the token.
+  useEffect(() => {
+    const recheck = () => {
+      if (!getSessionToken()) {
+        client.clear();
+        navigate("/sign-in", { replace: true });
+      }
+    };
+    window.addEventListener("popstate", recheck);
+    window.addEventListener("pageshow", recheck);
+    return () => {
+      window.removeEventListener("popstate", recheck);
+      window.removeEventListener("pageshow", recheck);
+    };
+  }, [client, navigate]);
+
+  const signOut = async () => {
+    try {
+      await apiFetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // The session is ended locally either way.
+    }
+    clearSessionToken();
+    setMustChange(false);
+    client.clear();
+    navigate("/sign-in", { replace: true });
+  };
+
   // No session token means no signed-in user: every app screen sends you back to sign-in.
-  if (!getSessionToken()) {
+  if (!hasToken) {
     return <Navigate to="/sign-in" replace />;
+  }
+  if (getMustChange()) {
+    return <Navigate to="/change-password" replace />;
   }
   return (
     <div className="flex min-h-screen">
@@ -49,6 +110,14 @@ function AppShellLayout() {
           <NavLink to="/leave" className={navLinkClass}>
             {"Leave"}
           </NavLink>
+          <NavLink to="/profile" className={navLinkClass}>
+            {"My Profile"}
+          </NavLink>
+          {me?.permissions?.includes("team.view") ? (
+            <NavLink to="/my-team" className={navLinkClass}>
+              {"My Team"}
+            </NavLink>
+          ) : null}
           <NavLink to="/approvals" className={navLinkClass}>
             <Icons.User size={16} />
             {"Team & Approvals"}
@@ -58,6 +127,14 @@ function AppShellLayout() {
             {"Administration"}
           </NavLink>
         </nav>
+        <button
+          type="button"
+          onClick={signOut}
+          className="mt-4 w-full rounded-[var(--brand-radius)] px-3 py-2 text-left text-sm font-medium"
+          style={{ color: "var(--brand-fg-muted)" }}
+        >
+          {"Sign out"}
+        </button>
       </aside>
       <main className="flex-1 overflow-auto">
         <Outlet />
@@ -77,15 +154,30 @@ export default function App() {
 }
 
 function AppRoutes() {
+  const navigate = useNavigate();
+  const client = useQueryClient();
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      client.clear();
+      navigate("/sign-in", { replace: true });
+    });
+    return () => setSessionExpiredHandler(null);
+  }, [client, navigate]);
   return (
     <Routes>
       <Route element={<AppShellLayout />}>
         <Route path="/home" element={<Home />} />
         <Route path="/timesheet" element={<Timesheet />} />
         <Route path="/leave" element={<Leave />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/my-team" element={<MyTeam />} />
         <Route path="/approvals" element={<Approvals />} />
         <Route path="/administration" element={<Administration />} />
       </Route>
+      <Route
+        path="/change-password"
+        element={getSessionToken() ? <ChangePassword /> : <Navigate to="/sign-in" replace />}
+      />
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="*" element={<Navigate to="/sign-in" replace />} />
     </Routes>

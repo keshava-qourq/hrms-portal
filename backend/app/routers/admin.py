@@ -108,6 +108,42 @@ def create_user(
     )
 
 
+class PasswordResetOut(BaseModel):
+    user_id: str
+    one_time_password: str
+
+
+@router.post("/users/{user_id}/password-reset", response_model=PasswordResetOut)
+def reset_password(
+    user_id: str,
+    admin: Annotated[User, Depends(require_permission("users.manage"))],
+    db: Annotated[Session, Depends(get_db)],
+) -> PasswordResetOut:
+    try:
+        uid = uuid.UUID(user_id)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        ) from None
+    user = db.get(User, uid)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    one_time = secrets.token_urlsafe(12)
+    user.password_hash = hash_password(one_time)
+    user.must_change_password = True
+    user.failed_login_count = 0
+    user.locked_at = None
+    write_audit(
+        db,
+        actor=admin,
+        action="user.password_reset",
+        entity_type="user",
+        entity_id=user.id,
+    )
+    db.commit()
+    return PasswordResetOut(user_id=str(user.id), one_time_password=one_time)
+
+
 @router.patch("/users/{user_id}", response_model=AdminUser)
 def patch_user(
     user_id: str,
