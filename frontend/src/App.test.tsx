@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -30,7 +30,7 @@ describe("App", () => {
       </MemoryRouter>,
     );
     await userEvent.click(screen.getByRole("button", { name: "Sign out" }));
-    expect(await screen.findByLabelText("Work email")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByLabelText("Work email")).toBeInTheDocument());
     expect(getSessionToken()).toBeNull();
     expect(
       fetchMock.mock.calls.some(
@@ -53,7 +53,7 @@ describe("App", () => {
     );
     await screen.findAllByText("Home");
     await expect(apiFetch("/api/me")).rejects.toThrow();
-    expect(await screen.findByLabelText("Work email")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByLabelText("Work email")).toBeInTheDocument());
     expect(getSessionToken()).toBeNull();
     vi.unstubAllGlobals();
   });
