@@ -6,7 +6,7 @@ exactly the employees whose reporting manager is the caller.
 """
 
 import uuid
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
@@ -19,6 +19,7 @@ from app.authz import ensure_relationship, permissions_for, require_permission
 from app.database import get_db
 from app.models import Department, Employee, User
 from app.routers.auth import current_user
+from app.security import SESSION_KEY_PREFIX, get_redis
 
 router = APIRouter(prefix="/api", tags=["employees"])
 
@@ -131,6 +132,28 @@ def _audit_values(e: Employee) -> dict[str, object]:
         "end_date": e.end_date.isoformat() if e.end_date else None,
         "is_active": e.is_active,
     }
+
+
+def _drop_sessions(user_ids: set[str]) -> None:
+    """Best effort: delete live sessions of the given users."""
+    try:
+        r = get_redis()
+        for key in r.scan_iter(SESSION_KEY_PREFIX + "*"):
+            raw = r.get(key)
+            if raw and any(f'"{u}"' in raw for u in user_ids):
+                r.delete(key)
+    except Exception:  # noqa: BLE001 -- inactive users are refused anyway
+        pass
+
+
+def _deactivate_user(db: Session, employee_id: uuid.UUID, scrub: bool = False) -> None:
+    users = db.scalars(select(User).where(User.employee_id == employee_id)).all()
+    for u in users:
+        u.is_active = False
+        if scrub:
+            u.email = f"erased-{u.id}@erased.invalid"
+    db.flush()
+    _drop_sessions({str(u.id) for u in users})
 
 
 class DepartmentCreate(BaseModel):
@@ -309,12 +332,24 @@ def patch_employee(
             )
         _require_manager(db, fields["reporting_manager_id"])
 
+    leaving = fields.get("is_active") is False and employee.is_active
+    if (
+        fields.get("is_active") is False
+        and (fields.get("end_date") if "end_date" in fields else employee.end_date) is None
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="end_date is required when marking a leaver",
+        )
+
     before = _audit_values(employee)
     for key, value in fields.items():
         if key == "work_email" and value is not None:
             value = str(value).strip().lower()
         setattr(employee, key, value)
     db.flush()
+    if leaving:
+        _deactivate_user(db, employee.id)
     db.refresh(employee)
     after = _audit_values(employee)
 
@@ -329,6 +364,46 @@ def patch_employee(
             before=old,
             after=new,
         )
+    db.commit()
+    db.refresh(employee)
+    return EmployeeOut.of(employee)
+
+
+@router.post("/employees/{employee_id}/erase", response_model=EmployeeOut)
+def erase_employee(
+    employee_id: str,
+    hr: Annotated[User, Depends(require_permission("employees.manage"))],
+    db: Annotated[Session, Depends(get_db)],
+) -> EmployeeOut:
+    try:
+        eid = uuid.UUID(employee_id)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found"
+        ) from None
+    employee = db.get(Employee, eid)
+    if employee is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
+    if employee.is_active or employee.is_erased:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="only a leaver that is not yet erased can be erased",
+        )
+    employee.full_name = "Erased"
+    employee.work_email = f"erased-{employee.id}@erased.invalid"
+    employee.mobile_number = None
+    employee.personal_contact = None
+    employee.is_erased = True
+    employee.erased_at = datetime.now(UTC)
+    db.flush()
+    _deactivate_user(db, employee.id, scrub=True)
+    write_audit(
+        db,
+        actor=hr,
+        action="employee.erase",
+        entity_type="employee",
+        entity_id=employee.id,
+    )
     db.commit()
     db.refresh(employee)
     return EmployeeOut.of(employee)
@@ -402,7 +477,11 @@ def my_team(
 ) -> EmployeePage:
     if user.employee_id is None:
         return EmployeePage(items=[], total=0)
-    conds = [Employee.reporting_manager_id == user.employee_id]
+    conds = [
+        Employee.reporting_manager_id == user.employee_id,
+        Employee.is_active.is_(True),
+        Employee.is_erased.is_(False),
+    ]
     total = db.scalar(select(func.count()).select_from(Employee).where(*conds)) or 0
     rows = db.scalars(
         select(Employee).where(*conds).order_by(Employee.full_name).limit(limit).offset(offset)
