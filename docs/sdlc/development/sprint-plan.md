@@ -136,11 +136,14 @@ Capacity: 20 points · Committed: 19
 
 Change requests (CHG-001)
 
-Capacity: 20 points · Committed: 2
+Capacity: 20 points · Committed: 9
 
 | Key | Type | Title | Points | Role | Depends on |
 |---|---|---|---|---|---|
 | US-043 | Story | Frontend sign-in test using the real login response | 2 | qa-agent | — |
+| US-044 | Story | Backend endpoint to issue an administrator password reset | 3 | backend-agent | — |
+| US-045 | Story | Users & roles 'Issue password reset' button calls the backend | 2 | frontend-agent | — |
+| US-046 | Story | Automated tests for the administrator password reset | 2 | qa-agent | — |
 
 ## Unscheduled
 

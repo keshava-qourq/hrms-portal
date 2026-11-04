@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v14
+**Documentation version:** v15
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -36,7 +36,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 <!-- sdlc:auto:start contents -->
 | Document | State |
 |---|---|
-| [Requirements](requirements/README.md) | v2 approved |
+| [Requirements](requirements/README.md) | v3 approved |
 | [Architecture](architecture/README.md) | 22 entries |
 | [Development](development/README.md) | 5 entries |
 | [Testing](testing/README.md) | 3 entries |
@@ -48,13 +48,13 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Sprint plan](development/sprint-plan.md) | 10 sprints |
 | [Developer guide](development/developer-guide.md) | generated |
 | [API reference](development/api-reference.md) | 23 routes |
-| [Test report](testing/test-report.md) | running |
+| [Test report](testing/test-report.md) | failed |
 | [Tests](testing/test-cases.md) | 116 tests |
 | [Deployment guide](deployment/deployment-guide.md) | deployed |
 | [Runbook](deployment/runbook.md) | deployed |
 | [Release notes](deployment/release-notes.md) | 4 releases |
-| [Traceability matrix](traceability-matrix.md) | 43 requirements |
-| [Changelog](CHANGELOG.md) | 14 versions |
+| [Traceability matrix](traceability-matrix.md) | 46 requirements |
+| [Changelog](CHANGELOG.md) | 15 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -62,65 +62,78 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 <!-- sdlc:auto:start open-gaps -->
 ### Requirements
 
-- Project description text is truncated at 'RBAC Requirements ... 2. Employees can', so RBAC requirement items beyond item 1 were not provided.
-- Project description lists Reporting Manager 'monitor team availability' and 'team reports', HR Admin 'organization-wide HR reports' and Project Manager 'monitor project utilization', but EPIC-003, EPIC-005 and EPIC-007 state dashboards and reports are NOT in this lightweight scope. Descriptions and scope conflict; confirm that these are deferred.
-- Project description says approval workflows include 'notifications'; this version delivers in-app notifications only (email removed). Confirm.
-- Project description assigns Project Managers the ability to 'review project-specific timesheets', but no user story defines a project timesheet review screen. Only AC-014 mentions visibility of hours booked to the PM's own project.
-- No approval of the requirements by a named person or date is recorded in the input beyond the product owner approving the technology stack and services.
-- The Redis queue rationale (bulk spreadsheet import, payroll CSV/Excel export, nightly pending-approval reminder emails) refers to capabilities that other inputs exclude from this version: bulk import (EPIC-002 assumptions), CSV/Excel export (EPIC-004 assumptions), and email reminders (EPIC-007, out-of-scope list). The queue's purpose in this version is unclear; confirm.
-- Cache rationale mentions team availability, project utilisation and leave liability dashboards, which are not in the lightweight scope (EPIC-003, EPIC-007).
-- Stack rationale mentions Amazon SES as an option, while email is declared out of scope. Confirm SES is not to be provisioned.
-- Scale is stated inconsistently: 'tens of users at week-end peaks' versus '500 employees' punches and timesheets'. Capacity expectations need confirming.
-- Session timeout duration and lockout attempt threshold are described only as 'configured'; no values are given.
-- Stack text refers to the analyst's earlier Node/TypeScript assumption; US-041/US-043 reference SignIn.tsx. Confirm the frontend is TypeScript-based React.
-- CONFLICT with confirmed understanding: it assumed emailed password-reset links, but email was removed from scope, so only administrator-issued resets are delivered. Needs confirmation.
-- Session timeout duration and lockout attempt count are not specified ('configured'); no default values or where they are configured is stated.
-- US-007 says the audit log covers 'approvals, changes and admin actions', while the epic describes it as 'minimal level'. The exact event list should be confirmed (e.g. sign-ins, lockouts are only partly mentioned: unlock and password change are).
-- AC-027 requires immutability even against System Admin; the mechanism (e.g. DB-level append-only) is not specified in requirements.
-- US-041 to US-043 describe implementation-level defects/tests (SignIn.tsx field mapping) rather than user needs; the original source of this defect is not stated.
-- US-042 AC-146 says 'current password is required for the change' conditionally; whether the one-time-password flow also requires the current password is ambiguous.
-- No story covers viewing, unlocking or deactivating accounts beyond AC-003, AC-009 and AC-019; reactivation of a deactivated account is not described.
-- US-004 is worded 'As a the company', not a user persona; this is a minor text issue in the source.
-- Which profile fields are employee-editable versus HR-only is assumed (contact details editable; employment data HR-only) and needs confirmation.
-- Bulk import of employees, departments and opening balances from CSV/Excel was in the confirmed understanding but is not in the lightweight scope; records are created one at a time. Confirm, since creating several hundred records manually at launch is onerous.
-- Erasure (AC-037) conflicts potentially with audit log immutability (AC-027) regarding personal data already inside audit before/after values; handling is not specified.
-- Relationship between a 'leaver' flag and a later erasure of linked records (timesheets, leave) is not defined.
-- 'Current leave/timesheet status' on 'My Team' (AC-042) is not further defined.
-- No definition of the employee directory screen's access (who may search/view all) beyond HR Admin.
-- Ambiguity: AC-044 has a Project Manager creating a project, yet AC-045 says PMs see only projects they are 'assigned to'. How a creator becomes the manager of a project is not specified.
-- Whether a project can have several Project Managers, and how a PM is assigned to a project, is not defined.
-- Project end date, reopening a closed project, and editing/deleting projects are not specified.
-- Allocated-versus-actual utilisation reporting is explicitly not in scope, though the Project Manager role description mentions monitoring utilisation and allocated hours.
+- Conflict: the queue rationale cites bulk spreadsheet import, month-end CSV/Excel payroll export and nightly pending-approval reminders. Bulk import and CSV/Excel export are not in the lightweight capability set, and reminder emails are out of scope because email was removed. Which background jobs the queue actually serves is unclear.
+- The FastAPI rationale cites accrual/carry-over maths and CSV/Excel handling, and the cloud rationale cites SES. None of these is in scope for this version.
+- The cache rationale cites team availability, project utilisation and leave liability dashboards, but EPIC-007 says manager dashboards and reports are not in this scope.
+- The in-country data-residency, daily automated backup and point-in-time restore requirements appear only in the stack rationale. No user story or acceptance criterion covers them.
+- Redis session store and queue share one Redis instance. No persistence or availability expectation is stated.
+- 'English / the local language' is ambiguous: which single language is configured is not stated.
+- The scope-reduction decisions (no bulk import, no export, no accrual/carry-over, no email, no dashboards) are marked 'to confirm' in the epics, and no confirmation is recorded.
+- The project description is truncated at 'RBAC requirement 2 (Employees can ...)'. The remaining RBAC requirements were not provided.
+- The description gives Reporting Managers 'monitor team availability' and 'team reports', HR Admins 'organization-wide HR reports', and Project Managers 'monitor project utilization'. EPIC-005 and EPIC-007 exclude attendance reports and manager dashboards from this scope.
+- The description says System Admin has 'full administrative access', 'permissions' and 'organization settings'. US-002 and EPIC-001 say admins assign roles but cannot toggle individual permissions or create custom roles. No story defines organisation settings or system configuration screens.
+- The description says Project Managers 'review project-specific timesheets'. No story defines a screen or workflow for this, beyond the visibility rule in AC-014.
+- The description lists notifications for approvals, but v3 delivers in-app alerts only.
+- Conflict with the confirmed understanding: password reset by emailed link was assumed, but v3 delivers administrator-issued resets only. This needs confirmation.
+- Session timeout duration and the lockout failed-attempt threshold are only 'configured'. No values are given, and no configuration screen or owner is defined.
+- Lockout duration or auto-unlock is not stated. AC-019 implies a manual System Admin unlock only.
+- Whether the current password is required for the forced change after a one-time password is ambiguous (AC-145 and AC-146 vs AC-023). The one-time password flow implies it might be supplied.
+- The one-time password policy (length, complexity, expiry) and new-password rules are not defined.
+- US-041 to US-046 read as defect-fix or technical stories. Their link to originally reported failures is not recorded in the input.
+- The audit log's retention period and search/filter needs are not stated.
+- US-004 does not say whether a Project Manager who creates a project is automatically 'assigned' to it for visibility.
+- Which profile fields are employee-editable versus HR-only is assumed and needs confirmation.
+- Bulk import was assumed in the confirmed understanding but is excluded. Creating several hundred records manually at launch is flagged as onerous and needs confirmation.
+- The full profile field list is not defined beyond the fields named in the acceptance criteria.
+- Conflict risk: erasure removes personal fields, yet the audit log retains before/after values of edits (AC-026, AC-035), which may contain personal data. How erasure treats existing audit entries is not specified.
+- Whether an employee record can exist without a linked user account, and whether a reporting manager must also be an active employee, are not stated.
+- Reporting-line rules such as a top-level employee with no manager are not defined here, although AC-116 assumes some managers have none. This sits against AC-033, which makes reporting manager mandatory.
+- Who can see a leaver's history after the end date is not stated.
+- 'Current leave/timesheet status' on My Team is not defined further.
+- How a Project Manager becomes 'assigned' to a project (including the creator) is not stated.
+- The project end date and the full list of statuses beyond 'active' and 'closed' are not defined.
+- Whether an assignment has start/end dates is not stated, only an optional allocated-hours figure.
+- No allocated-vs-actual view exists in this scope, so allocated hours have no visible use yet.
+- Whether an employee already on leave or marked as a leaver can be assigned is not stated, beyond leavers being removed from assignment pickers (AC-036).
 - Validation limits (e.g. 24 hours/day maximum) are assumed and need confirmation.
-- AC-054 example is internally unclear (8 hours already entered; the 24-hour limit would require adding over 16 hours); confirm the intended rule, including whether the limit applies across projects.
-- Status wording is inconsistent: AC-063 shows status 'Rejected' while the item is editable, whereas AC-111 says the item 'returns as an editable draft'. Confirm the status model.
-- CSV/Excel export of approved timesheets for payroll was in the confirmed understanding but is not in the lightweight scope.
-- Whether the weekly week starts on Monday or another day is not stated.
-- Behaviour for weeks that span a project assignment ending, or hours entered for holidays/leave days, is not defined.
-- Attendance reports (late arrivals, early departures, absent days, hours per period) from the confirmed understanding are NOT in the lightweight scope.
-- One-punch-pair-per-day is assumed; confirm that mid-day breaks and multiple shifts are not needed.
-- HR correction of a missed clock-in (arrival time) or a wholly missing day is not explicitly covered (AC-075 describes setting a departure time).
-- Handling of an unclosed punch spanning midnight or an auto close-out is not specified.
-- The 'company's single timezone' value is not named.
-- Accrual and carry-over rules were in the confirmed understanding but are NOT included; entitlement is a single annual figure per employee. Needs confirmation.
-- Leave-year definition (calendar vs financial year) and what happens to balances at year end is not specified.
-- Whether a request spanning only weekends/holidays (zero deductible days) is allowed is not stated.
-- Behaviour of half-day requests on a multi-day range (e.g. half-day at start/end) is not defined; AC-082 covers single-day half-days only.
-- Where an HR override (AC-088) is applied in the flow (before or after submission/approval) and who may cancel an approved or pending leave request is not described; no employee cancellation or withdrawal story exists.
-- Pending days are shown separately (AC-090) but it is not stated whether pending days are reserved against the balance check for new requests.
-- CONFLICT with confirmed understanding: it assumed in-app alerts plus transactional email; email was removed, so notifications are in-app only with no emailed notices or pending-approval reminder emails. Needs confirmation.
-- The confirmed understanding flagged single-step approval and the self-approval rule as the two most important points to check; their confirmation is not recorded in the input.
-- Self-approval edge cases are undefined: an HR Admin submitting their own item, a reporting chain with no eligible approver, and employees whose manager is a leaver.
-- What happens to pending items when an employee's reporting manager changes (US-009) is not defined.
-- Alert wording and retention are not specified; there is no alert history screen story.
-- Status wording conflict: 'returns to employee as an editable draft' (AC-111) versus status 'Rejected' (AC-063).
-- Manager dashboards and reports (team availability, project utilisation, headcount, leave liability) are out of scope for this version, though the Reporting Manager role description lists team availability and team reports.
-- 'English / the local language' is ambiguous: which single language and which local language/timezone are used is not specified.
-- The date/time display format is not defined.
-- Only the 360px viewport is stated as a responsive target; other breakpoints and supported browsers are not listed.
-- Dashboard content for roles other than Employee/Reporting Manager (HR Admin, Project Manager, System Admin) is not defined.
-- The administrator guide must also cover the Reporting Manager approval tasks; US-040 lists approving items but names HR Admin, Project Manager and System Admin as audiences, not Reporting Manager. Confirm which section a Reporting Manager sees.
-- The guide must reflect the built screens only; because bulk import, email and reports are excluded, the guide content depends on confirmation of those scope items.
+- The 24-hour limit is stated per day across all projects (AC-054). The 8-hour example in that criterion is not a limit.
+- Whether hours entered on days of approved leave, weekends or holidays are blocked or warned is not specified.
+- Whether one timesheet covers all projects for a week, or whether a partial-week or cross-month period is possible, is not stated.
+- Whether hours can be entered in decimals other than 0.5 steps (e.g. 7.5 is shown in AC-052) is not defined.
+- No reconciliation between timesheet hours and attendance by design. This is flagged for confirmation.
+- Payroll export was assumed in the confirmed understanding but is excluded. This needs confirmation.
+- How far back or forward a timesheet can be entered is not stated.
+- HR Admins can set a departure time for an incomplete punch (AC-075). Correcting a missed clock-in, or creating a record for a day with no punches, is not explicitly covered.
+- The one-punch-per-day assumption needs confirmation. How shifts crossing midnight are handled is not stated.
+- The company timezone is not named, and day boundaries for 'today' depend on it.
+- Reporting Managers have no attendance view of their team in any story, although the role table mentions team availability.
+- Attendance reports (late, early, absent, hours per period) are excluded. This needs confirmation.
+- Whether a forgotten clock-out auto-closes at end of day is not stated.
+- Accrual and carry-over were assumed in the confirmed understanding but are excluded. This needs confirmation, and year-end balance treatment is not defined.
+- How the 'pending' amount is held against the balance for the shortfall check on a second request is not stated.
+- How an HR override is applied (before or after submission, and by whom initiating it) is ambiguous in AC-088.
+- No story lets an employee cancel or withdraw a submitted or approved leave request.
+- A leave request rejected by a manager 'returns as an editable draft' (AC-111), but no leave edit/resubmit story or criterion exists, unlike US-019 for timesheets.
+- The working-week definition (Saturday and Sunday as weekends) is assumed, not stated.
+- Entitlement per employee versus per leave type: how HR sets individual entitlements (the annual figure per employee) is not fully specified beyond opening balances (AC-100).
+- A multi-day range with a half-day at the start or end is not addressed, only a single-day half-day (AC-082).
+- The deletion or deactivation of holidays and leave types already in use is not addressed.
+- Conflict with the confirmed understanding: transactional email notifications and pending-approval reminder emails are removed. This needs confirmation.
+- Single-step approval and no self-approval escalation rules are flagged for confirmation.
+- The 'HR Admin queue' (AC-116) is not defined: no story gives HR Admins an approvals list or approval permission for submissions routed to them.
+- AC-115 describes the manager's own reporting manager; the behaviour when that manager is on leave or deactivated is not defined.
+- Whether the escalated approver sees the item in the same pending list (US-030) is implied but not stated.
+- Reopened leave: the resulting status of the leave request is not specified (AC-119 only returns days).
+- No bulk approve action and no delegation or out-of-office approver are described.
+- Whether alerts persist indefinitely or are cleared is not stated.
+- The company timezone and the date/time display format are not specified.
+- The dashboard content for users with other roles (HR Admin, Project Manager, System Admin) is not defined, apart from the manager approval count.
+- Supported browsers and their minimum versions are not stated.
+- Accessibility requirements are not stated.
+- The guide covers 'the capabilities built in this version', so its content depends on what is actually built.
+- The launch-setup order puts employees before accounts, but accounts require a linked employee record (AC-005). The order is consistent with that. The order places leave types and holidays before employees, yet balances need employees, so where opening-balance setup falls is not stated.
+- Who maintains the guide content after release is not stated.
+- The administrator section's visibility for each administrative role (HR Admin, Project Manager, System Admin) is not distinguished beyond 'administrative role'.
 
 ### Architecture
 

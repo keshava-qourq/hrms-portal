@@ -5,470 +5,297 @@
 <!-- sdlc:auto:start narrative -->
 ## Summary
 
-### REQ-OVERVIEW · draft · source: requirements:overview
-
-HRMS portal: a responsive web portal with secure login and role-based access for Employees, Reporting Managers, HR Admins, Project Managers and System Admins. Requirements version 2 is delivered as a 'lightweight' scope. This entry lists the in-scope capabilities, the roles and the explicit exclusions.
-
-PROJECT: HRMS portal. Delivery scope: lightweight. Requirements version: 2.
-
-ROLES (from project description; fixed set, predefined permissions, union across multiple roles per EPIC-001):
-- Employee: view/update own profile, submit daily/weekly timesheets, apply for leave, check balances, view holidays, track approval status.
-- Reporting Manager: all Employee permissions, view team members, approve/reject team timesheets and leave, monitor team availability, access team reports.
-- HR Admin: manage employee records, departments, leave policies, leave balances, holiday calendars, attendance records, org-wide HR reports.
-- Project Manager: create/manage projects, assign employees, review project-specific timesheets, monitor project utilisation and allocated hours.
-- System Admin: manage users, roles, permissions, organisation settings, system configuration, audit logs.
-
-CAPABILITIES IN SCOPE:
-- Employee sign-in with email and password
-- Employee profile records with department and reporting manager
-- Project records and employee-to-project assignments
-- Daily and weekly timesheet entry against assigned projects
-- Timesheet submission with on-screen status
-- Browser clock-in and clock-out of arrival and departure times
-- Leave request submission by leave type and date range
-- Personal leave balance and leave history view
-- Company holiday calendar view
-- Employee home dashboard (own timesheet, attendance, leave)
-- Mobile-responsive screens usable on a phone browser
-- Portal user guide for employees and administrators
-- Accounts created by an administrator; no public self-registration
-- Clock-in from any browser, no geofencing or location check
-- Punch times stamped by the server clock
-- Single-language interface (English / the local language)
-- Half-day as the smallest leave increment
-
-OUT OF SCOPE (do not design or build):
-- Single sign-on (Google Workspace / Microsoft 365 / Azure AD)
-- Automatic payroll system integration
-- Multi-country support (per-country holidays, leave rules, timezones) and multi-language UI
-- Biometric clock-in and badge/RFID terminal integration
-- Native iOS/Android apps (incl. offline clock-in, push notifications)
-- Payroll/salary processing, recruitment/ATS, performance reviews, expense claims, employee document storage
-- Email (the suggested SendGrid was removed from the stack)
-
-**Related:** EPIC-001, EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-007, EPIC-008, EPIC-009
-
-- ⚠ Project description text is truncated at 'RBAC Requirements ... 2. Employees can', so RBAC requirement items beyond item 1 were not provided.
-- ⚠ Project description lists Reporting Manager 'monitor team availability' and 'team reports', HR Admin 'organization-wide HR reports' and Project Manager 'monitor project utilization', but EPIC-003, EPIC-005 and EPIC-007 state dashboards and reports are NOT in this lightweight scope. Descriptions and scope conflict; confirm that these are deferred.
-- ⚠ Project description says approval workflows include 'notifications'; this version delivers in-app notifications only (email removed). Confirm.
-- ⚠ Project description assigns Project Managers the ability to 'review project-specific timesheets', but no user story defines a project timesheet review screen. Only AC-014 mentions visibility of hours booked to the PM's own project.
-- ⚠ No approval of the requirements by a named person or date is recorded in the input beyond the product owner approving the technology stack and services.
-
 ### REQ-STACK · approved · source: requirements:technology-stack
 
-The product owner approved FastAPI 0.115 (backend), React 19 (frontend), PostgreSQL 16 (database) and AWS (cloud). Redis 7 is approved as both queue and cache. Design must use exactly these with no substitution; REDIS_URL is the required API key/config.
+The product owner approved the stack: FastAPI 0.115, React 19, PostgreSQL 16, AWS, and Redis 7 (queue and cache) in a redis:7-alpine container. Design must use exactly these. The approved REDIS_URL is the only API key listed.
 
-APPROVED STACK (design against exactly these):
-- Backend: FastAPI 0.115. Replaces the Node/TypeScript assumption recorded by the analyst, because Node cannot be built with on this platform. Rationale given: the hard work is rules (relationship-scoped permissions, self-approval escalation up the reporting line, leave accrual/carry-over maths, CSV/Excel import/export), and tens of users at week-end peaks is within FastAPI's reach.
-- Cloud: AWS. Rationale given: one managed region inside the company's own country with daily automated backups; managed PostgreSQL with daily snapshots and point-in-time restore; encryption at rest; Amazon SES mentioned as an option if email is preferred over SendGrid.
-- Database: PostgreSQL 16. Rationale given: system of record for people, hours, attendance and leave balances; enforces relationships; prevents double-deduction when approval and HR correction coincide; keeps the immutable audit log append-only and searchable; 500 employees is a light load.
-- Frontend: React 19. Rationale given: one responsive interface for desktop (HR bulk work) and phone browser (clock-in); one shared set of screens that show or hide sections by role.
+Approved stack (do not substitute):
+- Backend: FastAPI 0.115. This replaces the analyst's Node/TypeScript assumption, because Node cannot be built on this platform. Stated reasons: the hard parts are rules (relationship-scoped permissions, self-approval escalation, leave maths, spreadsheet handling), and tens of users at week-end peaks is within FastAPI's reach.
+- Frontend: React 19. One responsive interface for desktop and phone browsers, built from one shared set of screens that show or hide sections by role.
+- Database: PostgreSQL 16. System of record for people, hours, attendance and leave balances. Relational integrity must prevent double-deducting a balance when an approval and an HR correction land together. It also keeps the immutable audit log append-only and searchable. Load is about 500 employees.
+- Cloud: AWS. One managed region inside the company's own country, daily automated backups, managed PostgreSQL with daily snapshots and point-in-time restore, and encryption at rest.
 
-APPROVED SERVICES (include exactly these in runtime_needs):
-- Queue: Redis (as a queue), container redis:7-alpine. Stated purpose: spreadsheet import of employees/opening balances, month-end CSV/Excel exports for payroll, nightly pending-approval reminders, with retry.
-- Cache: Redis, container redis:7-alpine. Stated purpose: login sessions (session timeout, lockout after failed attempts) and cached dashboard figures (team availability, project utilisation, leave liability).
+Approved services (runtime_needs must include exactly these):
+- Queue: Redis (as a queue), container redis:7-alpine. Background and retried work.
+- Cache: Redis, container redis:7-alpine. Holds login sessions (so session timeout and lockout work reliably) and caches dashboard figures (team availability, project utilisation, leave liability).
 
-API KEYS / CONFIG: REDIS_URL.
+API keys: REDIS_URL.
 
-**Related:** US-005, US-007, US-023, US-030, US-036
+- ⚠ Conflict: the queue rationale cites bulk spreadsheet import, month-end CSV/Excel payroll export and nightly pending-approval reminders. Bulk import and CSV/Excel export are not in the lightweight capability set, and reminder emails are out of scope because email was removed. Which background jobs the queue actually serves is unclear.
+- ⚠ The FastAPI rationale cites accrual/carry-over maths and CSV/Excel handling, and the cloud rationale cites SES. None of these is in scope for this version.
+- ⚠ The cache rationale cites team availability, project utilisation and leave liability dashboards, but EPIC-007 says manager dashboards and reports are not in this scope.
+- ⚠ The in-country data-residency, daily automated backup and point-in-time restore requirements appear only in the stack rationale. No user story or acceptance criterion covers them.
+- ⚠ Redis session store and queue share one Redis instance. No persistence or availability expectation is stated.
 
-- ⚠ The Redis queue rationale (bulk spreadsheet import, payroll CSV/Excel export, nightly pending-approval reminder emails) refers to capabilities that other inputs exclude from this version: bulk import (EPIC-002 assumptions), CSV/Excel export (EPIC-004 assumptions), and email reminders (EPIC-007, out-of-scope list). The queue's purpose in this version is unclear; confirm.
-- ⚠ Cache rationale mentions team availability, project utilisation and leave liability dashboards, which are not in the lightweight scope (EPIC-003, EPIC-007).
-- ⚠ Stack rationale mentions Amazon SES as an option, while email is declared out of scope. Confirm SES is not to be provisioned.
-- ⚠ Scale is stated inconsistently: 'tens of users at week-end peaks' versus '500 employees' punches and timesheets'. Capacity expectations need confirming.
-- ⚠ Session timeout duration and lockout attempt threshold are described only as 'configured'; no values are given.
-- ⚠ Stack text refers to the analyst's earlier Node/TypeScript assumption; US-041/US-043 reference SignIn.tsx. Confirm the frontend is TypeScript-based React.
+### REQ-SCOPE · draft · source: requirements:scope
+
+Requirements v3 uses the lightweight delivery scope. It lists in-scope capabilities and a firm out-of-scope list. The interface is a single-language, mobile-responsive web portal, with accounts created only by an administrator.
+
+In scope:
+- Email/password sign-in; administrator-created accounts, no public self-registration.
+- Employee profiles with department and reporting manager.
+- Projects and employee-to-project assignments.
+- Daily and weekly timesheet entry against assigned projects, with submission and on-screen status.
+- Browser clock-in/clock-out, stamped by the server clock, with no geofencing or location check.
+- Leave requests by type and date range, with half-day as the smallest increment.
+- Personal leave balance and history, and the company holiday calendar.
+- Employee home dashboard.
+- Mobile-responsive screens.
+- Single-language interface (English / the local language).
+- Portal user guide for employees and administrators.
+
+Out of scope (do not design or build):
+- Single sign-on (Google Workspace, Microsoft 365, Azure AD).
+- Automatic payroll integration.
+- Multi-country support (holiday calendars, leave rules, timezones) and multi-language UI.
+- Biometric clock-in and badge/RFID terminals.
+- Native iOS/Android apps, offline clock-in and push notifications.
+- Payroll/salary processing, recruitment, performance reviews, expense claims, and employee document storage.
+- Email (SendGrid was removed from the stack).
+
+Beyond the out-of-scope list, these were assumed in the confirmed understanding but are not in the Lightweight MVP capability set:
+- Bulk CSV/Excel import.
+- Payroll CSV/Excel export.
+- Leave accrual and carry-over automation.
+- Attendance reports.
+- Manager dashboards and reports.
+
+**Related:** US-001, US-008, US-013, US-016, US-020, US-023, US-036, US-037, US-039
+
+- ⚠ 'English / the local language' is ambiguous: which single language is configured is not stated.
+- ⚠ The scope-reduction decisions (no bulk import, no export, no accrual/carry-over, no email, no dashboards) are marked 'to confirm' in the epics, and no confirmation is recorded.
+
+### REQ-RBAC · draft · source: requirements:project-description
+
+The project description defines five roles: Employee, Reporting Manager, HR Admin, Project Manager and System Admin. Its permission table is broader than what the lightweight user stories cover.
+
+Role permissions as given in the description:
+- Employee: view/update own profile, submit daily/weekly timesheets, apply for leave, check balances, view holidays, track approval status.
+- Reporting Manager: all Employee permissions, plus view team members, approve/reject team timesheets and leave, monitor team availability, access team reports.
+- HR Admin: manage employee records, departments, leave policies, leave balances, holiday calendars, attendance records, and organisation-wide HR reports.
+- Project Manager: create/manage projects, assign employees, review project-specific timesheets, monitor project utilisation and allocated hours.
+- System Admin: manage users, roles, permissions, organisation settings, system configuration and audit logs, with full administrative access.
+
+RBAC requirement 1 as given: users log in securely and access only features permitted for their roles. Per EPIC-001: five fixed roles, a user may hold several roles (permissions are a union), and access is also scoped by relationship.
+
+**Related:** US-002, US-003, US-004, US-012, US-013, US-014, US-022, US-029, US-031, US-007
+
+- ⚠ The project description is truncated at 'RBAC requirement 2 (Employees can ...)'. The remaining RBAC requirements were not provided.
+- ⚠ The description gives Reporting Managers 'monitor team availability' and 'team reports', HR Admins 'organization-wide HR reports', and Project Managers 'monitor project utilization'. EPIC-005 and EPIC-007 exclude attendance reports and manager dashboards from this scope.
+- ⚠ The description says System Admin has 'full administrative access', 'permissions' and 'organization settings'. US-002 and EPIC-001 say admins assign roles but cannot toggle individual permissions or create custom roles. No story defines organisation settings or system configuration screens.
+- ⚠ The description says Project Managers 'review project-specific timesheets'. No story defines a screen or workflow for this, beyond the visibility rule in AC-014.
+- ⚠ The description lists notifications for approvals, but v3 delivers in-app alerts only.
 
 ### REQ-EPIC-001 · draft · source: requirements:EPIC-001
 
-Secure email/password sign-in with administrator-created accounts only, five fixed roles combined as a union, relationship-scoped access, session timeout and lockout, administrator-issued password reset, and an immutable audit log. Stories US-041 to US-043 cover a sign-in token-field fix, a change-password endpoint and a frontend sign-in test.
+Secure sign-in, administrator-only account creation, five fixed roles combined as a union, and relationship-scoped access. It also covers session timeout, lockout, administrator-issued password reset (plus its API and UI follow-ups) and an immutable audit log.
 
-EPIC-001: Secure Access, Accounts and Role-Based Permissions. Five fixed roles with predefined permission sets; a user may hold several roles and permissions combine as a union; access is scoped by relationship as well as role.
+Stories:
+- US-001 [critical] Sign in with email and password (AC-001 to AC-004). Correct credentials lead to the home dashboard. A wrong password gives a generic 'email or password is incorrect' message that does not reveal whether the email exists. A deactivated account is refused with a 'contact an administrator' message. Only a salted one-way hash is stored, and plaintext appears nowhere, including logs.
+- US-002 [critical] Administrator creates accounts (AC-005 to AC-009). A System Admin creates a user with an email, a linked employee record and one or more roles. There is no self-registration screen, and unauthenticated users are redirected to sign-in. A duplicate email is rejected. HR Admins cannot open user or role management. Creating, editing or deactivating an account is audit-logged.
+- US-003 [high] Permissions are a union across roles (AC-010 to AC-012). Navigation shows the union of screens. An Employee-only user sees no admin screens, and direct URLs are refused. Removing a role takes effect on the next load.
+- US-004 [critical] Access scoped by relationship (AC-013 to AC-016). A Reporting Manager sees only direct reports. A Project Manager sees only hours booked to their own projects. An Employee cannot access any record that is not their own. An HR Admin has organisation-wide people data but no access to accounts, roles or system configuration.
+- US-005 [high] Session timeout and lockout (AC-017 to AC-020). An idle session expires. An account locks after the configured number of consecutive failed sign-ins, even if the password is then correct. A System Admin can unlock it, and the unlock is audit-logged. Sign-out invalidates the session, and the back button does not show protected pages.
+- US-006 [high] Administrator-issued password reset (AC-021 to AC-024). No emailed reset links are built. The sign-in screen tells users to contact an administrator. A System Admin issues a one-time password, shown once, and the stored hash is replaced. The user must set a new password at next sign-in. The reset is audit-logged.
+- US-007 [high] Immutable audit log (AC-025 to AC-028). It records approvals and rejections (actor, action, record, comment, timestamp) and HR edits, punch corrections and reopens (before/after values). No interface or API allows edit or delete, and attempts are refused. Only System Admins can read the log.
+- US-041 [critical] Sign-in screen reads session_token (AC-142 to AC-144). SignIn.tsx stores `session_token` from the login response, with `token` then `access_token` as fallbacks. It never stores an empty string when `session_token` is present. A refused login stores no token and shows the generic message.
+- US-042 [high] POST /api/auth/change-password (AC-145 to AC-149). It requires an authenticated session. It replaces the hash, clears must_change_password, and refuses a wrong current password or an invalid or empty new password. No password appears in responses or logs. An unauthenticated call is refused. The old password stops working. The change is audit-logged without any password or hash.
+- US-043 [medium] Frontend sign-in test against the real login response shape (AC-150 to AC-152). The test fails if the field name differs, and it covers the refusal path.
+- US-044 [high] POST /api/admin/users/{id}/reset-password (AC-153 to AC-158). System Admin only. It generates a random one-time password, replaces the hash, sets must_change_password=true, and returns the plaintext once. The plaintext is never stored or logged. The reset is audit-logged without secrets. Non-admins are refused (forbidden or unauthenticated). An unknown id returns not-found and writes no audit entry. Signing in with the one-time password succeeds and the account stays flagged must_change_password.
+- US-045 [high] Users & roles 'Issue password reset' button calls the backend (AC-159 to AC-161). It shows the real returned password once, not a hard-coded mock value. The password is not shown after the dialog is reopened and is not kept in browser storage. An API error shows a clear message and no password.
+- US-046 [medium] Automated tests for the reset flow (AC-162, AC-163). The backend test asserts the hash changed, the flag is set, the password is returned once, an audit entry exists and a non-admin is refused. The frontend test asserts the API is called and the returned password is displayed.
 
-US-001 [critical] Sign in with email and password.
-- AC-001: correct email/password for an active account authenticates and lands on the home dashboard.
-- AC-002: wrong password gives a generic 'email or password is incorrect' message that does not reveal whether the email exists.
-- AC-003: deactivated account is refused and told to contact an administrator.
-- AC-004: only a salted one-way hash is stored; plaintext appears nowhere in the record or application logs.
+Assumptions listed for confirmation: application-managed email/password auth; administrator-issued resets instead of emailed links (a conflict with the confirmed understanding, because email was removed); fixed roles; SSO out of scope; employee data is personal data, encrypted in transit and at rest, with no special-category data; audit logging at a minimal level but firm.
 
-US-002 [critical] Administrator creates user accounts; no public self-registration.
-- AC-005: System Admin creates a user with email, linked employee record and roles (e.g. Employee + Reporting Manager); account is active and holds both roles.
-- AC-006: no self-registration screen exists; unauthenticated access to account-creation URLs redirects to sign-in.
-- AC-007: duplicate email rejected with 'email already in use'.
-- AC-008: HR Admin without System Admin cannot open user account/role management.
-- AC-009: create/edit/deactivate is audit-logged with actor, action, affected account and server timestamp.
+**Related:** US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-041, US-042, US-043, US-044, US-045, US-046
 
-US-003 [high] Permissions combine as a union across roles.
-- AC-010: Employee + Project Manager sees both personal and project management navigation.
-- AC-011: Employee-only sees no project, HR or system admin screens; direct URL navigation is refused.
-- AC-012: after a System Admin removes a role, its screens are unavailable on next load.
-
-US-004 [critical] Access scoped by relationship, not only role.
-- AC-013: Reporting Manager's team list shows only direct reports; another employee's record by ID returns an authorisation error.
-- AC-014: Project Manager sees only hours booked to their assigned project(s).
-- AC-015: Employee requesting a non-own timesheet/attendance/leave record is refused with no data returned.
-- AC-016: HR Admin can view and maintain people data org-wide but cannot open user accounts, roles or system configuration.
-
-US-005 [high] Session timeout and account lockout.
-- AC-017: idle beyond the configured timeout ends the session and returns to sign-in.
-- AC-018: the configured number of consecutive failed attempts locks the account; sign-in is refused even with the correct password.
-- AC-019: System Admin unlock restores sign-in with the existing password and is audit-logged.
-- AC-020: sign out invalidates the session; browser back does not show protected pages.
-
-US-006 [high] Administrator-issued password reset.
-- AC-021 (assumption): no emailed reset links; the sign-in screen tells users to contact an administrator.
-- AC-022: System Admin issues a reset; a one-time password is generated, shown once, and the stored hash is replaced.
-- AC-023: signing in with the one-time password forces setting a new password before any other screen.
-- AC-024: reset is audit-logged with acting admin, affected account and timestamp.
-
-US-007 [high] Immutable audit log of approvals, changes and admin actions.
-- AC-025: approve/reject of timesheet or leave is logged with actor, action, record, comment and server timestamp.
-- AC-026: HR edits of employee records, attendance punch corrections and reopened items are logged with before/after values.
-- AC-027: no interface or API allows editing or deleting entries (including by System Admin); attempts are refused.
-- AC-028: only System Admin can open the audit log.
-
-US-041 [critical] Sign-in screen reads session_token from the login response.
-- AC-142: SignIn.tsx stores the value of `session_token` and navigates to the dashboard.
-- AC-143: token is taken from `session_token` first, with `token` then `access_token` as fallbacks only; an empty string is never stored when `session_token` is present.
-- AC-144: wrong password stores no token and shows the generic error.
-
-US-042 [high] Backend endpoint to change a password (/api/auth/change-password).
-- AC-145: signed-in user needing a change posts a new password; a new salted hash replaces the old, must_change_password is cleared, other screens become reachable.
-- AC-146: wrong current password or empty/invalid new password is refused with a clear error; hash unchanged; no password in response or logs.
-- AC-147: unauthenticated request is refused.
-- AC-148: after change, the new password signs in and the old one is refused.
-- AC-149: change is audit-logged with actor, account and timestamp, but no password or hash.
-
-US-043 [medium] Frontend sign-in test using the real login response.
-- AC-150: component test with a fixture matching the real /api/auth/login success response asserts the token is set from `session_token` and the user is navigated to the dashboard.
-- AC-151: the test fails if the sign-in screen reads a field name that differs from the real response.
-- AC-152: refusal response stores no token and shows the generic error.
-
-OPEN ASSUMPTIONS RECORDED: email/password managed by the app (hashed, timeout, lockout, no self-registration); admin-issued reset replaces emailed reset links; roles fixed (no custom roles or per-permission toggles); SSO out of scope; employee records are personal data (encryption in transit and at rest; no special-category data); minimal audit logging.
-
-**Related:** US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-041, US-042, US-043
-
-- ⚠ CONFLICT with confirmed understanding: it assumed emailed password-reset links, but email was removed from scope, so only administrator-issued resets are delivered. Needs confirmation.
-- ⚠ Session timeout duration and lockout attempt count are not specified ('configured'); no default values or where they are configured is stated.
-- ⚠ US-007 says the audit log covers 'approvals, changes and admin actions', while the epic describes it as 'minimal level'. The exact event list should be confirmed (e.g. sign-ins, lockouts are only partly mentioned: unlock and password change are).
-- ⚠ AC-027 requires immutability even against System Admin; the mechanism (e.g. DB-level append-only) is not specified in requirements.
-- ⚠ US-041 to US-043 describe implementation-level defects/tests (SignIn.tsx field mapping) rather than user needs; the original source of this defect is not stated.
-- ⚠ US-042 AC-146 says 'current password is required for the change' conditionally; whether the one-time-password flow also requires the current password is ambiguous.
-- ⚠ No story covers viewing, unlocking or deactivating accounts beyond AC-003, AC-009 and AC-019; reactivation of a deactivated account is not described.
-- ⚠ US-004 is worded 'As a the company', not a user persona; this is a minor text issue in the source.
+- ⚠ Conflict with the confirmed understanding: password reset by emailed link was assumed, but v3 delivers administrator-issued resets only. This needs confirmation.
+- ⚠ Session timeout duration and the lockout failed-attempt threshold are only 'configured'. No values are given, and no configuration screen or owner is defined.
+- ⚠ Lockout duration or auto-unlock is not stated. AC-019 implies a manual System Admin unlock only.
+- ⚠ Whether the current password is required for the forced change after a one-time password is ambiguous (AC-145 and AC-146 vs AC-023). The one-time password flow implies it might be supplied.
+- ⚠ The one-time password policy (length, complexity, expiry) and new-password rules are not defined.
+- ⚠ US-041 to US-046 read as defect-fix or technical stories. Their link to originally reported failures is not recorded in the input.
+- ⚠ The audit log's retention period and search/filter needs are not stated.
+- ⚠ US-004 does not say whether a Project Manager who creates a project is automatically 'assigned' to it for visibility.
 
 ### REQ-EPIC-002 · draft · source: requirements:EPIC-002
 
-Employee profile records with department and reporting manager. Employees edit permitted details; HR Admins maintain records, departments and leaver handling including erasure. Managers see their direct reports.
+Employee profiles with department and reporting manager. Employees edit permitted contact details, while HR Admins maintain records, departments and leavers, and Reporting Managers see their direct reports.
 
-EPIC-002: Employee Profiles, Departments and Reporting Lines.
+Stories:
+- US-008 [high] View and update own profile (AC-029 to AC-031). 'My Profile' shows name, employee ID, department, reporting manager, work email and contact details. Employee-editable fields such as mobile number can be saved, and the change is audit-logged. Department, reporting manager and employee ID are read-only, and direct update requests are refused.
+- US-009 [critical] HR Admin maintains employee records (AC-032 to AC-035). Create with name, employee ID, work email, department, reporting manager and start date. Missing mandatory fields (department, reporting manager) block the save and are flagged. Changing the reporting manager moves the employee between team lists. Every field edit is audit-logged with old and new values, actor and timestamp.
+- US-010 [medium] HR Admin corrects or erases a leaver's record (AC-036 to AC-038). Marking a leaver (with an end date) removes them from active lists and pickers and deactivates their account. Erasure irreversibly removes identifying fields, while the audit log retains who erased and when. Non-HR users are refused.
+- US-011 [medium] HR Admin maintains departments (AC-039 to AC-041). Add a department and it becomes selectable. Deletion is refused when employees are assigned, naming the count. There is one shared list with no per-country or per-entity variants.
+- US-012 [high] Manager views direct reports (AC-042, AC-043). 'My Team' lists exactly the direct reports with department and current leave/timesheet status. Other employees are not listed or reachable.
 
-US-008 [high] View and update my own profile.
-- AC-029: 'My Profile' shows name, employee ID, department, reporting manager, work email and contact details.
-- AC-030: employee-editable fields (e.g. mobile number) can be changed, are saved, confirmed on screen and audit-logged.
-- AC-031: department, reporting manager and employee ID are read-only; direct update requests are refused.
-
-US-009 [critical] HR Admin maintains employee records.
-- AC-032: create with name, employee ID, work email, department, reporting manager and start date; appears in the directory.
-- AC-033: missing mandatory fields (e.g. department, reporting manager) block saving and are flagged.
-- AC-034: changing the reporting manager moves the employee between team lists.
-- AC-035: every field edit is audit-logged with field, old/new value, actor and timestamp.
-
-US-010 [medium] HR Admin corrects or erases a leaver's record.
-- AC-036: marking as leaver with an end date removes the employee from active team lists and assignment pickers and deactivates the linked portal account.
-- AC-037: erasure irreversibly removes identifying personal fields while the audit log keeps who performed it and when.
-- AC-038: non-HR Admins cannot mark leavers or erase.
-
-US-011 [medium] HR Admin maintains departments.
-- AC-039: added departments become selectable on employee records.
-- AC-040: deleting a department with employees is refused with the count of assigned employees.
-- AC-041: one shared department list, no per-country or per-entity variants.
-
-US-012 [high] Manager views direct reports.
-- AC-042: 'My Team' lists exactly the employees reporting to the manager with department and current leave/timesheet status.
-- AC-043: non-reports are not listed and their profiles are unreachable from the manager's screens.
-
-ASSUMPTIONS RECORDED: employee data is personal data; no special-category data; employee documents out of scope.
+Assumptions: data is personal data with role/relationship-restricted access and HR correction or erasure for leavers; the split of employee-editable versus HR-only fields (contact details editable, employment data HR-only) is assumed; bulk import of employees, departments and opening balances is NOT in scope, so records are created one at a time in-portal; document storage is out of scope.
 
 **Related:** US-008, US-009, US-010, US-011, US-012
 
-- ⚠ Which profile fields are employee-editable versus HR-only is assumed (contact details editable; employment data HR-only) and needs confirmation.
-- ⚠ Bulk import of employees, departments and opening balances from CSV/Excel was in the confirmed understanding but is not in the lightweight scope; records are created one at a time. Confirm, since creating several hundred records manually at launch is onerous.
-- ⚠ Erasure (AC-037) conflicts potentially with audit log immutability (AC-027) regarding personal data already inside audit before/after values; handling is not specified.
-- ⚠ Relationship between a 'leaver' flag and a later erasure of linked records (timesheets, leave) is not defined.
-- ⚠ 'Current leave/timesheet status' on 'My Team' (AC-042) is not further defined.
-- ⚠ No definition of the employee directory screen's access (who may search/view all) beyond HR Admin.
+- ⚠ Which profile fields are employee-editable versus HR-only is assumed and needs confirmation.
+- ⚠ Bulk import was assumed in the confirmed understanding but is excluded. Creating several hundred records manually at launch is flagged as onerous and needs confirmation.
+- ⚠ The full profile field list is not defined beyond the fields named in the acceptance criteria.
+- ⚠ Conflict risk: erasure removes personal fields, yet the audit log retains before/after values of edits (AC-026, AC-035), which may contain personal data. How erasure treats existing audit entries is not specified.
+- ⚠ Whether an employee record can exist without a linked user account, and whether a reporting manager must also be an active employee, are not stated.
+- ⚠ Reporting-line rules such as a top-level employee with no manager are not defined here, although AC-116 assumes some managers have none. This sits against AC-033, which makes reporting manager mandatory.
+- ⚠ Who can see a leaver's history after the end date is not stated.
+- ⚠ 'Current leave/timesheet status' on My Team is not defined further.
 
 ### REQ-EPIC-003 · draft · source: requirements:EPIC-003
 
-Project records and employee-to-project assignments, which control what employees may book hours against and what Project Managers may see.
+Project records and employee assignments. Assignments determine what an employee can book hours against and what a Project Manager can see.
 
-EPIC-003: Projects and Employee Assignments.
+Stories:
+- US-013 [high] Create and manage project records (AC-044 to AC-046). A Project Manager creates a project with name, code, start date and status 'active', and it becomes available for assignment. A Project Manager sees only their assigned projects, and opening another by ID is refused. Closing a project removes it from timesheet pickers while historic hours stay visible on submitted timesheets.
+- US-014 [high] Assign employees to projects (AC-047 to AC-049). Assign with an optional allocated-hours figure, and the project then appears in that employee's picker. Unassigning removes it from the picker for new entries while recorded hours are retained. Assigning to a project the user does not manage is refused.
+- US-015 [medium] Employee sees own assignments (AC-050, AC-051). 'My Projects' lists name, code and status of assigned projects. If there are none, an empty-state message says a Project Manager must assign the employee first.
 
-US-013 [high] Create and manage project records.
-- AC-044: Project Manager creates a project with name, code, start date and status 'active'; it becomes available for assignment.
-- AC-045: a Project Manager sees only assigned projects; opening another project by ID is refused.
-- AC-046: setting a project to 'closed' removes it from timesheet pickers while historic hours remain visible on submitted timesheets.
-
-US-014 [high] Assign employees to projects.
-- AC-047: assigning an employee to an active project with optional allocated hours adds the project to that employee's timesheet picker.
-- AC-048: removing an assignment removes the project from new-entry pickers while recorded hours are retained.
-- AC-049: assigning to a project the user does not manage is refused with an authorisation error.
-
-US-015 [medium] Employee sees own project assignments.
-- AC-050: 'My Projects' lists assigned active projects with name, code and status.
-- AC-051: with no assignments, an empty-state message explains a Project Manager must assign the employee before logging hours.
-
-ASSUMPTIONS RECORDED: Project Managers see only projects they are assigned to; allocated hours per assignment are captured for later allocated-versus-actual comparison; dashboards are not in this scope.
+Assumptions: Project Managers see only projects they are assigned to; allocated hours are captured so allocated-vs-actual can be compared later, but the reporting dashboards are not in this scope.
 
 **Related:** US-013, US-014, US-015
 
-- ⚠ Ambiguity: AC-044 has a Project Manager creating a project, yet AC-045 says PMs see only projects they are 'assigned to'. How a creator becomes the manager of a project is not specified.
-- ⚠ Whether a project can have several Project Managers, and how a PM is assigned to a project, is not defined.
-- ⚠ Project end date, reopening a closed project, and editing/deleting projects are not specified.
-- ⚠ Allocated-versus-actual utilisation reporting is explicitly not in scope, though the Project Manager role description mentions monitoring utilisation and allocated hours.
+- ⚠ How a Project Manager becomes 'assigned' to a project (including the creator) is not stated.
+- ⚠ The project end date and the full list of statuses beyond 'active' and 'closed' are not defined.
+- ⚠ Whether an assignment has start/end dates is not stated, only an optional allocated-hours figure.
+- ⚠ No allocated-vs-actual view exists in this scope, so allocated hours have no visible use yet.
+- ⚠ Whether an employee already on leave or marked as a leaver can be assigned is not stated, beyond leavers being removed from assignment pickers (AC-036).
 
 ### REQ-EPIC-004 · draft · source: requirements:EPIC-004
 
-Daily and weekly entry of project hours, submission for approval, on-screen status tracking and correction/resubmission of rejected timesheets.
+Daily and weekly timesheet entry against assigned active projects, submission, on-screen status (Draft, Submitted, Approved, Rejected) and correction/resubmission of rejected timesheets.
 
-EPIC-004: Timesheet Entry and Submission.
+Stories:
+- US-016 [critical] Log daily hours (AC-052 to AC-055). Entries are saved as drafts against a date. The picker lists only active, currently assigned projects. A day's total above 24 hours is rejected with a message stating the maximum. Negative or non-numeric values are rejected and flagged.
+- US-017 [high] Weekly grid (AC-056 to AC-058). Projects are rows and days are columns, with row, column and week totals. Saved values persist after reload. The previous/next week navigation shows that week's entries and status.
+- US-018 [critical] Submit and track status (AC-059 to AC-062). Submitting a draft with at least one entry sets it to 'Submitted', makes entries read-only, and adds it to the reporting manager's pending list. An empty timesheet cannot be submitted. The timesheet list shows Draft, Submitted, Approved or Rejected with decision date and manager comment. A Submitted timesheet cannot be edited until the manager rejects it or an HR Admin reopens it.
+- US-019 [high] Correct and resubmit a rejected timesheet (AC-063 to AC-065). A rejected timesheet shows the manager's comment and is editable again. Resubmission returns it to Submitted and to the manager's pending list. History lists the rejection with its comment and the resubmission, in order, with timestamps.
 
-US-016 [critical] Log daily hours against assigned projects.
-- AC-052: entering 7.5 hours on an assigned project for today and saving stores a draft shown against that date.
-- AC-053: the project picker lists only active projects the employee is currently assigned to.
-- AC-054: an entry that takes the day's total above 24 hours is rejected with a message stating the daily maximum.
-- AC-055: negative or non-numeric hours are rejected and the invalid field flagged.
-
-US-017 [high] Enter and review a weekly timesheet.
-- AC-056: grid has assigned projects as rows, days as columns, with row, column and week totals.
-- AC-057: edited cells save, totals recalculate and values persist after reload.
-- AC-058: previous/next week navigation shows that week's entries and status.
-
-US-018 [critical] Submit a timesheet and track status on screen.
-- AC-059: submitting a draft with at least one entry sets status 'Submitted', makes entries read-only and adds it to the reporting manager's pending list.
-- AC-060: submitting with no hours is refused (at least one entry required).
-- AC-061: the timesheet list shows Draft/Submitted/Approved/Rejected with decision date and manager comment.
-- AC-062: editing a 'Submitted' timesheet is blocked until the manager rejects it or an HR Admin reopens it.
-
-US-019 [high] Correct and resubmit a rejected timesheet.
-- AC-063: a rejected timesheet shows status 'Rejected', the manager's comment, and is editable again.
-- AC-064: resubmitting returns it to 'Submitted' and to the manager's pending list.
-- AC-065: history lists the rejection with comment and the resubmission in order with timestamps.
-
-ASSUMPTIONS RECORDED: period is a calendar week, hours per day per project; timesheet hours are project effort, separate from attendance and not reconciled automatically.
+Assumptions: the timesheet period is a calendar week, with hours entered per day per project; validation limits such as 24 hours/day are assumed; timesheet hours (project effort) are deliberately separate from attendance punches and not reconciled automatically; CSV/Excel payroll export is not in scope.
 
 **Related:** US-016, US-017, US-018, US-019
 
 - ⚠ Validation limits (e.g. 24 hours/day maximum) are assumed and need confirmation.
-- ⚠ AC-054 example is internally unclear (8 hours already entered; the 24-hour limit would require adding over 16 hours); confirm the intended rule, including whether the limit applies across projects.
-- ⚠ Status wording is inconsistent: AC-063 shows status 'Rejected' while the item is editable, whereas AC-111 says the item 'returns as an editable draft'. Confirm the status model.
-- ⚠ CSV/Excel export of approved timesheets for payroll was in the confirmed understanding but is not in the lightweight scope.
-- ⚠ Whether the weekly week starts on Monday or another day is not stated.
-- ⚠ Behaviour for weeks that span a project assignment ending, or hours entered for holidays/leave days, is not defined.
+- ⚠ The 24-hour limit is stated per day across all projects (AC-054). The 8-hour example in that criterion is not a limit.
+- ⚠ Whether hours entered on days of approved leave, weekends or holidays are blocked or warned is not specified.
+- ⚠ Whether one timesheet covers all projects for a week, or whether a partial-week or cross-month period is possible, is not stated.
+- ⚠ Whether hours can be entered in decimals other than 0.5 steps (e.g. 7.5 is shown in AC-052) is not defined.
+- ⚠ No reconciliation between timesheet hours and attendance by design. This is flagged for confirmation.
+- ⚠ Payroll export was assumed in the confirmed understanding but is excluded. This needs confirmation.
+- ⚠ How far back or forward a timesheet can be entered is not stated.
 
 ### REQ-EPIC-005 · draft · source: requirements:EPIC-005
 
-Attendance module separate from timesheets: browser clock-in/out stamped by the server clock with no location checks, employee attendance history, and HR correction of missed punches.
+A distinct attendance module with browser clock-in/clock-out stamped by the server clock. Employees can view their own history and HR Admins correct missed punches. There is no geofencing and no attendance reports.
 
-EPIC-005: Attendance Clock-In and Clock-Out.
+Stories:
+- US-020 [critical] Clock in and out (AC-066 to AC-070). Clock in creates today's record with an arrival time from the server clock. Clock out records the departure time and shows the worked duration. After clocking in, the Clock in action is unavailable and the arrival time is shown. The server time is stored even if the device clock is wrong. Phone punches are accepted from any network or location with no location, geofence or device check.
+- US-021 [high] View own attendance history (AC-071 to AC-073). 'My Attendance' lists each day with arrival, departure and worked duration. A clock-in without clock-out is flagged as an incomplete punch with no duration. An Employee cannot request others' attendance.
+- US-022 [high] HR Admin views and corrects punches (AC-074 to AC-077). Opening a date lists all employees' arrival and departure times with incomplete punches flagged. HR sets a departure time with a reason. The record is marked 'regularised' and the duration recalculated. The correction is audit-logged with original value, corrected value, reason and timestamp. Reporting Managers and Employees without the HR Admin role are refused.
 
-US-020 [critical] Clock in and clock out from any browser.
-- AC-066: 'Clock in' creates today's attendance record with arrival time from the server clock; screen shows clocked in.
-- AC-067: 'Clock out' records departure from the server clock and shows worked duration.
-- AC-068: once clocked in, 'Clock in' is unavailable and the arrival time is shown.
-- AC-069: the stored arrival time is the server time even if the device clock is wrong.
-- AC-070: on a phone browser from any network/location, the punch is accepted with no location, geofence or device check.
-
-US-021 [high] View my own attendance history.
-- AC-071: 'My Attendance' lists each day of the current month with arrival, departure and worked duration.
-- AC-072: clock-in without clock-out is flagged as an incomplete punch with no duration calculated.
-- AC-073: an Employee-only user requesting another employee's attendance is refused.
-
-US-022 [high] HR Admin views and corrects attendance punches.
-- AC-074: for a given date, all employees' arrival/departure are listed, with incomplete punches flagged.
-- AC-075: HR sets a departure time with a reason; record is marked regularised and duration recalculated.
-- AC-076: the correction is audit-logged with actor, original value, corrected value, reason and timestamp.
-- AC-077: Reporting Managers or Employees without HR Admin cannot edit punches.
-
-ASSUMPTIONS RECORDED: server-clock timestamps; no geofencing; biometric and badge/RFID out of scope; one clock-in and one clock-out per day.
+Assumptions: one clock-in and one clock-out per calendar day, with no mid-day breaks punched; biometric and badge/RFID are out of scope; attendance reports (late arrivals, early departures, absent days, hours per period) are not in this scope.
 
 **Related:** US-020, US-021, US-022
 
-- ⚠ Attendance reports (late arrivals, early departures, absent days, hours per period) from the confirmed understanding are NOT in the lightweight scope.
-- ⚠ One-punch-pair-per-day is assumed; confirm that mid-day breaks and multiple shifts are not needed.
-- ⚠ HR correction of a missed clock-in (arrival time) or a wholly missing day is not explicitly covered (AC-075 describes setting a departure time).
-- ⚠ Handling of an unclosed punch spanning midnight or an auto close-out is not specified.
-- ⚠ The 'company's single timezone' value is not named.
+- ⚠ HR Admins can set a departure time for an incomplete punch (AC-075). Correcting a missed clock-in, or creating a record for a day with no punches, is not explicitly covered.
+- ⚠ The one-punch-per-day assumption needs confirmation. How shifts crossing midnight are handled is not stated.
+- ⚠ The company timezone is not named, and day boundaries for 'today' depend on it.
+- ⚠ Reporting Managers have no attendance view of their team in any story, although the role table mentions team availability.
+- ⚠ Attendance reports (late, early, absent, hours per period) are excluded. This needs confirmation.
+- ⚠ Whether a forgotten clock-out auto-closes at end of day is not stated.
 
 ### REQ-EPIC-006 · draft · source: requirements:EPIC-006
 
-Leave requests by type and date range with half-day support, validation against weekends, holidays and balance, personal balances and history, a shared holiday calendar, and HR configuration of leave types, entitlements, opening balances and holidays.
+Leave requests by type and date range with half-day support. Requests are validated against weekends, holidays and balance. Employees get balances, history and the holiday calendar, and HR Admins configure leave types, balances and holidays.
 
-EPIC-006: Leave Requests, Balances and Holiday Calendar.
+Stories:
+- US-023 [critical] Apply for leave (AC-078 to AC-081). A request with sufficient balance is created as 'Submitted', shows the deducted day count, and appears in the manager's pending list. An end date earlier than the start date is refused. A request overlapping an approved or submitted one is refused, naming the overlap. Only active leave types are offered.
+- US-024 [high] Half-day (AC-082 to AC-084). A single day can be a half-day, first half or second half, counting 0.5 days. No smaller increment is offered. Approval deducts exactly 0.5 days.
+- US-025 [high] Validation against weekends, holidays and balance (AC-085 to AC-088). Weekend days and holiday-calendar dates are excluded from the deducted total and shown as non-working in the breakdown. A request over the available balance is refused, stating the balance and shortfall. An HR Admin may apply an override, the negative balance is shown, and the override is audit-logged.
+- US-026 [critical] View balances (AC-089 to AC-091). Per leave type: entitlement, taken, remaining (e.g. 20 / 5 / 15). Submitted requests show separately as pending and are not yet deducted. On approval, days move from pending to taken.
+- US-027 [high] Leave history (AC-092 to AC-094). Lists type, dates, day count, status and decision date, most recent first. A rejected request shows the manager's comment and timestamp. The list can be filtered by leave type and status.
+- US-028 [medium] Holiday calendar (AC-095 to AC-097). Lists date, weekday and name. A single shared calendar with no country or region selector. A year selector shows other years that exist.
+- US-029 [critical] HR Admin configures (AC-098 to AC-102). Create a leave type with an annual entitlement and active flag. An unpaid type has no balance check. Setting or adjusting an opening balance is audit-logged with old and new values. Holiday add, edit and remove take effect for future calculations and are audit-logged. Reporting Managers without HR Admin are refused.
 
-US-023 [critical] Apply for leave by type and date range.
-- AC-078: with sufficient balance, a request (e.g. Annual, 10-12 March, with reason) is created as 'Submitted', shows the deducted day count and appears in the manager's pending list.
-- AC-079: end date before start date is refused and fields flagged.
-- AC-080: overlap with an approved or submitted request is refused, naming the overlapping request.
-- AC-081: only leave types marked active by HR Admin are offered.
-
-US-024 [high] Half-day as the smallest increment.
-- AC-082: a single-day request can be a half-day (first half / second half), 0.5 days, with the half shown.
-- AC-083: no increment smaller than 0.5 days is offered.
-- AC-084: approving a half-day deducts exactly 0.5 days from the leave type.
-
-US-025 [high] Validation against weekends, holidays and balance.
-- AC-085: weekends are excluded from the deducted total and shown as non-working.
-- AC-086: dates on the holiday calendar are excluded from the deducted total.
-- AC-087: a request exceeding balance (e.g. 4 days with 2 remaining) is refused stating balance and shortfall.
-- AC-088: HR Admin may override to allow over-balance; negative balance is shown and the override is audit-logged.
-
-US-026 [critical] View my leave balances.
-- AC-089: shows entitlement, taken and remaining per type (e.g. 20/5/15).
-- AC-090: submitted-but-undecided days appear separately as pending, not in 'taken'.
-- AC-091: on approval, days move from pending to taken and remaining reduces.
-
-US-027 [high] View my leave history and request status.
-- AC-092: lists requests with type, dates, day count, status and decision date, most recent first.
-- AC-093: rejected requests show manager comment and rejection timestamp.
-- AC-094: filter by leave type or status.
-
-US-028 [medium] View the company holiday calendar.
-- AC-095: lists each holiday with date, weekday and name.
-- AC-096: single shared calendar with no country/region selector.
-- AC-097: year selector shows other years where holidays exist.
-
-US-029 [critical] HR Admin configures leave types, entitlements and holidays.
-- AC-098: create a leave type (e.g. 'Annual', 20 days, active); it is selectable and shown in balance views.
-- AC-099: unpaid leave types have no entitlement balance check.
-- AC-100: HR sets/adjusts an employee's opening balance; remaining updates and the change is audit-logged with old/new values.
-- AC-101: holiday add/edit/remove affects future day-count calculations and is audit-logged.
-- AC-102: Reporting Managers without HR Admin cannot open leave-type or holiday configuration.
-
-ASSUMPTIONS RECORDED: leave types carry an annual entitlement; balances deduct on approval; one calendar and one policy set for one country/timezone; no medical certificate or health detail stored.
+Assumptions: balances deduct on approval; half-day is the smallest increment; requests beyond balance are blocked unless an HR Admin overrides; entitlement is an annual figure per employee, with no automated accrual or carry-over; one shared holiday calendar and policy set for one country and timezone; no medical certificates or health detail for sickness leave.
 
 **Related:** US-023, US-024, US-025, US-026, US-027, US-028, US-029
 
-- ⚠ Accrual and carry-over rules were in the confirmed understanding but are NOT included; entitlement is a single annual figure per employee. Needs confirmation.
-- ⚠ Leave-year definition (calendar vs financial year) and what happens to balances at year end is not specified.
-- ⚠ Whether a request spanning only weekends/holidays (zero deductible days) is allowed is not stated.
-- ⚠ Behaviour of half-day requests on a multi-day range (e.g. half-day at start/end) is not defined; AC-082 covers single-day half-days only.
-- ⚠ Where an HR override (AC-088) is applied in the flow (before or after submission/approval) and who may cancel an approved or pending leave request is not described; no employee cancellation or withdrawal story exists.
-- ⚠ Pending days are shown separately (AC-090) but it is not stated whether pending days are reserved against the balance check for new requests.
+- ⚠ Accrual and carry-over were assumed in the confirmed understanding but are excluded. This needs confirmation, and year-end balance treatment is not defined.
+- ⚠ How the 'pending' amount is held against the balance for the shortfall check on a second request is not stated.
+- ⚠ How an HR override is applied (before or after submission, and by whom initiating it) is ambiguous in AC-088.
+- ⚠ No story lets an employee cancel or withdraw a submitted or approved leave request.
+- ⚠ A leave request rejected by a manager 'returns as an editable draft' (AC-111), but no leave edit/resubmit story or criterion exists, unlike US-019 for timesheets.
+- ⚠ The working-week definition (Saturday and Sunday as weekends) is assumed, not stated.
+- ⚠ Entitlement per employee versus per leave type: how HR sets individual entitlements (the annual figure per employee) is not fully specified beyond opening balances (AC-100).
+- ⚠ A multi-day range with a half-day at the start or end is not addressed, only a single-day half-day (AC-082).
+- ⚠ The deletion or deactivation of holidays and leave types already in use is not addressed.
 
 ### REQ-EPIC-007 · draft · source: requirements:EPIC-007
 
-Single-step approval by the Reporting Manager of timesheets and leave, mandatory rejection comments, no self-approval with escalation, HR reopen of approved items, and in-app-only alerts.
+Single-step approval by the Reporting Manager for timesheets and leave. A rejection comment is mandatory, there is no self-approval, and HR Admins can reopen approved items. Notifications are in-app only.
 
-EPIC-007: Single-Step Approval of Timesheets and Leave.
+Stories:
+- US-030 [critical] Pending list (AC-103 to AC-105). One list of direct reports' submitted timesheets and leave requests, showing employee, item type, period/dates and submission date. Other employees' items are not listed and cannot be opened by URL. A timesheet detail is read-only with approve and reject actions.
+- US-031 [critical] Approve (AC-106 to AC-109). A timesheet becomes Approved, locked and leaves the pending list. A leave request becomes Approved and the days are deducted from the balance. The employee gets an in-app alert, and the item shows the approver and decision timestamp. The approval is audit-logged.
+- US-032 [critical] Reject with mandatory comment (AC-110 to AC-113). Rejection without a comment is refused. After rejection the item becomes Rejected, returns as an editable draft and leaves the pending list. A rejected leave request deducts no days. The employee gets an in-app alert, and the comment is visible on the item.
+- US-033 [high] No self-approval (AC-114 to AC-117). A multi-role user's own submission is not in their own pending list, and a direct approve attempt is refused. It is routed to the next manager up the reporting line, or to the HR Admin queue if there is none. The escalation and the routed approver are audit-logged.
+- US-034 [medium] HR Admin reopens an approved item (AC-118 to AC-121). A reopened timesheet returns to Draft, is editable and no longer counts as approved. A reopened leave request returns the deducted days. The reversal is audit-logged with reason and previous status. Managers without HR Admin are refused.
+- US-035 [medium] In-app alerts (AC-122 to AC-125). Managers get an alert and a pending-count indicator. Employees get decision alerts stating item, outcome and comment. Opening an alert marks it read and lowers the unread count. No email or SMS is sent.
 
-US-030 [critical] Review pending items for direct reports.
-- AC-103: one pending list shows all submitted timesheets and leave requests of direct reports with employee name, item type, period/dates and submission date.
-- AC-104: items from non-reports are not listed and cannot be opened by direct URL.
-- AC-105: opening a pending timesheet shows per-day, per-project hours and period total read-only with approve and reject actions.
-
-US-031 [critical] Approve a submitted item.
-- AC-106: approved timesheet becomes 'Approved', locked against editing, leaves pending list.
-- AC-107: approved leave becomes 'Approved' and days are deducted from the balance of that leave type.
-- AC-108: employee gets an in-app alert; item shows approver name and decision timestamp.
-- AC-109: approval is audit-logged.
-
-US-032 [critical] Reject with mandatory comment.
-- AC-110: rejection without a comment is refused and the field flagged.
-- AC-111: with a comment, status becomes 'Rejected', returns to the employee as an editable draft and leaves pending list.
-- AC-112: rejected leave deducts no days.
-- AC-113: employee gets an in-app alert and the comment is visible on the item.
-
-US-033 [high] No self-approval for multi-role users.
-- AC-114: a manager's own submission is not in their own pending list; direct approval attempts are refused.
-- AC-115: it routes to the manager's own reporting manager if set.
-- AC-116: with no reporting manager, it routes to the HR Admin queue.
-- AC-117: the escalation and the routed approver are audit-logged.
-
-US-034 [medium] HR Admin reopens an approved item.
-- AC-118: reopening an approved timesheet with a reason returns it to 'Draft', editable, no longer counted as approved.
-- AC-119: reopening an approved leave request returns the deducted days to the balance.
-- AC-120: reversal is audit-logged with identity, reason, previous status and timestamp.
-- AC-121: Reporting Managers without HR Admin cannot reopen.
-
-US-035 [medium] In-app alerts.
-- AC-122: on next load, managers see an alert and pending-count indicator for submitted items.
-- AC-123: submitters see an alert with item, outcome and any comment.
-- AC-124: opening an alert marks it read and decreases the unread count.
-- AC-125 (assumption): notifications are in-app only; no email or SMS.
-
-ASSUMPTIONS RECORDED: approval is single-step (the Reporting Manager decides); approved items lock and are reopened only by HR Admin; no multi-level chains; manager dashboards/reports not in scope (pending-items list only).
+Assumptions (flagged as the most important to check): approval is single-step with no multi-level chains; approved items lock and can only be reopened by an HR Admin; self-approval escalates up the reporting line or to HR; notifications are in-app only (a conflict with the confirmed understanding, which assumed email plus in-app alerts); there are no manager dashboards or reports, only a pending list.
 
 **Related:** US-030, US-031, US-032, US-033, US-034, US-035
 
-- ⚠ CONFLICT with confirmed understanding: it assumed in-app alerts plus transactional email; email was removed, so notifications are in-app only with no emailed notices or pending-approval reminder emails. Needs confirmation.
-- ⚠ The confirmed understanding flagged single-step approval and the self-approval rule as the two most important points to check; their confirmation is not recorded in the input.
-- ⚠ Self-approval edge cases are undefined: an HR Admin submitting their own item, a reporting chain with no eligible approver, and employees whose manager is a leaver.
-- ⚠ What happens to pending items when an employee's reporting manager changes (US-009) is not defined.
-- ⚠ Alert wording and retention are not specified; there is no alert history screen story.
-- ⚠ Status wording conflict: 'returns to employee as an editable draft' (AC-111) versus status 'Rejected' (AC-063).
-- ⚠ Manager dashboards and reports (team availability, project utilisation, headcount, leave liability) are out of scope for this version, though the Reporting Manager role description lists team availability and team reports.
+- ⚠ Conflict with the confirmed understanding: transactional email notifications and pending-approval reminder emails are removed. This needs confirmation.
+- ⚠ Single-step approval and no self-approval escalation rules are flagged for confirmation.
+- ⚠ The 'HR Admin queue' (AC-116) is not defined: no story gives HR Admins an approvals list or approval permission for submissions routed to them.
+- ⚠ AC-115 describes the manager's own reporting manager; the behaviour when that manager is on leave or deactivated is not defined.
+- ⚠ Whether the escalated approver sees the item in the same pending list (US-030) is implied but not stated.
+- ⚠ Reopened leave: the resulting status of the leave request is not specified (AC-119 only returns days).
+- ⚠ No bulk approve action and no delegation or out-of-office approver are described.
+- ⚠ Whether alerts persist indefinitely or are cleared is not stated.
 
 ### REQ-EPIC-008 · draft · source: requirements:EPIC-008
 
-A home dashboard summarising the employee's timesheet, attendance and leave, mobile-responsive screens working at 360px, and a single-language interface with a single timezone and consistent date/time format.
+A home dashboard for the signed-in employee covering timesheet, attendance and leave. Screens are mobile-responsive and the interface is single-language with one date/time format and timezone.
 
-EPIC-008: Employee Home Dashboard and Mobile-Responsive Portal.
+Stories:
+- US-036 [high] Home dashboard (AC-126 to AC-129). Shows current timesheet status, today's clock-in state, remaining leave balances and pending leave requests. A draft timesheet shows a prompt with a direct link to complete and submit it. A 'Clock in' action is available if not yet clocked in. A user who is also a Reporting Manager sees a count of items awaiting their approval.
+- US-037 [high] Phone browser use (AC-130 to AC-133). At a 360px viewport the dashboard, clock-in, leave request and timesheet screens have no horizontal scrolling or overlap. Clock-in and submit-leave controls are tap-sized and work. The weekly timesheet grid uses a mobile-appropriate layout. No native app is offered and there is no offline clock-in.
+- US-038 [low] Single language and consistent date/time (AC-134, AC-135). No language selector. All timestamps display in the company's single timezone in one consistent format.
 
-US-036 [high] Home dashboard.
-- AC-126: shows current timesheet period status, today's clock-in state, remaining leave balances and pending leave requests.
-- AC-127: a draft timesheet shows a prompt and direct link to complete and submit.
-- AC-128: if not clocked in, a 'Clock in' action is available on the dashboard.
-- AC-129: a user who is also a Reporting Manager sees a count of items awaiting approval alongside the employee summary.
-
-US-037 [high] Phone browser use.
-- AC-130: at 360px width, dashboard, clock-in, leave request and timesheet screens are reachable with no horizontal scrolling or overlapping elements.
-- AC-131: clock-in and submit-leave controls are large enough to tap and complete successfully.
-- AC-132: weekly timesheet grid uses a mobile-appropriate layout rather than a cropped desktop table.
-- AC-133: no native iOS/Android app is offered and no offline clock-in is available.
-
-US-038 [low] Single-language interface and consistent date/time display.
-- AC-134: all labels, messages and errors appear in the single configured language, with no language selector.
-- AC-135: all timestamps are shown in the company's single timezone in one consistent format on every screen.
-
-ASSUMPTIONS RECORDED: single-language English / the local language; mobile-responsive in browser only; dates and times in the company's single timezone.
+Assumptions: single-language English / the local language; browser-based mobile responsiveness only; dates and times in the company's single timezone.
 
 **Related:** US-036, US-037, US-038
 
-- ⚠ 'English / the local language' is ambiguous: which single language and which local language/timezone are used is not specified.
-- ⚠ The date/time display format is not defined.
-- ⚠ Only the 360px viewport is stated as a responsive target; other breakpoints and supported browsers are not listed.
-- ⚠ Dashboard content for roles other than Employee/Reporting Manager (HR Admin, Project Manager, System Admin) is not defined.
+- ⚠ The company timezone and the date/time display format are not specified.
+- ⚠ The dashboard content for users with other roles (HR Admin, Project Manager, System Admin) is not defined, apart from the manager approval count.
+- ⚠ Supported browsers and their minimum versions are not stated.
+- ⚠ Accessibility requirements are not stated.
 
 ### REQ-EPIC-009 · draft · source: requirements:EPIC-009
 
-In-portal Help pages in the single configured language, with an employee guide and a role-restricted administrator guide covering only capabilities built in this version.
+In-portal Help pages for employees and administrators, in one language, covering only the capabilities built in this version. The administrator section also states the launch setup order.
 
-EPIC-009: Portal User Guide.
+Stories:
+- US-039 [medium] Employee guide (AC-136 to AC-138). 'Help' covers signing in, the dashboard, timesheets, clocking in/out, leave, half-day leave, balances, history and the holiday calendar. Task look-ups such as 'correct a rejected timesheet' give step-by-step instructions matching the built screens. The guide is readable on a phone without horizontal scrolling.
+- US-040 [medium] Administrator guide (AC-139 to AC-141). Covers creating accounts and assigning roles, maintaining employees and departments, projects and assignments, leave types and holidays, balances, correcting punches, approving and reopening items, and the audit log. A launch-setup section states the order: departments, leave types and holidays, employees and reporting lines, accounts and roles, then projects and assignments. An Employee-only user sees only the employee section.
 
-US-039 [medium] Employee user guide.
-- AC-136: 'Help' contains a guide covering signing in, the home dashboard, entering and submitting timesheets, clocking in/out, requesting leave, half-day leave, balances, history and the holiday calendar.
-- AC-137: tasks such as 'correct a rejected timesheet' have step-by-step instructions that match the built screens.
-- AC-138: the guide is readable and navigable on a phone without horizontal scrolling.
-
-US-040 [medium] Administrator user guide.
-- AC-139: for administrative roles, 'Help' has an administrator section covering account creation and role assignment, employees and departments, projects and assignments, leave types and holidays, balances, attendance corrections, approving and reopening items, and the audit log.
-- AC-140: a launch-setup section states the required order: departments, leave types and holidays, employees and reporting lines, accounts and roles, then projects and assignments.
-- AC-141: Employee-only users see only the employee section.
-
-ASSUMPTIONS RECORDED: delivered as in-portal help pages in the single configured language; video and interactive training are not included.
+Assumptions: delivered as in-portal help pages in the single configured language; covers this version's capabilities only; no video or interactive training.
 
 **Related:** US-039, US-040
 
-- ⚠ The administrator guide must also cover the Reporting Manager approval tasks; US-040 lists approving items but names HR Admin, Project Manager and System Admin as audiences, not Reporting Manager. Confirm which section a Reporting Manager sees.
-- ⚠ The guide must reflect the built screens only; because bulk import, email and reports are excluded, the guide content depends on confirmation of those scope items.
+- ⚠ The guide covers 'the capabilities built in this version', so its content depends on what is actually built.
+- ⚠ The launch-setup order puts employees before accounts, but accounts require a linked employee record (AC-005). The order is consistent with that. The order places leave types and holidays before employees, yet balances need employees, so where opening-balance setup falls is not stated.
+- ⚠ Who maintains the guide content after release is not stated.
+- ⚠ The administrator section's visibility for each administrative role (HR Admin, Project Manager, System Admin) is not distinguished beyond 'administrative role'.
 <!-- sdlc:auto:end narrative -->
 
 <!-- sdlc:auto:start summary -->
-**Requirements version:** v2  
+**Requirements version:** v3  
 **Delivery scope:** lightweight  
-**Approved:** 2026-11-03
+**Approved:** 2026-11-04
 
 **Capabilities in scope:** Employee sign-in with email and password, Employee profile records with department and reporting manager, Project records and employee-to-project assignments, Daily and weekly timesheet entry against assigned projects, Timesheet submission with on-screen status, Browser clock-in and clock-out of arrival and departure times, Leave request submission by leave type and date range, Personal leave balance and leave history view, Company holiday calendar view, Employee home dashboard for own timesheet, attendance and leave, Mobile-responsive screens usable on a phone browser, Portal user guide for employees and administrators, Accounts created by an administrator — no public self-registration, Clock-in from any browser, with no geofencing or location check, Punch times stamped by the server clock, Single-language interface in English / the local language, Half-day as the smallest leave increment
 
@@ -623,6 +450,44 @@ OPEN ASSUMPTIONS TO CONFIRM:
 | AC-150 | a test fixture that matches the actual /api/auth/login success response, with the token in `session_token` | the SignIn component test submits valid credentials against that response | the test asserts the session token is set to the `session_token` value and the user is navigated to the dashboard |
 | AC-151 | the sign-in screen reads a field name that differs from the real login response | the frontend test suite runs | the sign-in test fails |
 | AC-152 | the login API returns a refusal response | the sign-in test submits the form | no token is stored and the generic error message is displayed |
+
+### US-044: Backend endpoint to issue an administrator password reset
+
+**Priority:** high
+
+> As a System Admin, I want an API endpoint that resets a user's password to a random one-time password and returns it once, so that a new or locked-out user can be given working credentials without email.
+
+| ID | Given | When | Then |
+|---|---|---|---|
+| AC-153 | I am signed in as a System Admin and an active user account exists | I POST to /api/admin/users/{id}/reset-password for that user | a random one-time password is generated, only its salted one-way hash replaces users.password_hash, users.must_change_password is set to true, and the plaintext password is returned once in the response |
+| AC-154 | a reset has just been issued for a user | the same user's reset response is not repeated and I inspect the user record, the database and application logs | the plaintext one-time password is not stored or logged anywhere and cannot be retrieved again |
+| AC-155 | a reset has been issued for a user | a System Admin opens the audit log | an entry records the acting administrator, the affected account, the action and the server timestamp, with no password or hash value |
+| AC-156 | I am signed in as an HR Admin, another non-System-Admin role, or not signed in | I POST to /api/admin/users/{id}/reset-password | the request is refused as forbidden or unauthenticated, no password is changed and no password is returned |
+| AC-157 | I am signed in as a System Admin | I POST to /api/admin/users/{id}/reset-password with an id that does not exist | the request is refused with a not-found error and nothing is written to the audit log |
+| AC-158 | a new account has been created by a System Admin and then reset | the user signs in with the one-time password | sign-in succeeds and the account is flagged must_change_password |
+
+### US-045: Users & roles 'Issue password reset' button calls the backend
+
+**Priority:** high
+
+> As a System Admin, I want the 'Issue password reset' button in Users & roles to call the reset endpoint and show me the real one-time password once, so that I can hand a working password to the user instead of a meaningless mock code.
+
+| ID | Given | When | Then |
+|---|---|---|---|
+| AC-159 | I am a System Admin viewing a user in Users & roles | I press 'Issue password reset' | the screen calls POST /api/admin/users/{id}/reset-password and displays the one-time password returned by the API, not a value from a hard-coded list |
+| AC-160 | the one-time password is displayed | I close or leave the dialog and reopen the user | the password is no longer shown and is not kept in browser storage |
+| AC-161 | the reset API returns an error | I press 'Issue password reset' | a clear error message is shown and no password is displayed |
+
+### US-046: Automated tests for the administrator password reset
+
+**Priority:** medium
+
+> As a developer, I want automated backend and frontend tests for the reset flow using the real API response shape, so that a mock or a mismatch between the reset API and the Users & roles screen is caught before release.
+
+| ID | Given | When | Then |
+|---|---|---|---|
+| AC-162 | a test System Admin and a test user | the backend test calls the reset endpoint | it asserts the hash changed, must_change_password is true, the response contains the password once, an audit entry exists, and a non-admin caller is refused |
+| AC-163 | a frontend fixture matching the real reset response | the Users & roles test presses 'Issue password reset' | it asserts the API is called and the returned password is displayed |
 
 ## EPIC-002: Employee Profiles, Departments and Reporting Lines
 
