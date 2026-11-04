@@ -170,8 +170,9 @@ def test_ac024_reset_audit_entry_has_actor_account_timestamp_and_no_otp(make_rol
 def test_ac024_non_admin_cannot_read_audit_of_reset(make_roled):  # noqa: F811
     admin = make_roled("SYSTEM_ADMIN")
     target = make_roled("EMPLOYEE")
+    other = make_roled("EMPLOYEE")
     _reset(admin, target)
-    assert client.get(AUDIT, headers=_headers(target)).status_code == 403
+    assert client.get(AUDIT, headers=_headers(other)).status_code == 403
 
 
 def test_ac021_no_self_service_reset_route_exists():
