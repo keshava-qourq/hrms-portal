@@ -2,6 +2,9 @@ FROM python:3.12-slim
 
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+# The deployment is a demo: create the demo sign-ins (app/demo_seed.py) on startup.
+# Remove this line before the portal holds real data.
+ENV SEED_DEMO_ACCOUNTS=true
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt

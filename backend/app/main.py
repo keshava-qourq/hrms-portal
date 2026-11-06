@@ -15,6 +15,7 @@ from app import (
 )
 from app.config import settings
 from app.database import Base, engine
+from app.demo_seed import seed_demo_accounts
 from app.routers import admin, auth, employees, scoped
 from app.routers import audit as audit_router
 from app.services import configured_services
@@ -40,6 +41,9 @@ app.add_middleware(
 # The scaffold ships no migrations, so the tables are created from the models on
 # startup. Replace this with Alembic before anything holds data worth keeping.
 Base.metadata.create_all(bind=engine)
+
+if settings.seed_demo_accounts:
+    seed_demo_accounts()
 
 app.include_router(auth.router)
 app.include_router(admin.router)

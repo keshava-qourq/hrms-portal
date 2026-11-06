@@ -54,6 +54,11 @@ class Settings:
     # A writable directory that survives redeploys. Local default is under the
     # backend working directory.
     media_root: str = field(default_factory=lambda: os.getenv("MEDIA_ROOT", "./media"))
+    # Create the demo sign-ins (app/demo_seed.py) on startup. Off unless set; the
+    # deployed image turns it on in the Dockerfile.
+    seed_demo_accounts: bool = field(
+        default_factory=lambda: os.getenv("SEED_DEMO_ACCOUNTS", "").lower() == "true"
+    )
 
     def cors_origins(self) -> list[str]:
         """Origins for CORS: the configured list, or the dev origins locally."""
