@@ -16,7 +16,7 @@ from app import (
 from app.config import settings
 from app.database import Base, engine
 from app.demo_seed import seed_demo_accounts
-from app.routers import admin, auth, employees, scoped
+from app.routers import admin, auth, employees, scoped, timesheets
 from app.routers import audit as audit_router
 from app.services import configured_services
 
@@ -50,6 +50,7 @@ app.include_router(admin.router)
 app.include_router(audit_router.router)
 app.include_router(employees.router)
 app.include_router(scoped.router)
+app.include_router(timesheets.router)
 
 
 @app.get("/health")
