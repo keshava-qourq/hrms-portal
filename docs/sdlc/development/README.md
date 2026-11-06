@@ -3,11 +3,10 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start narrative -->
-### DEV-PLAN-v3 · approved · source: plan:v3
+### DEV-PLAN-V3 · approved · source: plan:v3
 
-Plan version 3 is approved. It has 10 sprints of capacity 20 each, 9 epics and 46 stories, plus tasks under US-029 and US-031. Sprint goals run from foundations and access control through timesheets, leave and approvals to the dashboard, mobile layouts and user guides. Sprint 10 covers change request CHG-001.
+Delivery plan version 3 is approved. It defines 10 sprints, each with a capacity of 20. Sprints 1-9 cover the product build and Sprint 10 covers change request CHG-001.
 
-Sprint goals:
 - Sprint 1: Foundations: sign-in, fixed role model, append-only audit service, departments, consistent date/time and language handling.
 - Sprint 2: Employee records, administrator-created accounts, server-side relationship-scoped access.
 - Sprint 3: Session timeout and lockout, admin password reset, own profile, team view, leaver handling.
@@ -19,121 +18,130 @@ Sprint goals:
 - Sprint 9: Employee home dashboard, phone-browser layouts, user guides.
 - Sprint 10: Change requests (CHG-001).
 
-Epics and stories:
-- EPIC-001 Secure Access, Accounts and RBAC: US-001 to US-007 (sign-in, admin-created accounts, union of roles, relationship-scoped access, session timeout/lockout, admin password reset, immutable audit log).
-- EPIC-002 Profiles, Departments, Reporting Lines: US-008 to US-012.
-- EPIC-003 Projects and Assignments: US-013 to US-015.
-- EPIC-004 Timesheet Entry and Submission: US-016 to US-019.
-- EPIC-005 Attendance Clock-In/Out: US-020 to US-022.
-- EPIC-006 Leave, Balances, Holiday Calendar: US-023 to US-029. US-029 has tasks T1 (leave type and holiday admin endpoints), T2 (opening balance set/adjust endpoint) and T3 (HR leave configuration screens).
-- EPIC-007 Single-Step Approval: US-030 to US-035. US-031 has tasks T1 (atomic approve endpoint), T2 (approve action on pending detail screen) and T3 (concurrency tests for balance deduction).
-- EPIC-008 Home Dashboard and Mobile: US-036 to US-038.
-- EPIC-009 Portal User Guide: US-039, US-040.
-- Additional stories: US-041 (sign-in screen reads session_token from login response), US-042 (backend change-password endpoint), US-043 (frontend sign-in test using real login response), US-044 (backend admin password reset endpoint), US-045 (Users & roles 'Issue password reset' button calls backend), US-046 (automated tests for admin password reset).
+- ⚠ The input does not map stories to sprints; only sprint goals are given.
+- ⚠ Sprint 10 names CHG-001, but no change request content is provided.
+- ⚠ No sprint start or end dates were provided.
+- ⚠ The plan approver and approval date are not recorded.
 
-Story points range from 1 to 8. Roles are assigned per item: backend-agent, frontend-agent, security-agent (US-004) and qa-agent (US-043, US-046, US-031-T3).
+### DEV-BACKLOG · approved · source: plan:v3
 
-**Related:** US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018, US-019, US-020, US-021, US-022, US-023, US-024, US-025, US-026, US-027, US-028, US-029, US-030, US-031, US-032, US-033, US-034, US-035, US-036, US-037, US-038, US-039, US-040, US-041, US-042, US-043, US-044, US-045, US-046
+The approved backlog has 9 epics and stories US-001 to US-046. Some stories are split into tasks and each item has an assigned agent role.
 
-- ⚠ The input does not map individual stories to sprints; only sprint goals are given.
-- ⚠ US-041 to US-046 are not tied to any named sprint or epic. Sprint 10 mentions CHG-001, but the input does not say these stories belong to it.
-- ⚠ The project description is truncated at RBAC requirement 2 ('Employees can'), so the full RBAC requirements cannot be checked against the plan.
-- ⚠ The plan refers to a 'fixed role model', but the description lists five roles (Employee, Reporting Manager, HR Admin, Project Manager, System Admin). The input does not confirm how the plan's role model maps to these five.
-- ⚠ No dates, plan approver or approval date, or version history (v1, v2) is provided.
+- EPIC-001 Secure Access, Accounts and RBAC: US-001 sign-in (backend); US-002 admin-created accounts, no self-registration (backend); US-003 union of permissions across roles (backend); US-004 relationship-scoped access (security-agent); US-005 session timeout and lockout (backend); US-006 admin-issued password reset (backend); US-007 immutable audit log (backend).
+- EPIC-002 Profiles, Departments, Reporting Lines: US-008 own profile (frontend); US-009 HR maintains employee records (backend); US-010 HR corrects/erases leaver record (backend); US-011 departments (backend); US-012 manager views direct reports (backend).
+- EPIC-003 Projects and Assignments: US-013 project records (backend); US-014 assign employees (backend); US-015 employee sees own assignments (frontend).
+- EPIC-004 Timesheets: US-016 log daily hours (backend); US-017 weekly timesheet (frontend); US-018 submit and track status (backend); US-019 correct and resubmit rejected timesheet (backend).
+- EPIC-005 Attendance: US-020 clock in/out from any browser (backend); US-021 own attendance history (backend); US-022 HR views/corrects punches (backend).
+- EPIC-006 Leave: US-023 apply by type and date range (backend); US-024 half-day (backend); US-025 validation against weekends, holidays and balance (backend); US-026 balances (backend); US-027 leave history and status (frontend); US-028 holiday calendar (frontend); US-029 HR configures leave types, entitlements, holidays (backend), with tasks T1 endpoints (backend), T2 opening balance endpoint (backend), T3 HR configuration screens (frontend).
+- EPIC-007 Approvals: US-030 pending list for direct reports (backend); US-031 approve (backend), with tasks T1 atomic approve endpoint (backend), T2 approve action on detail screen (frontend), T3 concurrency tests for balance deduction (qa); US-032 reject with mandatory comment (backend); US-033 no self-approval for multi-role users (backend); US-034 HR reopens approved item (backend); US-035 in-app alerts (backend).
+- EPIC-008 Dashboard and Mobile: US-036 home dashboard (frontend); US-037 phone browser (frontend); US-038 single language and consistent date/time (frontend).
+- EPIC-009 User Guide: US-039 employee guide (frontend); US-040 administrator guide (frontend).
+- Additional stories: US-041 sign-in screen reads session_token from login response (frontend); US-042 backend change-password endpoint (backend); US-043 frontend sign-in test with real login response (qa); US-044 backend admin password reset endpoint (backend); US-045 Users & roles 'Issue password reset' button calls backend (frontend); US-046 automated tests for admin password reset (qa).
 
-### DEV-RUN-STATUS · draft · source: dev:run
+**Related:** EPIC-001, EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-007, EPIC-008, EPIC-009
 
-The development run status is 'completed'. Only 5 of the 46 planned stories have a delivered ticket with a commit hash.
+- ⚠ Epics have no points or role assigned in the input.
+- ⚠ The source of US-041 to US-046 (e.g. whether they come from CHG-001 or a defect) is not stated.
+- ⚠ The project description was truncated in the input (RBAC requirement 2 is cut off), so the full RBAC requirements could not be cross-checked against the backlog.
 
-Delivered tickets with commits:
-- US-005: 9d1e4a86249097e5e71e0d9ef4603016a93c270c
-- US-006: dd39a18b75bd89e13d7f93e0379c73daf38ce1d5
-- US-008: 2a64fee51c4126a79b9452c349a7cc04a218f801
-- US-010: eae5063b59a1cdaf1f2dbc6c632596dd3792556b
-- US-012: eae5063b59a1cdaf1f2dbc6c632596dd3792556b (same commit as US-010)
+### DEV-RUN · draft · source: dev:run
 
-No ticket records were provided for any other story or task in the plan.
+The development run is reported as 'completed', but ticket outcomes exist for only five of the planned stories. Four tickets were delivered and one was skipped.
 
-**Related:** US-005, US-006, US-008, US-010, US-012
+- Run status: completed.
+- Tickets with a recorded outcome: US-013, US-014, US-015, US-016, US-017.
+- Delivered: US-013, US-014 (commit eac0b9dc6bd960555ec5188e62e9b86ccecbf705); US-016, US-017 (commit 18927b6478eaaaa6385085eb98a3c07169633dd2).
+- Skipped: US-015, with no commit.
+- The five tickets match the Sprint 4 goal (projects, assignments, weekly-grid timesheet entry). The input does not state that they were run as Sprint 4.
 
-- ⚠ The run is 'completed' but 41 of 46 planned stories (e.g. US-001 to US-004, US-007, US-009, US-011, US-013 to US-040) have no ticket or commit. It is unclear whether they were not attempted, are out of this run's scope, or were not reported.
-- ⚠ Epics and tasks (e.g. US-029-T1 to T3, US-031-T1 to T3) have no delivery records.
-- ⚠ No test, review or QA results are provided for any delivered ticket.
+**Related:** US-013, US-014, US-015, US-016, US-017
 
-### DEV-US-005 · draft · source: dev:US-005
+- ⚠ Discrepancy: the run is 'completed', yet most planned stories (see DEV-UNTRACKED) have no ticket outcome and US-015 was skipped.
+- ⚠ Tickets are not tied to sprints in the input.
+- ⚠ No dates or test or QA results were provided for any ticket.
 
-US-005 'Session timeout and account lockout' is delivered under commit 9d1e4a86249097e5e71e0d9ef4603016a93c270c. It is a backend-agent story of 5 points in EPIC-001.
+### DEV-US-013 · draft · source: dev:US-013
 
-- Ticket: US-005, status delivered.
-- Commit: 9d1e4a86249097e5e71e0d9ef4603016a93c270c.
-- Plan: the Sprint 3 goal mentions 'session timeout and lockout'.
+US-013, create and manage project records (backend, 3 points), is delivered in commit eac0b9dc.
 
-**Related:** US-005
+- Ticket status: delivered.
+- Commit: eac0b9dc6bd960555ec5188e62e9b86ccecbf705, shared with US-014.
+- Part of EPIC-003 Projects and Employee Assignments.
 
-- ⚠ No details of the implementation are provided, such as timeout duration, lockout threshold or unlock behaviour.
-- ⚠ No test results or review/approval are recorded.
-- ⚠ The input does not explicitly state this ticket's sprint.
-- ⚠ Dependency US-001 (sign-in) has no delivery record.
+**Related:** US-013, EPIC-003, DEV-RUN
 
-### DEV-US-006 · draft · source: dev:US-006
+- ⚠ No details of what was implemented (endpoints, fields, permissions) were provided.
+- ⚠ No review, test or approval outcome was provided.
+- ⚠ Delivered ticket status is the only evidence; acceptance criteria were not supplied.
 
-US-006 'Administrator-issued password reset' is delivered under commit dd39a18b75bd89e13d7f93e0379c73daf38ce1d5. It is a backend-agent story of 3 points in EPIC-001.
+### DEV-US-014 · draft · source: dev:US-014
 
-- Ticket: US-006, status delivered.
-- Commit: dd39a18b75bd89e13d7f93e0379c73daf38ce1d5.
-- Plan: the Sprint 3 goal mentions 'admin password reset'.
-- Related stories in the plan are US-042 (change-password endpoint), US-044 (backend admin reset endpoint), US-045 (frontend 'Issue password reset' button) and US-046 (automated tests for admin reset). None has a delivery record.
+US-014, assign employees to projects (backend, 3 points), is delivered in commit eac0b9dc, the same commit as US-013.
 
-**Related:** US-006, US-042, US-044, US-045, US-046
+- Ticket status: delivered.
+- Commit: eac0b9dc6bd960555ec5188e62e9b86ccecbf705, shared with US-013.
+- Part of EPIC-003 Projects and Employee Assignments.
 
-- ⚠ No details of the implementation are provided.
-- ⚠ The input does not say how US-044 to US-046 relate to US-006. They may be follow-ups, but this is inferred from titles only.
-- ⚠ No test results or review are recorded, and US-046 (admin reset tests) has no delivery record.
-- ⚠ The input does not confirm whether a frontend for the reset exists, since US-045 is not delivered.
+**Related:** US-014, US-013, EPIC-003, DEV-RUN
 
-### DEV-US-008 · draft · source: dev:US-008
+- ⚠ No implementation details were provided.
+- ⚠ No review, test or approval outcome was provided.
+- ⚠ The assignment-related behaviour that depends on employee records (US-009) cannot be confirmed, as no ticket outcome for US-009 was provided.
 
-US-008 'View and update my own profile' is delivered under commit 2a64fee51c4126a79b9452c349a7cc04a218f801. It is a frontend-agent story of 3 points in EPIC-002.
+### DEV-US-015 · draft · source: dev:US-015
 
-- Ticket: US-008, status delivered.
-- Commit: 2a64fee51c4126a79b9452c349a7cc04a218f801.
-- Plan: the Sprint 3 goal mentions 'own profile'.
+US-015, employee sees their own project assignments (frontend, 2 points), was skipped. No commit exists, so this functionality is not recorded as built.
 
-**Related:** US-008
+- Ticket status: skipped.
+- Commit: none.
+- It is the only frontend story in EPIC-003. Backend assignment creation (US-014) is delivered, but no screen is recorded for an employee to view their assignments.
 
-- ⚠ The input does not state which profile fields are viewable or editable.
-- ⚠ The backend supporting the profile (e.g. US-009 HR records) has no delivery record.
-- ⚠ No test results or review are recorded.
+**Related:** US-015, US-014, EPIC-003, DEV-RUN
 
-### DEV-US-010 · draft · source: dev:US-010
+- ⚠ The reason for skipping is not stated.
+- ⚠ It is unknown whether the story is deferred, descoped or covered elsewhere.
+- ⚠ Without this story, the project selection used by the weekly timesheet (US-016/US-017) may depend on another source; this cannot be confirmed from the input.
 
-US-010 'HR Admin corrects or erases a leaver's record' is delivered under commit eae5063b59a1cdaf1f2dbc6c632596dd3792556b. It is a backend-agent story of 5 points in EPIC-002.
+### DEV-US-016 · draft · source: dev:US-016
 
-- Ticket: US-010, status delivered.
-- Commit: eae5063b59a1cdaf1f2dbc6c632596dd3792556b.
-- The same commit is recorded for US-012.
-- Plan: the Sprint 3 goal mentions 'leaver handling'.
+US-016, log daily hours against assigned projects (backend, 5 points), is delivered in commit 18927b64, shared with US-017.
 
-**Related:** US-010, US-012
+- Ticket status: delivered.
+- Commit: 18927b6478eaaaa6385085eb98a3c07169633dd2, shared with US-017.
+- Part of EPIC-004 Timesheet Entry and Submission.
 
-- ⚠ No details are provided on what 'correct' and 'erase' do, such as retention rules or audit entries.
-- ⚠ The commit is shared with US-012, so the changes for each ticket cannot be separated from the input.
-- ⚠ US-007 (audit log) has no delivery record, so audit coverage of erasure is unconfirmed.
-- ⚠ No test results or review are recorded.
+**Related:** US-016, EPIC-004, US-014, DEV-RUN
 
-### DEV-US-012 · draft · source: dev:US-012
+- ⚠ No implementation details were provided (validation rules, limits, data model).
+- ⚠ No review, test or approval outcome was provided.
+- ⚠ It is not confirmed how 'assigned projects' is enforced, given that US-015 was skipped.
 
-US-012 'Manager views their direct reports' is delivered under commit eae5063b59a1cdaf1f2dbc6c632596dd3792556b. It is a backend-agent story of 3 points in EPIC-002.
+### DEV-US-017 · draft · source: dev:US-017
 
-- Ticket: US-012, status delivered.
-- Commit: eae5063b59a1cdaf1f2dbc6c632596dd3792556b.
-- The same commit is recorded for US-010.
-- Plan: the Sprint 3 goal mentions 'team view'.
+US-017, enter and review a weekly timesheet (frontend, 2 points per plan listing 5), is delivered in commit 18927b64, shared with US-016.
 
-**Related:** US-012, US-010
+- Ticket status: delivered.
+- Commit: 18927b6478eaaaa6385085eb98a3c07169633dd2, shared with US-016.
+- Part of EPIC-004 Timesheet Entry and Submission. The Sprint 4 goal refers to the weekly grid.
 
-- ⚠ No details of the implementation are provided.
-- ⚠ The commit is shared with US-010, so the changes for each ticket cannot be separated from the input.
-- ⚠ The dependency on relationship-scoped access (US-004) has no delivery record.
-- ⚠ No test results or review are recorded.
+**Related:** US-017, US-016, EPIC-004, DEV-RUN
+
+- ⚠ No implementation details of the weekly grid screen were provided.
+- ⚠ No review, test or approval outcome was provided.
+- ⚠ Submission and status (US-018) have no recorded ticket, so how the weekly timesheet is submitted is not documented.
+
+### DEV-UNTRACKED · draft · source: plan:v3
+
+The stories listed in the related ids are in the approved plan but have no ticket status or commit in the development input. Their delivery state is unknown and is not documented as done.
+
+- Covered by no recorded ticket: all of EPIC-001 (US-001 to US-007), EPIC-002 (US-008 to US-012), US-018 and US-019, EPIC-005 (US-020 to US-022), EPIC-006 (US-023 to US-029 and tasks US-029-T1 to T3), EPIC-007 (US-030 to US-035 and tasks US-031-T1 to T3), EPIC-008 (US-036 to US-038), EPIC-009 (US-039, US-040) and US-041 to US-046.
+- Nothing is documented for these items beyond their plan entries in DEV-BACKLOG.
+
+**Related:** US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-018, US-019, US-020, US-021, US-022, US-023, US-024, US-025, US-026, US-027, US-028, US-029, US-030, US-031, US-032, US-033, US-034, US-035, US-036, US-037, US-038, US-039, US-040, US-041, US-042, US-043, US-044, US-045, US-046
+
+- ⚠ Confirm whether tickets for these stories were run, are pending, or were omitted from the report.
+- ⚠ Confirm the discrepancy between run status 'completed' and the absence of these tickets.
+- ⚠ The secure sign-in, role-based access and audit foundations (EPIC-001) have no recorded delivery, so the security behaviour of the build cannot be documented.
+- ⚠ No testing, review or QA evidence exists for any story, including the qa-agent tasks US-031-T3, US-043 and US-046.
+- ⚠ Because most functionality is not confirmed as built, a user guide cannot yet be reliably documented from this input.
 <!-- sdlc:auto:end narrative -->

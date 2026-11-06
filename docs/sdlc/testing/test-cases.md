@@ -3,9 +3,9 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start summary -->
-195 tests · Passed 171 · Failed 0 · Skipped 7 · Not run 17
+226 tests · Passed 197 · Failed 0 · Skipped 7 · Not run 22
 
-Acceptance criteria covered: 45/163 · passing: 28/163
+Acceptance criteria covered: 53/163 · passing: 31/163
 <!-- sdlc:auto:end summary -->
 
 <!-- sdlc:auto:start tests -->
@@ -266,6 +266,44 @@ Acceptance criteria covered: 45/163 · passing: 28/163
 | AC-042 | [AC-042] a manager with no reports sees the empty state | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
 | AC-043 | [AC-043] a non-report is not listed on My Team | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
 | AC-043 | [AC-043] a non-report's profile is not reachable from the screen | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
+
+## Sprint 4
+
+### US-016: Log daily hours against assigned projects
+
+| Criteria | Test | Level | Result | File |
+|---|---|---|---|---|
+| AC-052 | Timesheet grid > [AC-052] saves 7.5 via PUT, keeps it under today and shows Draft | Unit | Passed | `frontend/src/screens/Timesheet.test.tsx` |
+| AC-053 | Timesheet grid > [AC-053] only pickable projects are editable; closed ones are read-only | Unit | Passed | `frontend/src/screens/Timesheet.test.tsx` |
+| AC-053 | Timesheet grid > [AC-053] shows the empty state when there are no projects | Unit | Passed | `frontend/src/screens/Timesheet.test.tsx` |
+| AC-054 | Timesheet grid > [AC-054] a 422 daily maximum shows the server message, flags the day, keeps values | Unit | Passed | `frontend/src/screens/Timesheet.test.tsx` |
+| AC-055 | Timesheet grid > [AC-055] a negative value is flagged client-side and nothing is sent | Unit | Passed | `frontend/src/screens/Timesheet.test.tsx` |
+| AC-056 | Timesheet grid > [AC-056] loads the current week and shows row, day and week totals | Unit | Passed | `frontend/src/screens/Timesheet.test.tsx` |
+| AC-058 | Timesheet grid > [AC-058] next week loads that week; locked weeks are read-only | Unit | Passed | `frontend/src/screens/Timesheet.test.tsx` |
+| AC-046 | test_ac046_closed_project_hours_returned_on_locked_week[approved] | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-046 | test_ac046_closed_project_hours_returned_on_locked_week[submitted] | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-046 | test_ac046_closing_project_unpicks_it_but_keeps_hours | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-052 | test_ac052_put_stores_in_draft_and_get_returns_it | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-053 | test_ac053_pickable_only_for_active_assigned_projects | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-053 | test_ac053_unassignment_removes_pickable_but_keeps_hours | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-054 | test_ac054_exactly_24_is_accepted | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-054 | test_ac054_over_24_is_422_naming_daily_maximum_and_nothing_saved | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-054 | test_ac054_single_cell_over_24_is_422 | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-055 | test_ac055_bad_row_blocks_whole_payload | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-055 | test_ac055_negative_or_non_numeric_hours_422_with_field_and_not_saved[-0.5] | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-055 | test_ac055_negative_or_non_numeric_hours_422_with_field_and_not_saved[-1] | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-055 | test_ac055_negative_or_non_numeric_hours_422_with_field_and_not_saved[None] | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-055 | test_ac055_negative_or_non_numeric_hours_422_with_field_and_not_saved[] | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-055 | test_ac055_negative_or_non_numeric_hours_422_with_field_and_not_saved[abc] | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| — | test_nfr004_employee_reads_only_own_week | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| — | test_nfr004_other_employee_cannot_write_into_my_week | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| — | test_nfr004_put_unassigned_project_is_403_and_not_saved | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| — | test_nfr004_unauthenticated_is_401 | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
+| AC-054 | [AC-054] a day total above 24 is flagged inline with a message and is not saved | E2E | Not run yet | `frontend/e2e/timesheet-grid.spec.ts` |
+| AC-055 | [AC-055] a negative value is flagged inline with a message and is not saved | E2E | Not run yet | `frontend/e2e/timesheet-grid.spec.ts` |
+| AC-056 | [AC-056] grid shows each assigned project as a row, Mon–Sun columns and row/day/week totals | E2E | Not run yet | `frontend/e2e/timesheet-grid.spec.ts` |
+| AC-057 | [AC-057] editing a cell and clicking Save draft recalculates totals and persists after reload | E2E | Not run yet | `frontend/e2e/timesheet-grid.spec.ts` |
+| AC-058 | [AC-058] Previous and Next week show that week's entries and status; an empty week is a blank draft | E2E | Not run yet | `frontend/e2e/timesheet-grid.spec.ts` |
 
 ## Project setup
 

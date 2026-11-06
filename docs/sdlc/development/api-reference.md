@@ -28,9 +28,13 @@
 | GET | /api/my/projects | my_projects | `backend/app/routers/scoped.py:99` | — |
 | GET | /api/my/team | my_team | `backend/app/routers/employees.py:491` | — |
 | GET | /api/my/team/{employee_id} | my_team_member | `backend/app/routers/employees.py:447` | — |
+| POST | /api/projects/{project_id}/assignments | assign_employee | `backend/app/routers/project_assignments.py:74` | — |
+| DELETE | /api/projects/{project_id}/assignments/{assignment_id} | unassign_employee | `backend/app/routers/project_assignments.py:125` | — |
 | GET | /api/timesheets | list_timesheets | `backend/app/routers/scoped.py:128` | — |
+| GET | /api/timesheets/week/{week_start} | get_week | `backend/app/routers/timesheets.py:148` | — |
+| PUT | /api/timesheets/week/{week_start}/entries | put_week_entries | `backend/app/routers/timesheets.py:155` | — |
 | GET | /api/timesheets/{entry_id} | get_timesheet_entry | `backend/app/routers/scoped.py:181` | — |
-| GET | /health | health | `backend/app/main.py:51` | Liveness probe, and the only route here that is not a stub. |
+| GET | /health | health | `backend/app/main.py:57` | Liveness probe, and the only route here that is not a stub. |
 <!-- sdlc:auto:end endpoints -->
 
 <!-- sdlc:auto:start drift -->
@@ -43,7 +47,6 @@
 - GET /api/leave-balances
 - GET /api/notifications
 - GET /api/projects
-- GET /api/timesheets/week/{week_start}
 - PATCH /api/attendance/{id}/regularise
 - PATCH /api/employees/{id}
 - POST /api/admin/holidays
@@ -60,11 +63,11 @@
 - POST /api/projects/{id}/assignments
 - POST /api/timesheets/{id}/submit
 - PUT /api/admin/leave-balances/{employee_id}/{leave_type_id}
-- PUT /api/timesheets/week/{week_start}/entries
 
 **Code only:**
 
 - DELETE /api/departments/{department_id}
+- DELETE /api/projects/{project_id}/assignments/{assignment_id}
 - GET /api/attendance/{record_id}
 - GET /api/employees/{employee_id}
 - GET /api/leave-requests/{request_id}
@@ -72,8 +75,9 @@
 - GET /api/timesheets/{entry_id}
 - PATCH /api/employees/{employee_id}
 - POST /api/employees/{employee_id}/erase
+- POST /api/projects/{project_id}/assignments
 <!-- sdlc:auto:end drift -->
 
 <!-- sdlc:auto:start source -->
-Generated from commit `688a7f9`
+Generated from commit `8dd2714`
 <!-- sdlc:auto:end source -->
