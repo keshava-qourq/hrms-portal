@@ -3,23 +3,39 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start narrative -->
-### DEPLOY-688a7f9cb4c3 · draft · source: deployment:688a7f9cb4c3
+### DEPLOY-ecfac516ce8e · approved · source: deployment:ecfac516ce8e
 
-Version 688a7f9cb4c3 of the HRMS portal is recorded as live. The frontend is served from an Amplify-hosted URL and the backend API from an sslip.io-based URL.
+Version ecfac516ce8e is recorded as live. The frontend and backend are reachable at the URLs below. No other deployment metadata was provided.
 
 - Status: live
-- Version: 688a7f9cb4c3
-- Frontend URL: https://p0b51fe7c3507.d13el1ykvx8z63.amplifyapp.com
+- Version: ecfac516ce8e
+- Frontend URL: https://p0b51fe7c3507.d13el1ykvx8z63.amplifyapp.com (the hostname suggests AWS Amplify hosting; this is inferred from the domain and not stated in the input)
 - Backend URL: https://184-198-241-75.sslip.io/apps/0b51fe7c3507/
-- Scope: the input does not state which requirements (US-001 to US-046) are included in this release, so none are linked.
-- Not stated in the input: deploy date/time, who triggered or approved the release, target environment (production/staging), deployment method, and configuration or secrets handling.
+- Both URLs share the identifier fragment 0b51fe7c3507 / p0b51fe7c3507, which suggests they belong to the same application instance. This is an observation, not a stated fact.
+- Scope: the HRMS portal as described (Employee Management, Timesheet Management, Leave Management, Approval Workflows, and RBAC for Employee, Reporting Manager, HR Admin, Project Manager and System Admin roles).
 
-- ⚠ No deployment date/timestamp provided.
-- ⚠ No deployment id, environment name (prod/staging), or approver recorded.
-- ⚠ No mapping of this version to the requirements (US-001..US-046) it delivers, so related_ids is empty.
-- ⚠ No smoke-test, health-check, or post-deploy verification results provided.
-- ⚠ No rollback plan or previous-version reference provided.
-- ⚠ Backend URL uses an sslip.io wildcard-DNS host on a raw IP; whether this is intended for production use is not stated.
-- ⚠ The project description is truncated at RBAC requirement 2 ('Employees can'), so the full RBAC requirements could not be checked against this release.
-- ⚠ Security and compliance items for a login/RBAC HR system (e.g. TLS config, audit logging, personal-data protection) are not documented for this deployment.
+- ⚠ Deployment date/time was not provided.
+- ⚠ Environment (production, staging, etc.) was not stated, only 'live'.
+- ⚠ Who triggered or approved the deployment was not recorded.
+- ⚠ Deployment method, pipeline, and infrastructure details were not provided.
+- ⚠ No health check, smoke test, or post-deploy verification results were supplied.
+- ⚠ No rollback plan or previous version was recorded.
+- ⚠ The 'live' status is taken from the input and was not independently verified.
+- ⚠ It is unclear whether the backend URL (sslip.io host) is a permanent production endpoint or a temporary one.
+- ⚠ The 'approved' status reflects only that the deployment is reported live. No explicit approval was provided.
+
+### DEPLOY-SCOPE · draft · source: deployment:ecfac516ce8e
+
+The project has 46 known requirement keys (US-001 to US-046). The deployment input does not say which of them are included in version ecfac516ce8e.
+
+- Known requirement keys: US-001 through US-046.
+- The deployment record carries no release notes, changelog, or requirement-to-release mapping.
+- The requirement links are listed for traceability only and do not confirm that each requirement is delivered in this release.
+
+**Related:** US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018, US-019, US-020, US-021, US-022, US-023, US-024, US-025, US-026, US-027, US-028, US-029, US-030, US-031, US-032, US-033, US-034, US-035, US-036, US-037, US-038, US-039, US-040, US-041, US-042, US-043, US-044, US-045, US-046
+
+- ⚠ No mapping of requirements to version ecfac516ce8e was provided, so delivery of each requirement is unconfirmed.
+- ⚠ No testing results were supplied to confirm the deployed build was validated.
+- ⚠ The project description is truncated in the RBAC section ('2. Employees can'), so the complete RBAC requirements could not be documented.
+- ⚠ No domain or industry skill was supplied, so no compliance traceability was performed.
 <!-- sdlc:auto:end narrative -->

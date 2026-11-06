@@ -50,7 +50,7 @@ HRMS portal is a two-app repository. `backend/` is a FastAPI service using SQLAl
 | `.quorq/` | Quorq platform metadata (handoff.json, prepared.json). |
 | `backend/app/` | FastAPI application: main.py (app, CORS, health), models.py, schemas.py, database.py, config.py, security.py (sessions, hashing), authz.py (roles and permissions), audit.py, services.py. |
 | `backend/app/routers/` | Route modules: auth, admin, audit, employees (departments, employees, my team) and scoped (projects, timesheets, attendance, leave). |
-| `backend/scripts/` | Helper scripts (check_connections.py; seed_demo.py creates the demo sign-ins from app/demo_seed.py, one per role, password `DemoPass123!`; the deployed image also creates them on startup via SEED_DEMO_ACCOUNTS=true in the Dockerfile). |
+| `backend/scripts/` | Helper scripts (check_connections.py). |
 | `backend/tests/` | Pytest suite: test_health.py plus integration/ tests. |
 | `backend/tests/integration/` | Integration tests for auth, RBAC, relationship scoping, employees, departments, audit log, password reset, user creation, leaver erasure and my-team. |
 | `frontend/e2e/` | Playwright acceptance specs. |

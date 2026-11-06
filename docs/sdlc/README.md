@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v18
+**Documentation version:** v19
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -40,7 +40,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Architecture](architecture/README.md) | 22 entries |
 | [Development](development/README.md) | 7 entries |
 | [Testing](testing/README.md) | 2 entries |
-| [Deployment](deployment/README.md) | 1 entry |
+| [Deployment](deployment/README.md) | 2 entries |
 | [Maintenance](maintenance/README.md) | 1 entry |
 | [Data model](architecture/data-model.md) | generated |
 | [API (OpenAPI)](architecture/api/openapi.yaml) | generated |
@@ -48,13 +48,13 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Sprint plan](development/sprint-plan.md) | 10 sprints |
 | [Developer guide](development/developer-guide.md) | generated |
 | [API reference](development/api-reference.md) | 26 routes |
-| [Test report](testing/test-report.md) | running |
+| [Test report](testing/test-report.md) | failed |
 | [Tests](testing/test-cases.md) | 195 tests |
 | [Deployment guide](deployment/deployment-guide.md) | deployed |
 | [Runbook](deployment/runbook.md) | deployed |
-| [Release notes](deployment/release-notes.md) | 5 releases |
+| [Release notes](deployment/release-notes.md) | 6 releases |
 | [Traceability matrix](traceability-matrix.md) | 46 requirements |
-| [Changelog](CHANGELOG.md) | 18 versions |
+| [Changelog](CHANGELOG.md) | 19 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -226,14 +226,19 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Deployment
 
-- No deployment date/timestamp provided.
-- No deployment id, environment name (prod/staging), or approver recorded.
-- No mapping of this version to the requirements (US-001..US-046) it delivers, so related_ids is empty.
-- No smoke-test, health-check, or post-deploy verification results provided.
-- No rollback plan or previous-version reference provided.
-- Backend URL uses an sslip.io wildcard-DNS host on a raw IP; whether this is intended for production use is not stated.
-- The project description is truncated at RBAC requirement 2 ('Employees can'), so the full RBAC requirements could not be checked against this release.
-- Security and compliance items for a login/RBAC HR system (e.g. TLS config, audit logging, personal-data protection) are not documented for this deployment.
+- Deployment date/time was not provided.
+- Environment (production, staging, etc.) was not stated, only 'live'.
+- Who triggered or approved the deployment was not recorded.
+- Deployment method, pipeline, and infrastructure details were not provided.
+- No health check, smoke test, or post-deploy verification results were supplied.
+- No rollback plan or previous version was recorded.
+- The 'live' status is taken from the input and was not independently verified.
+- It is unclear whether the backend URL (sslip.io host) is a permanent production endpoint or a temporary one.
+- The 'approved' status reflects only that the deployment is reported live. No explicit approval was provided.
+- No mapping of requirements to version ecfac516ce8e was provided, so delivery of each requirement is unconfirmed.
+- No testing results were supplied to confirm the deployed build was validated.
+- The project description is truncated in the RBAC section ('2. Employees can'), so the complete RBAC requirements could not be documented.
+- No domain or industry skill was supplied, so no compliance traceability was performed.
 
 ### Maintenance
 

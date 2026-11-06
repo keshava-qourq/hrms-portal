@@ -3,6 +3,12 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start releases -->
+## ecfac516ce8e — 2026-11-06
+
+**Commit:** `ecfac51`
+
+_Nothing delivered in this window._
+
 ## 688a7f9cb4c3 — 2026-11-04
 
 **Commit:** `688a7f9`
