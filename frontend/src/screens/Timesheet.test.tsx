@@ -105,7 +105,9 @@ describe("Timesheet grid", () => {
   it("[AC-058] next week loads that week; locked weeks are read-only", async () => {
     const next = format(addWeeks(parseISO(MON), 1), ISO);
     mockFetch.mockImplementation(async (path?: string) =>
-      String(path).endsWith(next) ? week({ week_start: next, status: "approved", editable: false }) : week(),
+      String(path).endsWith(next)
+        ? week({ week_start: next, status: "approved", editable: false })
+        : week(),
     );
     renderIt();
     await screen.findByText("Project A");

@@ -149,7 +149,9 @@ export default function Screen() {
             else ce[keyOf(sent.project_id, sent.work_date)] = msg;
           }
         });
-        const text = messages.length ? messages.join(" ") : err.message || "The week was not saved.";
+        const text = messages.length
+          ? messages.join(" ")
+          : err.message || "The week was not saved.";
         if (/daily maximum/i.test(text))
           dates.forEach((d) => {
             if (dayTotal(d) > 24) de[d] = true;
@@ -298,9 +300,7 @@ export default function Screen() {
               Hours by project
             </h2>
             {!canEdit ? (
-              <p style={{ color: N, fontSize: 14 }}>
-                This week is {status} and read-only.
-              </p>
+              <p style={{ color: N, fontSize: 14 }}>This week is {status} and read-only.</p>
             ) : null}
             <div style={{ overflowX: "auto", marginTop: 16 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -381,7 +381,12 @@ export default function Screen() {
               </table>
             </div>
             <div style={{ display: "flex", gap: 16, marginTop: 24, flexWrap: "wrap" }}>
-              <Button type="button" data-wf="b-2-0" disabled={!canEdit || save.isPending} onClick={onSave}>
+              <Button
+                type="button"
+                data-wf="b-2-0"
+                disabled={!canEdit || save.isPending}
+                onClick={onSave}
+              >
                 Save draft
               </Button>
               <Button type="button" variant="outline" data-wf="b-2-2" disabled>

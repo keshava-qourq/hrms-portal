@@ -85,9 +85,7 @@ def ts(make_roled, factory):  # noqa: F811
 
     def put(entries, week=WEEK, headers=None):
         body = {
-            "entries": [
-                {"project_id": str(p), "work_date": d, "hours": h} for p, d, h in entries
-            ]
+            "entries": [{"project_id": str(p), "work_date": d, "hours": h} for p, d, h in entries]
         }
         return client.put(_url(week) + "/entries", headers=headers or t.h, json=body)
 
@@ -127,9 +125,7 @@ def ts(make_roled, factory):  # noqa: F811
 
 def _hours(body, pid, day):
     return [
-        e["hours"]
-        for e in body["entries"]
-        if e["project_id"] == str(pid) and e["work_date"] == day
+        e["hours"] for e in body["entries"] if e["project_id"] == str(pid) and e["work_date"] == day
     ]
 
 

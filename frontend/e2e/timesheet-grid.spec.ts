@@ -90,9 +90,7 @@ async function setup(page: Page, seed: Record<string, { status: string; entries:
             status: 422,
             contentType: "application/json",
             body: JSON.stringify({
-              detail: [
-                { loc: ["body", "entries", i, "hours"], msg: "Daily maximum is 24 hours" },
-              ],
+              detail: [{ loc: ["body", "entries", i, "hours"], msg: "Daily maximum is 24 hours" }],
             }),
           });
         }
