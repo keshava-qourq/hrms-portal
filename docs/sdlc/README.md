@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v22
+**Documentation version:** v23
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -38,7 +38,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 |---|---|
 | [Requirements](requirements/README.md) | v3 approved |
 | [Architecture](architecture/README.md) | 22 entries |
-| [Development](development/README.md) | 9 entries |
+| [Development](development/README.md) | 8 entries |
 | [Testing](testing/README.md) | 5 entries |
 | [Deployment](deployment/README.md) | 1 entry |
 | [Maintenance](maintenance/README.md) | 1 entry |
@@ -54,7 +54,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Runbook](deployment/runbook.md) | deployed |
 | [Release notes](deployment/release-notes.md) | 7 releases |
 | [Traceability matrix](traceability-matrix.md) | 46 requirements |
-| [Changelog](CHANGELOG.md) | 22 versions |
+| [Changelog](CHANGELOG.md) | 23 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -186,33 +186,31 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Development
 
-- The input does not map stories to sprints; only sprint goals are given.
-- Sprint 10 names CHG-001, but no change request content is provided.
-- No sprint start or end dates were provided.
-- The plan approver and approval date are not recorded.
-- Epics have no points or role assigned in the input.
-- The source of US-041 to US-046 (e.g. whether they come from CHG-001 or a defect) is not stated.
-- The project description was truncated in the input (RBAC requirement 2 is cut off), so the full RBAC requirements could not be cross-checked against the backlog.
-- Discrepancy: the run is 'completed', yet most planned stories (see DEV-UNTRACKED) have no ticket outcome and US-015 was skipped.
-- Tickets are not tied to sprints in the input.
-- No dates or test or QA results were provided for any ticket.
-- No details of what was implemented (endpoints, fields, permissions) were provided.
-- No review, test or approval outcome was provided.
-- Delivered ticket status is the only evidence; acceptance criteria were not supplied.
-- No implementation details were provided.
-- The assignment-related behaviour that depends on employee records (US-009) cannot be confirmed, as no ticket outcome for US-009 was provided.
-- The reason for skipping is not stated.
-- It is unknown whether the story is deferred, descoped or covered elsewhere.
-- Without this story, the project selection used by the weekly timesheet (US-016/US-017) may depend on another source; this cannot be confirmed from the input.
-- No implementation details were provided (validation rules, limits, data model).
-- It is not confirmed how 'assigned projects' is enforced, given that US-015 was skipped.
-- No implementation details of the weekly grid screen were provided.
-- Submission and status (US-018) have no recorded ticket, so how the weekly timesheet is submitted is not documented.
-- Confirm whether tickets for these stories were run, are pending, or were omitted from the report.
-- Confirm the discrepancy between run status 'completed' and the absence of these tickets.
-- The secure sign-in, role-based access and audit foundations (EPIC-001) have no recorded delivery, so the security behaviour of the build cannot be documented.
-- No testing, review or QA evidence exists for any story, including the qa-agent tasks US-031-T3, US-043 and US-046.
-- Because most functionality is not confirmed as built, a user guide cannot yet be reliably documented from this input.
+- The plan lists sprint goals and items separately. Which story or task belongs to which sprint is not stated, so any mapping from goals is inferred and not confirmed.
+- Epics and tasks have no point estimates, so sprint load against the capacity of 20 cannot be verified.
+- No approver or approval date is recorded for plan v1.
+- The project description input is cut off at 'RBAC Requirements ... 2. Employees can', so the complete RBAC requirements could not be cross-checked against the plan.
+- Discrepancy: the run status is 'completed', but 41 planned stories have no ticket record. Whether they were never started, deferred or omitted from the report is unknown.
+- No dates, authors, reviewers or test results were provided for any ticket.
+- The ticket-to-sprint relationship is not stated.
+- Delivered scope (fields, endpoints, validation, permissions) is not described in the input, so it cannot be documented.
+- No test or review outcome is recorded.
+- The commit is shared with US-014, so changes cannot be attributed to this ticket alone.
+- The Project Manager role is described as creating and managing projects, but no input confirms how access was implemented.
+- Delivered scope (assignment rules, allocated hours, permissions) is not described in the input.
+- The commit is shared with US-013.
+- No reason for skipping is given.
+- No rescheduling or follow-up ticket is recorded.
+- Impact on US-016 and US-017 is unknown: it is unclear how employees see which projects they can log hours against without this screen.
+- Delivered scope (validation, hour limits, data model) is not described in the input.
+- The commit is shared with US-017, so changes cannot be attributed to this ticket alone.
+- Screen behavior and layout are not described in the input.
+- US-015 was skipped, so how the weekly timesheet exposes assigned projects is unconfirmed.
+- Discrepancy: the run is 'completed' but covers only 5 of 46 stories.
+- Sign-in, role-based access, session security and the audit log (EPIC-001) have no development record.
+- Approval workflows and leave management have no development record.
+- No testing results exist for any story, including the qa-agent items US-043 and US-046.
+- No compliance or regulation context was provided, so no regulatory traceability could be produced.
 
 ### Testing
 
