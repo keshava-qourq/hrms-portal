@@ -3,9 +3,9 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start summary -->
-226 tests · Passed 197 · Failed 0 · Skipped 7 · Not run 22
+226 tests · Passed 217 · Failed 2 · Skipped 7 · Not run 0
 
-Acceptance criteria covered: 53/163 · passing: 31/163
+Acceptance criteria covered: 53/163 · passing: 46/163
 <!-- sdlc:auto:end summary -->
 
 <!-- sdlc:auto:start tests -->
@@ -52,8 +52,8 @@ Acceptance criteria covered: 53/163 · passing: 31/163
 | AC-012 | test_ac012_removing_role_revokes_access_on_next_request | Integration | Passed | `backend/tests/integration/test_rbac.py` |
 | — | test_nfr004_unauthenticated_admin_request_is_401_without_data | Integration | Passed | `backend/tests/integration/test_rbac.py` |
 | — | test_nfr021_only_five_fixed_roles_and_admin_cannot_create_others | Integration | Passed | `backend/tests/integration/test_rbac.py` |
-| AC-010 | [AC-010] multi-role user sees both the employee and the manager/admin menus | E2E | Not run yet | `frontend/e2e/navigation-gating.spec.ts` |
-| AC-011 | [AC-011] Employee-only user sees neither Team & Approvals nor Administration menus | E2E | Not run yet | `frontend/e2e/navigation-gating.spec.ts` |
+| AC-010 | [AC-010] multi-role user sees both the employee and the manager/admin menus | E2E | Passed | `frontend/e2e/navigation-gating.spec.ts` |
+| AC-011 | [AC-011] Employee-only user sees neither Team & Approvals nor Administration menus | E2E | Failed | `frontend/e2e/navigation-gating.spec.ts` |
 
 ### US-007: Immutable audit log of approvals, changes and admin actions
 
@@ -103,9 +103,9 @@ Acceptance criteria covered: 53/163 · passing: 31/163
 |---|---|---|---|---|
 | AC-135 | datetime > [AC-135] renders a timestamptz in the company timezone | Unit | Passed | `frontend/src/lib/datetime.test.ts` |
 | AC-135 | datetime > [AC-135] uses one format for bare stamps and dates | Unit | Passed | `frontend/src/lib/datetime.test.ts` |
-| AC-134 | [AC-134] no language selector on the sign-in screen | E2E | Not run yet | `frontend/e2e/single-language-timestamps.spec.ts` |
-| AC-135 | [AC-135] [NFR-017] company-timezone formatting is independent of browser timezone | E2E | Not run yet | `frontend/e2e/single-language-timestamps.spec.ts` |
-| AC-135 | [AC-135] the same instant renders identically across screens and in company timezone | E2E | Not run yet | `frontend/e2e/single-language-timestamps.spec.ts` |
+| AC-134 | [AC-134] no language selector on the sign-in screen | E2E | Passed | `frontend/e2e/single-language-timestamps.spec.ts` |
+| AC-135 | [AC-135] [NFR-017] company-timezone formatting is independent of browser timezone | E2E | Passed | `frontend/e2e/single-language-timestamps.spec.ts` |
+| AC-135 | [AC-135] the same instant renders identically across screens and in company timezone | E2E | Passed | `frontend/e2e/single-language-timestamps.spec.ts` |
 
 ## Sprint 2
 
@@ -126,7 +126,7 @@ Acceptance criteria covered: 53/163 · passing: 31/163
 | AC-008 | test_ac008_unauthenticated_create_is_401 | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
 | AC-009 | test_ac009_audit_entry_never_contains_password | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
 | AC-009 | test_ac009_create_edit_deactivate_each_produce_audit_entry | Integration | Passed | `backend/tests/integration/test_user_creation.py` |
-| AC-006 | [AC-006] the sign-in screen itself exposes no self-registration affordance | E2E | Not run yet | `frontend/e2e/no-self-registration.spec.ts` |
+| AC-006 | [AC-006] the sign-in screen itself exposes no self-registration affordance | E2E | Passed | `frontend/e2e/no-self-registration.spec.ts` |
 
 ### US-004: Access scoped by relationship, not only by role
 
@@ -166,7 +166,7 @@ Acceptance criteria covered: 53/163 · passing: 31/163
 | AC-035 | test_ac035_unchanged_edit_records_nothing | Integration | Passed | `backend/tests/integration/test_employees.py` |
 | — | test_authz_non_hr_admin_cannot_create_employee | Integration | Passed | `backend/tests/integration/test_employees.py` |
 | — | test_authz_unauthenticated_create_is_401 | Integration | Passed | `backend/tests/integration/test_employees.py` |
-| — | [US-009-3] missing mandatory field shows inline validation, then create succeeds and appears in the directory | E2E | Not run yet | `frontend/e2e/employee-create.spec.ts` |
+| — | [US-009-3] missing mandatory field shows inline validation, then create succeeds and appears in the directory | E2E | Passed | `frontend/e2e/employee-create.spec.ts` |
 
 ## Sprint 3
 
@@ -190,8 +190,8 @@ Acceptance criteria covered: 53/163 · passing: 31/163
 | AC-024 | test_ac024_non_admin_cannot_read_audit_of_reset | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
 | AC-024 | test_ac024_reset_and_change_are_audited_without_password | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
 | AC-024 | test_ac024_reset_audit_entry_has_actor_account_timestamp_and_no_otp | Integration | Passed | `backend/tests/integration/test_password_reset.py` |
-| AC-021 | [AC-021] sign-in tells the user to contact an administrator and offers no self-service reset | E2E | Not run yet | `frontend/e2e/forced-password-change.spec.ts` |
-| AC-023 | [AC-023] one-time password sign-in is forced to change password before any other screen | E2E | Not run yet | `frontend/e2e/forced-password-change.spec.ts` |
+| AC-021 | [AC-021] sign-in tells the user to contact an administrator and offers no self-service reset | E2E | Passed | `frontend/e2e/forced-password-change.spec.ts` |
+| AC-023 | [AC-023] one-time password sign-in is forced to change password before any other screen | E2E | Passed | `frontend/e2e/forced-password-change.spec.ts` |
 
 ### US-008: View and update my own profile
 
@@ -212,9 +212,9 @@ Acceptance criteria covered: 53/163 · passing: 31/163
 | AC-031 | test_ac031_mixed_payload_is_refused_whole | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
 | AC-031 | test_ac031_refused_attempt_writes_no_audit | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
 | AC-031 | test_ac031_unauthenticated_patch_is_401 | Integration | Passed | `backend/tests/integration/test_own_profile.py` |
-| AC-029 | [AC-029] My Profile displays name, employee ID, department, manager, work email and contact details | E2E | Not run yet | `frontend/e2e/my-profile.spec.ts` |
-| AC-030 | [AC-030] changing the mobile number saves, sends only editable fields and confirms on screen | E2E | Not run yet | `frontend/e2e/my-profile.spec.ts` |
-| AC-031 | [AC-031] department, reporting manager and employee ID are read-only | E2E | Not run yet | `frontend/e2e/my-profile.spec.ts` |
+| AC-029 | [AC-029] My Profile displays name, employee ID, department, manager, work email and contact details | E2E | Passed | `frontend/e2e/my-profile.spec.ts` |
+| AC-030 | [AC-030] changing the mobile number saves, sends only editable fields and confirms on screen | E2E | Passed | `frontend/e2e/my-profile.spec.ts` |
+| AC-031 | [AC-031] department, reporting manager and employee ID are read-only | E2E | Passed | `frontend/e2e/my-profile.spec.ts` |
 
 ### US-010: HR Admin corrects or erases a leaver's record
 
@@ -262,10 +262,10 @@ Acceptance criteria covered: 53/163 · passing: 31/163
 | AC-043 | test_ac043_non_report_profile_is_refused_403_without_data[unassigned] | Integration | Passed | `backend/tests/integration/test_my_team.py` |
 | AC-043 | test_ac043_non_report_profile_is_refused_403_without_data[unknown] | Integration | Passed | `backend/tests/integration/test_my_team.py` |
 | AC-043 | test_ac043_unauthenticated_is_401 | Integration | Passed | `backend/tests/integration/test_my_team.py` |
-| AC-042 | [AC-042] My Team lists exactly the three reports with department and leave/timesheet status | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
-| AC-042 | [AC-042] a manager with no reports sees the empty state | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
-| AC-043 | [AC-043] a non-report is not listed on My Team | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
-| AC-043 | [AC-043] a non-report's profile is not reachable from the screen | E2E | Not run yet | `frontend/e2e/my-team.spec.ts` |
+| AC-042 | [AC-042] My Team lists exactly the three reports with department and leave/timesheet status | E2E | Passed | `frontend/e2e/my-team.spec.ts` |
+| AC-042 | [AC-042] a manager with no reports sees the empty state | E2E | Passed | `frontend/e2e/my-team.spec.ts` |
+| AC-043 | [AC-043] a non-report is not listed on My Team | E2E | Passed | `frontend/e2e/my-team.spec.ts` |
+| AC-043 | [AC-043] a non-report's profile is not reachable from the screen | E2E | Passed | `frontend/e2e/my-team.spec.ts` |
 
 ## Sprint 4
 
@@ -299,11 +299,11 @@ Acceptance criteria covered: 53/163 · passing: 31/163
 | — | test_nfr004_other_employee_cannot_write_into_my_week | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
 | — | test_nfr004_put_unassigned_project_is_403_and_not_saved | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
 | — | test_nfr004_unauthenticated_is_401 | Integration | Passed | `backend/tests/integration/test_timesheet_week.py` |
-| AC-054 | [AC-054] a day total above 24 is flagged inline with a message and is not saved | E2E | Not run yet | `frontend/e2e/timesheet-grid.spec.ts` |
-| AC-055 | [AC-055] a negative value is flagged inline with a message and is not saved | E2E | Not run yet | `frontend/e2e/timesheet-grid.spec.ts` |
-| AC-056 | [AC-056] grid shows each assigned project as a row, Mon–Sun columns and row/day/week totals | E2E | Not run yet | `frontend/e2e/timesheet-grid.spec.ts` |
-| AC-057 | [AC-057] editing a cell and clicking Save draft recalculates totals and persists after reload | E2E | Not run yet | `frontend/e2e/timesheet-grid.spec.ts` |
-| AC-058 | [AC-058] Previous and Next week show that week's entries and status; an empty week is a blank draft | E2E | Not run yet | `frontend/e2e/timesheet-grid.spec.ts` |
+| AC-054 | [AC-054] a day total above 24 is flagged inline with a message and is not saved | E2E | Failed | `frontend/e2e/timesheet-grid.spec.ts` |
+| AC-055 | [AC-055] a negative value is flagged inline with a message and is not saved | E2E | Passed | `frontend/e2e/timesheet-grid.spec.ts` |
+| AC-056 | [AC-056] grid shows each assigned project as a row, Mon–Sun columns and row/day/week totals | E2E | Passed | `frontend/e2e/timesheet-grid.spec.ts` |
+| AC-057 | [AC-057] editing a cell and clicking Save draft recalculates totals and persists after reload | E2E | Passed | `frontend/e2e/timesheet-grid.spec.ts` |
+| AC-058 | [AC-058] Previous and Next week show that week's entries and status; an empty week is a blank draft | E2E | Passed | `frontend/e2e/timesheet-grid.spec.ts` |
 
 ## Project setup
 
@@ -311,5 +311,5 @@ Acceptance criteria covered: 53/163 · passing: 31/163
 |---|---|---|---|---|
 | — | test_health_reports_ok | Unit | Passed | `backend/tests/test_health.py` |
 | — | test_the_openapi_document_builds | Unit | Passed | `backend/tests/test_health.py` |
-| — | the app loads | E2E | Not run yet | `frontend/e2e/example.spec.ts` |
+| — | the app loads | E2E | Passed | `frontend/e2e/example.spec.ts` |
 <!-- sdlc:auto:end tests -->

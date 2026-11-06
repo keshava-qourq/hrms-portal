@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v21
+**Documentation version:** v22
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -39,7 +39,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Requirements](requirements/README.md) | v3 approved |
 | [Architecture](architecture/README.md) | 22 entries |
 | [Development](development/README.md) | 9 entries |
-| [Testing](testing/README.md) | 2 entries |
+| [Testing](testing/README.md) | 5 entries |
 | [Deployment](deployment/README.md) | 1 entry |
 | [Maintenance](maintenance/README.md) | 1 entry |
 | [Data model](architecture/data-model.md) | generated |
@@ -54,7 +54,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Runbook](deployment/runbook.md) | deployed |
 | [Release notes](deployment/release-notes.md) | 7 releases |
 | [Traceability matrix](traceability-matrix.md) | 46 requirements |
-| [Changelog](CHANGELOG.md) | 21 versions |
+| [Changelog](CHANGELOG.md) | 22 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -216,16 +216,23 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Testing
 
-- The names and types of the 4 checks (lint, unit, build, etc.) are not stated.
-- No ticket is associated with this run (ticket=None), so it cannot be traced to a specific requirement.
-- No timestamp was provided.
-- No code coverage or per-requirement coverage data was provided.
-- It is unclear which user stories (US-001 to US-046) these checks cover, if any.
-- The E2E run has not finished, so there are no pass/fail results.
-- The 0/0 count means either no tests were discovered or none have reported yet. The input does not say which.
-- The E2E scenarios in scope are not listed, so coverage of login, RBAC, employee management, timesheets, leave and approval workflows is unknown.
-- No start time or run id was provided.
-- It is not stated whether the target URL is a test or production environment.
+- The names and scope of the 6 checks are not provided, so what this pass covers cannot be documented.
+- No run date or build/commit identifier was provided.
+- No ticket is associated with this run.
+- No run date, build/version or run id was provided.
+- The 37 passing checks are not listed, so coverage of the other requirements cannot be documented.
+- Failure causes are not provided.
+- No re-run or fix is recorded, so the failures are unresolved as far as the input shows.
+- No sign-off or release decision was provided.
+- The observed behavior is not stated (e.g. whether the menus were shown, or whether /approvals loaded or returned an error).
+- The requirement ids (US-xxx) behind AC-011 are not given, so the link to specific requirements is unconfirmed.
+- The RBAC requirements text in the project description is truncated at "2. Employees can", so the full RBAC rules could not be cross-checked.
+- No defect ticket or fix is recorded.
+- The actual formats observed are not provided.
+- The requirement ids (US-xxx) behind AC-135 are not given.
+- Whether other screens were checked for this format is unknown.
+- It is unclear whether the failure is a missing message, the entry being saved, or both.
+- The requirement ids (US-xxx) behind AC-054 are not given.
 
 ### Deployment
 
