@@ -3,6 +3,17 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start releases -->
+## 8dd271430d63 — 2026-11-06
+
+**Commit:** `8dd2714`
+
+**Delivered:**
+- US-013: Create and manage project records
+- US-014: Assign employees to projects
+- US-015: Employee sees their own project assignments
+- US-016: Log daily hours against assigned projects
+- US-017: Enter and review a weekly timesheet
+
 ## ecfac516ce8e — 2026-11-06
 
 **Commit:** `ecfac51`

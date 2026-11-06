@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v20
+**Documentation version:** v21
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -40,7 +40,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Architecture](architecture/README.md) | 22 entries |
 | [Development](development/README.md) | 9 entries |
 | [Testing](testing/README.md) | 2 entries |
-| [Deployment](deployment/README.md) | 2 entries |
+| [Deployment](deployment/README.md) | 1 entry |
 | [Maintenance](maintenance/README.md) | 1 entry |
 | [Data model](architecture/data-model.md) | generated |
 | [API (OpenAPI)](architecture/api/openapi.yaml) | generated |
@@ -52,9 +52,9 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Tests](testing/test-cases.md) | 226 tests |
 | [Deployment guide](deployment/deployment-guide.md) | deployed |
 | [Runbook](deployment/runbook.md) | deployed |
-| [Release notes](deployment/release-notes.md) | 6 releases |
+| [Release notes](deployment/release-notes.md) | 7 releases |
 | [Traceability matrix](traceability-matrix.md) | 46 requirements |
-| [Changelog](CHANGELOG.md) | 20 versions |
+| [Changelog](CHANGELOG.md) | 21 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -229,19 +229,16 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 
 ### Deployment
 
-- Deployment date/time was not provided.
-- Environment (production, staging, etc.) was not stated, only 'live'.
-- Who triggered or approved the deployment was not recorded.
-- Deployment method, pipeline, and infrastructure details were not provided.
-- No health check, smoke test, or post-deploy verification results were supplied.
-- No rollback plan or previous version was recorded.
-- The 'live' status is taken from the input and was not independently verified.
-- It is unclear whether the backend URL (sslip.io host) is a permanent production endpoint or a temporary one.
-- The 'approved' status reflects only that the deployment is reported live. No explicit approval was provided.
-- No mapping of requirements to version ecfac516ce8e was provided, so delivery of each requirement is unconfirmed.
-- No testing results were supplied to confirm the deployed build was validated.
-- The project description is truncated in the RBAC section ('2. Employees can'), so the complete RBAC requirements could not be documented.
-- No domain or industry skill was supplied, so no compliance traceability was performed.
+- Deployment date/time is not recorded.
+- Deployer and any release approval or sign-off are not recorded.
+- Target environment (production, staging, etc.) is not named, only the status 'live'.
+- Release scope is not stated, so no requirement (US-001 to US-046) can be linked to this version.
+- No release notes or change log were provided.
+- No rollback plan or previous version was provided.
+- No post-deployment verification (smoke test, health check) results were provided, so it is unconfirmed that the live app works end to end.
+- No record of how secrets, environment configuration, or database migrations were handled.
+- The backend uses a shared sslip.io wildcard-DNS hostname rather than a dedicated domain. Whether this is intended for the long term is not stated.
+- The project description supplied is truncated at RBAC requirement 2 ('Employees can'), so the full access-control requirements could not be checked against this deployment.
 
 ### Maintenance
 
