@@ -9,7 +9,6 @@ from datetime import date, timedelta
 from decimal import Decimal
 from typing import Annotated
 
-from dateutil.relativedelta import relativedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
@@ -160,7 +159,7 @@ def put_week_entries(
     _check_monday(week_start)
     ensure_relationship(user.employee_id is not None)
     employee_id = user.employee_id
-    week_end = week_start + relativedelta(days=6)
+    week_end = week_start + timedelta(days=6)
 
     for i, e in enumerate(payload.entries):
         if not week_start <= e.work_date <= week_end:
@@ -234,10 +233,8 @@ def put_week_entries(
             row.hours = hours
         else:
             db.add(
-                TimesheetEntry(
-                    timesheet_id=ts.id, project_id=key[0], work_date=key[1], hours=hours
-                )
+                TimesheetEntry(timesheet_id=ts.id, project_id=key[0], work_date=key[1], hours=hours)
             )
-    ts.total_hours = sum((h for h in cells.values()), Decimal(0))
+    ts.total_hours = sum(cells.values(), Decimal(0))
     db.commit()
     return _week(db, employee_id, week_start)
