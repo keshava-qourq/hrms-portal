@@ -122,9 +122,7 @@ def assign_employee(
     )
 
 
-@router.delete(
-    "/{project_id}/assignments/{assignment_id}", status_code=status.HTTP_204_NO_CONTENT
-)
+@router.delete("/{project_id}/assignments/{assignment_id}", status_code=status.HTTP_204_NO_CONTENT)
 def unassign_employee(
     project_id: str, assignment_id: str, user: Manager, db: DbSession
 ) -> Response:
