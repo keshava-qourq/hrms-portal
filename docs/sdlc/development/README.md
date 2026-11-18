@@ -34,11 +34,6 @@ Agent roles assigned: backend-agent, frontend-agent, security-agent (US-004) and
 
 **Related:** EPIC-001, EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-007, EPIC-008, EPIC-009
 
-- ⚠ The plan lists sprint goals and items separately. Which story or task belongs to which sprint is not stated, so any mapping from goals is inferred and not confirmed.
-- ⚠ Epics and tasks have no point estimates, so sprint load against the capacity of 20 cannot be verified.
-- ⚠ No approver or approval date is recorded for plan v1.
-- ⚠ The project description input is cut off at 'RBAC Requirements ... 2. Employees can', so the complete RBAC requirements could not be cross-checked against the plan.
-
 ### DEV-RUN-STATUS · draft · source: dev:run
 
 The development run is marked completed. Tickets were reported for only 5 of the 46 planned stories: 4 delivered and 1 skipped.
@@ -54,10 +49,6 @@ All reported tickets fall under EPIC-003 and EPIC-004, which matches the Sprint 
 
 **Related:** US-013, US-014, US-015, US-016, US-017
 
-- ⚠ Discrepancy: the run status is 'completed', but 41 planned stories have no ticket record. Whether they were never started, deferred or omitted from the report is unknown.
-- ⚠ No dates, authors, reviewers or test results were provided for any ticket.
-- ⚠ The ticket-to-sprint relationship is not stated.
-
 ### DEV-US-013 · draft · source: dev:US-013
 
 Create and manage project records (3 points, backend-agent). Delivered in commit eac0b9dc.
@@ -68,11 +59,6 @@ Create and manage project records (3 points, backend-agent). Delivered in commit
 - The plan places this story in EPIC-003, Projects and Employee Assignments.
 
 **Related:** US-013, EPIC-003
-
-- ⚠ Delivered scope (fields, endpoints, validation, permissions) is not described in the input, so it cannot be documented.
-- ⚠ No test or review outcome is recorded.
-- ⚠ The commit is shared with US-014, so changes cannot be attributed to this ticket alone.
-- ⚠ The Project Manager role is described as creating and managing projects, but no input confirms how access was implemented.
 
 ### DEV-US-014 · draft · source: dev:US-014
 
@@ -85,10 +71,6 @@ Assign employees to projects (3 points, backend-agent). Delivered in commit eac0
 
 **Related:** US-014, US-013, EPIC-003
 
-- ⚠ Delivered scope (assignment rules, allocated hours, permissions) is not described in the input.
-- ⚠ No test or review outcome is recorded.
-- ⚠ The commit is shared with US-013.
-
 ### DEV-US-015 · draft · source: dev:US-015
 
 Employee sees their own project assignments (2 points, frontend-agent). The ticket was skipped and no commit exists, so this capability is not delivered.
@@ -100,10 +82,6 @@ Employee sees their own project assignments (2 points, frontend-agent). The tick
 
 **Related:** US-015, US-014, EPIC-003
 
-- ⚠ No reason for skipping is given.
-- ⚠ No rescheduling or follow-up ticket is recorded.
-- ⚠ Impact on US-016 and US-017 is unknown: it is unclear how employees see which projects they can log hours against without this screen.
-
 ### DEV-US-016 · draft · source: dev:US-016
 
 Log daily hours against assigned projects (5 points, backend-agent). Delivered in commit 18927b64, shared with US-017.
@@ -113,10 +91,6 @@ Log daily hours against assigned projects (5 points, backend-agent). Delivered i
 - The plan places this story in EPIC-004, Timesheet Entry and Submission.
 
 **Related:** US-016, US-014, EPIC-004
-
-- ⚠ Delivered scope (validation, hour limits, data model) is not described in the input.
-- ⚠ No test or review outcome is recorded.
-- ⚠ The commit is shared with US-017, so changes cannot be attributed to this ticket alone.
 
 ### DEV-US-017 · draft · source: dev:US-017
 
@@ -128,10 +102,6 @@ Enter and review a weekly timesheet (5 points, frontend-agent). Delivered in com
 - Submission and status tracking (US-018) and resubmission (US-019) have no ticket records.
 
 **Related:** US-017, US-016, EPIC-004
-
-- ⚠ Screen behavior and layout are not described in the input.
-- ⚠ No test or review outcome is recorded.
-- ⚠ US-015 was skipped, so how the weekly timesheet exposes assigned projects is unconfirmed.
 
 ### DEV-COVERAGE-GAP · draft · source: plan:v1
 
@@ -150,10 +120,4 @@ Stories with no ticket record:
 The input does not say whether this work was started, deferred or left out of the report.
 
 **Related:** US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-041, US-042, US-043, US-044, US-045, US-046, US-008, US-009, US-010, US-011, US-012, US-018, US-019, US-020, US-021, US-022, US-023, US-024, US-025, US-026, US-027, US-028, US-029, US-030, US-031, US-032, US-033, US-034, US-035, US-036, US-037, US-038, US-039, US-040
-
-- ⚠ Discrepancy: the run is 'completed' but covers only 5 of 46 stories.
-- ⚠ Sign-in, role-based access, session security and the audit log (EPIC-001) have no development record.
-- ⚠ Approval workflows and leave management have no development record.
-- ⚠ No testing results exist for any story, including the qa-agent items US-043 and US-046.
-- ⚠ No compliance or regulation context was provided, so no regulatory traceability could be produced.
 <!-- sdlc:auto:end narrative -->

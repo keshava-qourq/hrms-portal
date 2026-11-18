@@ -21,12 +21,6 @@ Approved services (runtime_needs must include exactly these):
 
 API keys: REDIS_URL.
 
-- ⚠ Conflict: the queue rationale cites bulk spreadsheet import, month-end CSV/Excel payroll export and nightly pending-approval reminders. Bulk import and CSV/Excel export are not in the lightweight capability set, and reminder emails are out of scope because email was removed. Which background jobs the queue actually serves is unclear.
-- ⚠ The FastAPI rationale cites accrual/carry-over maths and CSV/Excel handling, and the cloud rationale cites SES. None of these is in scope for this version.
-- ⚠ The cache rationale cites team availability, project utilisation and leave liability dashboards, but EPIC-007 says manager dashboards and reports are not in this scope.
-- ⚠ The in-country data-residency, daily automated backup and point-in-time restore requirements appear only in the stack rationale. No user story or acceptance criterion covers them.
-- ⚠ Redis session store and queue share one Redis instance. No persistence or availability expectation is stated.
-
 ### REQ-SCOPE · draft · source: requirements:scope
 
 Requirements v3 uses the lightweight delivery scope. It lists in-scope capabilities and a firm out-of-scope list. The interface is a single-language, mobile-responsive web portal, with accounts created only by an administrator.
@@ -62,9 +56,6 @@ Beyond the out-of-scope list, these were assumed in the confirmed understanding 
 
 **Related:** US-001, US-008, US-013, US-016, US-020, US-023, US-036, US-037, US-039
 
-- ⚠ 'English / the local language' is ambiguous: which single language is configured is not stated.
-- ⚠ The scope-reduction decisions (no bulk import, no export, no accrual/carry-over, no email, no dashboards) are marked 'to confirm' in the epics, and no confirmation is recorded.
-
 ### REQ-RBAC · draft · source: requirements:project-description
 
 The project description defines five roles: Employee, Reporting Manager, HR Admin, Project Manager and System Admin. Its permission table is broader than what the lightweight user stories cover.
@@ -79,12 +70,6 @@ Role permissions as given in the description:
 RBAC requirement 1 as given: users log in securely and access only features permitted for their roles. Per EPIC-001: five fixed roles, a user may hold several roles (permissions are a union), and access is also scoped by relationship.
 
 **Related:** US-002, US-003, US-004, US-012, US-013, US-014, US-022, US-029, US-031, US-007
-
-- ⚠ The project description is truncated at 'RBAC requirement 2 (Employees can ...)'. The remaining RBAC requirements were not provided.
-- ⚠ The description gives Reporting Managers 'monitor team availability' and 'team reports', HR Admins 'organization-wide HR reports', and Project Managers 'monitor project utilization'. EPIC-005 and EPIC-007 exclude attendance reports and manager dashboards from this scope.
-- ⚠ The description says System Admin has 'full administrative access', 'permissions' and 'organization settings'. US-002 and EPIC-001 say admins assign roles but cannot toggle individual permissions or create custom roles. No story defines organisation settings or system configuration screens.
-- ⚠ The description says Project Managers 'review project-specific timesheets'. No story defines a screen or workflow for this, beyond the visibility rule in AC-014.
-- ⚠ The description lists notifications for approvals, but v3 delivers in-app alerts only.
 
 ### REQ-EPIC-001 · draft · source: requirements:EPIC-001
 
@@ -109,15 +94,6 @@ Assumptions listed for confirmation: application-managed email/password auth; ad
 
 **Related:** US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-041, US-042, US-043, US-044, US-045, US-046
 
-- ⚠ Conflict with the confirmed understanding: password reset by emailed link was assumed, but v3 delivers administrator-issued resets only. This needs confirmation.
-- ⚠ Session timeout duration and the lockout failed-attempt threshold are only 'configured'. No values are given, and no configuration screen or owner is defined.
-- ⚠ Lockout duration or auto-unlock is not stated. AC-019 implies a manual System Admin unlock only.
-- ⚠ Whether the current password is required for the forced change after a one-time password is ambiguous (AC-145 and AC-146 vs AC-023). The one-time password flow implies it might be supplied.
-- ⚠ The one-time password policy (length, complexity, expiry) and new-password rules are not defined.
-- ⚠ US-041 to US-046 read as defect-fix or technical stories. Their link to originally reported failures is not recorded in the input.
-- ⚠ The audit log's retention period and search/filter needs are not stated.
-- ⚠ US-004 does not say whether a Project Manager who creates a project is automatically 'assigned' to it for visibility.
-
 ### REQ-EPIC-002 · draft · source: requirements:EPIC-002
 
 Employee profiles with department and reporting manager. Employees edit permitted contact details, while HR Admins maintain records, departments and leavers, and Reporting Managers see their direct reports.
@@ -133,15 +109,6 @@ Assumptions: data is personal data with role/relationship-restricted access and 
 
 **Related:** US-008, US-009, US-010, US-011, US-012
 
-- ⚠ Which profile fields are employee-editable versus HR-only is assumed and needs confirmation.
-- ⚠ Bulk import was assumed in the confirmed understanding but is excluded. Creating several hundred records manually at launch is flagged as onerous and needs confirmation.
-- ⚠ The full profile field list is not defined beyond the fields named in the acceptance criteria.
-- ⚠ Conflict risk: erasure removes personal fields, yet the audit log retains before/after values of edits (AC-026, AC-035), which may contain personal data. How erasure treats existing audit entries is not specified.
-- ⚠ Whether an employee record can exist without a linked user account, and whether a reporting manager must also be an active employee, are not stated.
-- ⚠ Reporting-line rules such as a top-level employee with no manager are not defined here, although AC-116 assumes some managers have none. This sits against AC-033, which makes reporting manager mandatory.
-- ⚠ Who can see a leaver's history after the end date is not stated.
-- ⚠ 'Current leave/timesheet status' on My Team is not defined further.
-
 ### REQ-EPIC-003 · draft · source: requirements:EPIC-003
 
 Project records and employee assignments. Assignments determine what an employee can book hours against and what a Project Manager can see.
@@ -154,12 +121,6 @@ Stories:
 Assumptions: Project Managers see only projects they are assigned to; allocated hours are captured so allocated-vs-actual can be compared later, but the reporting dashboards are not in this scope.
 
 **Related:** US-013, US-014, US-015
-
-- ⚠ How a Project Manager becomes 'assigned' to a project (including the creator) is not stated.
-- ⚠ The project end date and the full list of statuses beyond 'active' and 'closed' are not defined.
-- ⚠ Whether an assignment has start/end dates is not stated, only an optional allocated-hours figure.
-- ⚠ No allocated-vs-actual view exists in this scope, so allocated hours have no visible use yet.
-- ⚠ Whether an employee already on leave or marked as a leaver can be assigned is not stated, beyond leavers being removed from assignment pickers (AC-036).
 
 ### REQ-EPIC-004 · draft · source: requirements:EPIC-004
 
@@ -175,15 +136,6 @@ Assumptions: the timesheet period is a calendar week, with hours entered per day
 
 **Related:** US-016, US-017, US-018, US-019
 
-- ⚠ Validation limits (e.g. 24 hours/day maximum) are assumed and need confirmation.
-- ⚠ The 24-hour limit is stated per day across all projects (AC-054). The 8-hour example in that criterion is not a limit.
-- ⚠ Whether hours entered on days of approved leave, weekends or holidays are blocked or warned is not specified.
-- ⚠ Whether one timesheet covers all projects for a week, or whether a partial-week or cross-month period is possible, is not stated.
-- ⚠ Whether hours can be entered in decimals other than 0.5 steps (e.g. 7.5 is shown in AC-052) is not defined.
-- ⚠ No reconciliation between timesheet hours and attendance by design. This is flagged for confirmation.
-- ⚠ Payroll export was assumed in the confirmed understanding but is excluded. This needs confirmation.
-- ⚠ How far back or forward a timesheet can be entered is not stated.
-
 ### REQ-EPIC-005 · draft · source: requirements:EPIC-005
 
 A distinct attendance module with browser clock-in/clock-out stamped by the server clock. Employees can view their own history and HR Admins correct missed punches. There is no geofencing and no attendance reports.
@@ -196,13 +148,6 @@ Stories:
 Assumptions: one clock-in and one clock-out per calendar day, with no mid-day breaks punched; biometric and badge/RFID are out of scope; attendance reports (late arrivals, early departures, absent days, hours per period) are not in this scope.
 
 **Related:** US-020, US-021, US-022
-
-- ⚠ HR Admins can set a departure time for an incomplete punch (AC-075). Correcting a missed clock-in, or creating a record for a day with no punches, is not explicitly covered.
-- ⚠ The one-punch-per-day assumption needs confirmation. How shifts crossing midnight are handled is not stated.
-- ⚠ The company timezone is not named, and day boundaries for 'today' depend on it.
-- ⚠ Reporting Managers have no attendance view of their team in any story, although the role table mentions team availability.
-- ⚠ Attendance reports (late, early, absent, hours per period) are excluded. This needs confirmation.
-- ⚠ Whether a forgotten clock-out auto-closes at end of day is not stated.
 
 ### REQ-EPIC-006 · draft · source: requirements:EPIC-006
 
@@ -221,16 +166,6 @@ Assumptions: balances deduct on approval; half-day is the smallest increment; re
 
 **Related:** US-023, US-024, US-025, US-026, US-027, US-028, US-029
 
-- ⚠ Accrual and carry-over were assumed in the confirmed understanding but are excluded. This needs confirmation, and year-end balance treatment is not defined.
-- ⚠ How the 'pending' amount is held against the balance for the shortfall check on a second request is not stated.
-- ⚠ How an HR override is applied (before or after submission, and by whom initiating it) is ambiguous in AC-088.
-- ⚠ No story lets an employee cancel or withdraw a submitted or approved leave request.
-- ⚠ A leave request rejected by a manager 'returns as an editable draft' (AC-111), but no leave edit/resubmit story or criterion exists, unlike US-019 for timesheets.
-- ⚠ The working-week definition (Saturday and Sunday as weekends) is assumed, not stated.
-- ⚠ Entitlement per employee versus per leave type: how HR sets individual entitlements (the annual figure per employee) is not fully specified beyond opening balances (AC-100).
-- ⚠ A multi-day range with a half-day at the start or end is not addressed, only a single-day half-day (AC-082).
-- ⚠ The deletion or deactivation of holidays and leave types already in use is not addressed.
-
 ### REQ-EPIC-007 · draft · source: requirements:EPIC-007
 
 Single-step approval by the Reporting Manager for timesheets and leave. A rejection comment is mandatory, there is no self-approval, and HR Admins can reopen approved items. Notifications are in-app only.
@@ -247,15 +182,6 @@ Assumptions (flagged as the most important to check): approval is single-step wi
 
 **Related:** US-030, US-031, US-032, US-033, US-034, US-035
 
-- ⚠ Conflict with the confirmed understanding: transactional email notifications and pending-approval reminder emails are removed. This needs confirmation.
-- ⚠ Single-step approval and no self-approval escalation rules are flagged for confirmation.
-- ⚠ The 'HR Admin queue' (AC-116) is not defined: no story gives HR Admins an approvals list or approval permission for submissions routed to them.
-- ⚠ AC-115 describes the manager's own reporting manager; the behaviour when that manager is on leave or deactivated is not defined.
-- ⚠ Whether the escalated approver sees the item in the same pending list (US-030) is implied but not stated.
-- ⚠ Reopened leave: the resulting status of the leave request is not specified (AC-119 only returns days).
-- ⚠ No bulk approve action and no delegation or out-of-office approver are described.
-- ⚠ Whether alerts persist indefinitely or are cleared is not stated.
-
 ### REQ-EPIC-008 · draft · source: requirements:EPIC-008
 
 A home dashboard for the signed-in employee covering timesheet, attendance and leave. Screens are mobile-responsive and the interface is single-language with one date/time format and timezone.
@@ -269,11 +195,6 @@ Assumptions: single-language English / the local language; browser-based mobile 
 
 **Related:** US-036, US-037, US-038
 
-- ⚠ The company timezone and the date/time display format are not specified.
-- ⚠ The dashboard content for users with other roles (HR Admin, Project Manager, System Admin) is not defined, apart from the manager approval count.
-- ⚠ Supported browsers and their minimum versions are not stated.
-- ⚠ Accessibility requirements are not stated.
-
 ### REQ-EPIC-009 · draft · source: requirements:EPIC-009
 
 In-portal Help pages for employees and administrators, in one language, covering only the capabilities built in this version. The administrator section also states the launch setup order.
@@ -285,11 +206,6 @@ Stories:
 Assumptions: delivered as in-portal help pages in the single configured language; covers this version's capabilities only; no video or interactive training.
 
 **Related:** US-039, US-040
-
-- ⚠ The guide covers 'the capabilities built in this version', so its content depends on what is actually built.
-- ⚠ The launch-setup order puts employees before accounts, but accounts require a linked employee record (AC-005). The order is consistent with that. The order places leave types and holidays before employees, yet balances need employees, so where opening-balance setup falls is not stated.
-- ⚠ Who maintains the guide content after release is not stated.
-- ⚠ The administrator section's visibility for each administrative role (HR Admin, Project Manager, System Admin) is not distinguished beyond 'administrative role'.
 <!-- sdlc:auto:end narrative -->
 
 <!-- sdlc:auto:start summary -->

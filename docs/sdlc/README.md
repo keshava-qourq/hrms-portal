@@ -28,7 +28,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 1. Users must log in securely and access only features permitted for their roles.
 2. Employees can
 
-**Documentation version:** v23
+**Documentation version:** v24
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -38,6 +38,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 |---|---|
 | [Requirements](requirements/README.md) | v3 approved |
 | [Architecture](architecture/README.md) | 22 entries |
+| [Planning](planning/README.md) | 19 entries |
 | [Development](development/README.md) | 8 entries |
 | [Testing](testing/README.md) | 5 entries |
 | [Deployment](deployment/README.md) | 1 entry |
@@ -54,7 +55,7 @@ Approval Workflows: Allow managers to approve/reject timesheets and leave reques
 | [Runbook](deployment/runbook.md) | deployed |
 | [Release notes](deployment/release-notes.md) | 7 releases |
 | [Traceability matrix](traceability-matrix.md) | 46 requirements |
-| [Changelog](CHANGELOG.md) | 23 versions |
+| [Changelog](CHANGELOG.md) | 24 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps

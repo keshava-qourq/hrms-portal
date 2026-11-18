@@ -7,15 +7,16 @@
 
 Sign-in, role union, audit log and departments foundation
 
-Capacity: 20 points · Committed: 20
+Capacity: 20 points · Committed: 21
 
 | Key | Type | Title | Points | Role | Depends on |
 |---|---|---|---|---|---|
-| US-001 | Story | Sign in with email and password | 5 | backend-agent | — |
+| US-001 | Story | Sign in with email and password | 3 | backend-agent | — |
 | US-003 | Story | Permissions combine as a union across multiple roles | 5 | backend-agent | US-001 |
 | US-007 | Story | Immutable audit log of approvals, changes and admin actions | 5 | backend-agent | — |
 | US-041 | Story | Sign-in screen reads session_token from the login response | 1 | frontend-agent | US-001 |
 | US-011 | Story | HR Admin maintains departments | 2 | backend-agent | — |
+| US-020 | Story | Clock in and clock out from any browser | 3 | backend-agent | US-001 |
 | US-038 | Story | Single-language interface and consistent date/time display | 2 | frontend-agent | — |
 
 ## Sprint 2: Sprint 2
@@ -62,12 +63,11 @@ Capacity: 20 points · Committed: 18
 
 Timesheet submission, clock-in/out and leave policy configuration
 
-Capacity: 20 points · Committed: 18
+Capacity: 20 points · Committed: 15
 
 | Key | Type | Title | Points | Role | Depends on |
 |---|---|---|---|---|---|
 | US-018 | Story | Submit a timesheet and track its status on screen | 5 | backend-agent | US-017 |
-| US-020 | Story | Clock in and clock out from any browser | 3 | backend-agent | US-001 |
 | US-021 | Story | View my own attendance history | 2 | backend-agent | US-020 |
 | US-029 | Story | HR Admin configures leave types, entitlements and holidays | 8 | backend-agent | US-009, US-007 |
 | ↳ US-029-T1 | Task | Add leave_types, leave_balances and holidays tables | — | backend-agent | — |

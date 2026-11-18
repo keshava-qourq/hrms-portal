@@ -20,10 +20,6 @@ Single-organisation HRMS portal. A React 19 SPA calls a FastAPI 0.115 REST API o
 
 **Related:** NFR-008, NFR-012, NFR-015
 
-- ⚠ Input does not say who approved the architecture or when.
-- ⚠ The summary says Redis has 'two approved roles' but the Redis component also lists the job queue as a third function. Confirm the intended count.
-- ⚠ NFR-008, NFR-012 and NFR-015 are cited but their definitions were not provided.
-
 ### ARCH-COMP-WEB · approved · source: architecture:v1:components:web_app
 
 HRMS Web Portal: a responsive React 19 SPA serving all five roles. It renders navigation only from the union of the signed-in user's roles; this is presentation only, and the server remains the authority.
@@ -31,8 +27,6 @@ HRMS Web Portal: a responsive React 19 SPA serving all five roles. It renders na
 - Screens/functions listed: sign-in, home dashboard, weekly timesheet grid, clock-in/out, leave requests and balances, holiday calendar, approval queue, HR and admin screens, in-app alerts, help pages.
 - Navigation and dashboard are built from the permissions returned by GET /api/me.
 - The same build serves a 360px phone browser for clock-in.
-
-- ⚠ No requirement ids are linked to this component in the input.
 
 ### ARCH-COMP-API · approved · source: architecture:v1:components:api
 
@@ -60,8 +54,6 @@ Background Job Worker: a Python 3.12 RQ worker built from the same FastAPI 0.115
 - Retries failed jobs.
 - Shares the API's domain modules so rules are not duplicated.
 
-- ⚠ Retry policy (attempts, backoff) and failure handling for jobs that keep failing are not specified.
-
 ### ARCH-COMP-DB · approved · source: architecture:v1:components:db
 
 PostgreSQL 16 is the system of record. It enforces referential integrity and uniqueness and provides transactional, row-locked balance updates.
@@ -72,8 +64,6 @@ PostgreSQL 16 is the system of record. It enforces referential integrity and uni
 
 **Related:** NFR-008, NFR-012
 
-- ⚠ Backup retention period and RPO/RTO are not stated.
-
 ### ARCH-COMP-REDIS · approved · source: architecture:v1:components:redis
 
 Redis 7 (redis:7-alpine) is the session store, cache and job queue. It holds no system-of-record data and no special-category data.
@@ -83,9 +73,6 @@ Redis 7 (redis:7-alpine) is the session store, cache and job queue. It holds no 
 - Carries the background job queue.
 
 **Related:** NFR-001, NFR-002
-
-- ⚠ Session idle TTL value and lockout threshold/duration are not specified.
-- ⚠ Redis persistence/availability behaviour is not described. A Redis loss would affect sessions and lockout counters.
 
 ### ARCH-PATH-AUTH · approved · source: architecture:v1:critical_paths:sign-in
 
@@ -100,8 +87,6 @@ Sign-in, lockout and server-side session: email+password login with a single gen
 
 **Related:** NFR-001, NFR-002, NFR-005
 
-- ⚠ No user story ids are linked in the input for this path (only NFR-001, NFR-002, NFR-005).
-
 ### ARCH-PATH-TIMESHEET · approved · source: architecture:v1:critical_paths:timesheet-submission
 
 Timesheet submission with no-self-approval routing: validate, lock, route to an approver by relationship, and escalate when the submitter is their own approver.
@@ -113,8 +98,6 @@ Timesheet submission with no-self-approval routing: validate, lock, route to an 
 - Both the submission and the escalation are written to the audit log.
 
 **Related:** US-018, US-033, NFR-004, NFR-010
-
-- ⚠ Behaviour when no one above the submitter exists and no HR Admin is configured is not specified.
 
 ### ARCH-PATH-LEAVE · approved · source: architecture:v1:critical_paths:leave-approval
 
@@ -141,8 +124,6 @@ Browser clock-in/clock-out stamped from the server clock, with HR-only regularis
 
 **Related:** US-020, US-021, US-022, NFR-006, NFR-010
 
-- ⚠ Handling of shifts crossing midnight is not addressed. The one-punch-pair-per-calendar-day rule implies it is not supported, but this is not stated.
-
 ### ARCH-DATA · approved · source: architecture:v1:entities
 
 15 entities cover identity/RBAC, organisation, projects, timesheets, attendance, leave, holidays, approvals, notifications and audit.
@@ -166,11 +147,6 @@ Browser clock-in/clock-out stamped from the server clock, with HR-only regularis
 
 Constraints stated in the technology decisions: one punch pair per employee per day, one timesheet per employee per week, one account per email. Audit log is INSERT/SELECT-only with a trigger refusing UPDATE and DELETE; before/after values are jsonb.
 
-- ⚠ Status value sets for timesheets and leave_requests (e.g. Draft/Submitted/Approved/Rejected) are only partly implied by endpoint text and not enumerated.
-- ⚠ The five role codes are not listed in the entities. The endpoint text says 'five fixed roles'.
-- ⚠ Only Draft, Submitted, approved and rejected-as-draft are implied. Whether rejected items keep a distinct status is unclear.
-- ⚠ How employees.is_erased interacts with audit_logs (which keeps who erased and when) is described only at a high level.
-
 ### ARCH-API-AUTH-ADMIN · approved · source: architecture:v1:endpoints:auth-admin
 
 Authentication, identity and system-admin endpoints: sign-in/out, password change, current user, user administration and audit-log reading.
@@ -185,10 +161,6 @@ Authentication, identity and system-admin endpoints: sign-in/out, password chang
 - GET /api/admin/audit-logs: filter by actor, entity, action or date range. No write, update or delete verb exists.
 
 **Related:** NFR-001, NFR-002, NFR-005, NFR-010
-
-- ⚠ No password policy (length/complexity/expiry) is specified.
-- ⚠ No self-service forgotten-password flow is listed. Only administrator reset exists.
-- ⚠ No user story ids are linked to these endpoints in the input.
 
 ### ARCH-API-PEOPLE-PROJECTS · approved · source: architecture:v1:endpoints:employees-departments-projects
 
@@ -207,12 +179,6 @@ Endpoints for employee records, departments, team view and project/assignment ma
 - DELETE /api/projects/{id}/assignments/{assignment_id}: unassign. The project leaves the employee's picker for new entries while recorded hours are retained.
 - GET /api/my/projects: active projects the caller is assigned to, with name, code and status.
 
-- ⚠ A department delete endpoint is not listed, yet deletion behaviour is described under POST /api/departments.
-- ⚠ No endpoint is listed for editing or closing a project, or for editing assignment allocated hours after creation.
-- ⚠ No endpoint is listed for employees to view or edit their own profile beyond PATCH /api/employees/{id}.
-- ⚠ The role description grants Project Managers 'monitor project utilization and allocated hours' and 'review project-specific timesheets'. No dedicated endpoint for these is listed.
-- ⚠ The role description grants HR Admin 'manage departments' and Reporting Managers 'monitor team availability'. Only team status is covered (GET /api/my/team).
-
 ### ARCH-API-TIME-ATTENDANCE · approved · source: architecture:v1:endpoints:timesheets-attendance
 
 Endpoints for the weekly timesheet grid, draft save and submission, and for clock-in/out, attendance history and HR regularisation.
@@ -228,10 +194,6 @@ Endpoints for the weekly timesheet grid, draft save and submission, and for cloc
 
 **Related:** US-018, US-020, US-021, US-022, NFR-006, NFR-010
 
-- ⚠ Hours granularity (decimal places) for timesheet cells is not stated.
-- ⚠ The project description mentions daily/weekly timesheets. Only a weekly grid is specified (daily entry is via day columns).
-- ⚠ No endpoint is listed for HR-wide attendance reports beyond the single-date query.
-
 ### ARCH-API-LEAVE · approved · source: architecture:v1:endpoints:leave-holidays
 
 Endpoints for applying for leave, history and balances, HR balance/leave-type administration and the holiday calendar.
@@ -245,11 +207,6 @@ Endpoints for applying for leave, history and balances, HR balance/leave-type ad
 - POST /api/admin/holidays: add, edit or remove a holiday date. Takes effect for future leave day-counts and is audit-logged.
 
 **Related:** US-023, US-024, US-025, US-026, US-031, NFR-015
-
-- ⚠ No endpoint is listed for an employee to cancel or withdraw a pending leave request, although the project description says to 'track requests'.
-- ⚠ How an HR override is supplied on POST /api/leave-requests (field or separate call) is not specified.
-- ⚠ Carry-forward or year-rollover of leave balances is not described.
-- ⚠ Single shared holiday calendar: regional or per-location calendars are not supported or discussed.
 
 ### ARCH-API-APPROVALS · approved · source: architecture:v1:endpoints:approvals-notifications-dashboard
 
@@ -265,10 +222,6 @@ Endpoints for the unified approval queue, approve/reject/reopen decisions, in-ap
 
 **Related:** US-033, NFR-004, NFR-010, NFR-015
 
-- ⚠ Approval is single-step only. Multi-level approval is not supported.
-- ⚠ The project description asks for approval 'notifications'. The architecture provides in-app alerts only, with no email/SMS/push. Confirm this meets the requirement.
-- ⚠ Manager behaviour when away or unavailable (delegation) is not described.
-
 ### ARCH-DEPLOY · approved · source: architecture:v1:deployment_nodes,technology_decisions:cloud
 
 Five development nodes are specified, all containers. The target cloud is AWS in a single in-country region, but no production node topology is itemised in the deployment nodes.
@@ -283,11 +236,6 @@ Development nodes:
 AWS target (from the cloud decision): CloudFront-fronted S3, ECS Fargate tasks, RDS and ElastiCache in one in-country region. RDS daily automated snapshots with point-in-time restore, KMS encryption at rest, TLS in transit, and Secrets Manager for DB and Redis credentials.
 
 **Related:** NFR-008, NFR-012
-
-- ⚠ Production/staging deployment nodes are not itemised. Only dev nodes are listed.
-- ⚠ The specific AWS region/country is not named.
-- ⚠ The dev nodes use a Redis container while the cloud decision names ElastiCache. This is consistent in intent but not explicitly mapped.
-- ⚠ No CI/CD, environment promotion, monitoring or logging approach is described.
 
 ### ARCH-TD-FRONTEND · approved · source: architecture:v1:technology_decisions:frontend
 
@@ -310,8 +258,6 @@ Rationale given:
 
 **Related:** AC-054, AC-055
 
-- ⚠ AC-054 and AC-055 are cited but are not in the supplied requirement keys, and their content was not provided.
-
 ### ARCH-TD-DATABASE · approved · source: architecture:v1:technology_decisions:database
 
 Database: PostgreSQL 16 chosen over MySQL 8, SQL Server and MongoDB.
@@ -323,8 +269,6 @@ Rationale given:
 
 **Related:** NFR-015
 
-- ⚠ Expected data volume and user count are referenced ('at this volume') but not stated.
-
 ### ARCH-TD-CLOUD · approved · source: architecture:v1:technology_decisions:cloud
 
 Cloud: AWS chosen over Azure, Google Cloud and on-premise hosting.
@@ -334,8 +278,6 @@ Rationale given:
 - NFRs delivered as managed features: RDS daily snapshots with point-in-time restore (NFR-012), KMS encryption at rest and TLS in transit (NFR-008), Secrets Manager for DB and Redis credentials.
 
 **Related:** NFR-008, NFR-012
-
-- ⚠ The company's country and the chosen region are not named, so the in-country claim cannot be verified from the input.
 
 ### ARCH-SEC-SCOPE · approved · source: architecture:v1:summary,endpoints,project-description
 
@@ -349,13 +291,6 @@ Cross-cutting authorisation, audit and scope boundaries, with discrepancies agai
 - Project description lists five roles: Employee, Reporting Manager, HR Admin, Project Manager, System Admin. The architecture models them as five fixed roles with a union of permissions for users holding several.
 
 **Related:** NFR-004, NFR-010
-
-- ⚠ Discrepancy: the project description's headline names four groups (Employees, Managers, HR, Admins) but its permissions table lists five roles (adds Project Manager). The architecture follows five.
-- ⚠ Conflict: the permissions table gives Reporting Managers 'access team reports' and HR Admin 'organization-wide HR reports'. The architecture excludes reporting dashboards and lists no report endpoints. Confirm whether a limited report is intended.
-- ⚠ The project description text is truncated at 'RBAC Requirements ... 2. Employees can', so RBAC requirements beyond item 1 could not be traced.
-- ⚠ The description lists 'attendance records' for HR Admin. Only a per-date attendance query and regularisation are specified.
-- ⚠ No endpoint covers role/permission management beyond assigning the five fixed roles, although System Admin is described as managing 'permissions' and 'organization settings and system configurations'. No settings endpoint is listed.
-- ⚠ US-001 to US-040 are known requirement keys, but the architecture input only cites US-018, US-020 to US-026, US-031 and US-033. The remaining stories have no explicit architecture linkage in the input.
 <!-- sdlc:auto:end narrative -->
 
 <!-- sdlc:auto:start building-blocks -->
